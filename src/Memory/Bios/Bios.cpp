@@ -48,8 +48,8 @@ void Bios::reset(const std::string& path) {
 	};
     
 	// Enable TTY
-	write(0x6F0C, 0x24010001);
-	write(0x6F14, 0xAF81A9C0);
+	//write(0x6F0C, 0x24010001);
+	//write(0x6F14, 0xAF81A9C0);
     
 	file.close();
     

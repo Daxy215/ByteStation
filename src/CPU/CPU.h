@@ -84,6 +84,12 @@ struct DisassemblerState {
     std::unordered_map<uint32_t, std::string> functionLabels;
     std::unordered_set<uint32_t> knownFunctions;
     bool show_address = true;
+    bool print_copied_lines_to_console = false;
+    bool config_loaded = false;
+    bool suppress_breakpoint_once = false;
+    uint32_t suppressed_breakpoint_addr = 0;
+    bool has_printed_pc_for_cycle = false;
+    uint64_t printed_pc_cycle = 0;
 
     std::deque<ExecutionTraceEntry> executionTrace;
     std::unordered_map<uint32_t, uint64_t> executionHits;
@@ -235,9 +241,9 @@ class CPU {
         int decodeAndExecuteSubFunctions(Instruction& instruction);
         uint32_t fetchInstruction(uint32_t addr);
 
-        int instructionFetchCycles(uint32_t addr) const;
         int memoryAccessCycles(uint32_t addr, uint8_t size, bool write) const;
 
+        void recordExecution(uint32_t instrPc, Instruction& instruction, bool branch, bool taken, uint32_t target);
         void recordMemoryAccess(uint32_t addr, uint32_t value, uint8_t size, bool write);
 
         void showDisassembler();

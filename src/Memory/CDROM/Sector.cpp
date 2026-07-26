@@ -26,7 +26,8 @@ int16_t& Sector::load16() {
 std::vector<uint8_t> Sector::read() {
 	std::vector<uint8_t> data(_size);
 	
-	std::memcpy(data.data(), &_buffer[_pointer], _size);
+	//std::memcpy(data.data(), &_buffer[_pointer], _size);
+    std::memcpy(data.data(), _buffer.data(), _size);
 	_pointer += _size;
 	
 	return data;
@@ -46,7 +47,7 @@ void const* Sector::data() const {
 }
 
 bool Sector::isEmpty() {
-	return _pointer >= _size;
+    return _pointer >= _size || _size == 0;
 }
 
 void Sector::empty() {

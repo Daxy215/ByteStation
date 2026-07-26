@@ -11,8 +11,10 @@
 #include <string>
 #include <optional>
 #include <unordered_set>
+#include <vector>
 
 #include "imgui.h"
+#include "../Core/config.h"
 #include "../Utils/Bitwise.h"
 
 /**
@@ -36,6 +38,23 @@ int CPU::executeNextInstruction() {
         exception(LoadAddressError);
 
         return 1;
+    }
+
+    const bool stepping =
+        stepRequested || stepUntilBranchTakenRequested || stepUntilBranchNotTakenRequested;
+
+    if (disasmState.suppress_breakpoint_once && disasmState.suppressed_breakpoint_addr == currentpc) {
+        disasmState.suppress_breakpoint_once = false;
+    } else if (disasmState.suppress_breakpoint_once) {
+        disasmState.suppress_breakpoint_once = false;
+
+        if (!stepping && disasmState.breakpoints.count(currentpc)) {
+            paused = true;
+            return 0;
+        }
+    } else if (!stepping && disasmState.breakpoints.count(currentpc)) {
+        paused = true;
+        return 0;
     }
 
     // If the last instruction was a branch then we're in the delay slot
@@ -84,8 +103,15 @@ int CPU::executeNextInstruction() {
         //printf("f");
     }
 
-    // Executes the instruction
-    const int cycles = decodeAndExecute(instruction) + extraCycles;
+    uint32_t instrPc = currentpc;
+
+    const int instructionCycles = decodeAndExecute(instruction);
+    bool executedBranch = branchSlot;
+    bool branchTaken = jumpSlot;
+    uint32_t traceTarget = branchTaken ? nextpc : pc;
+    const int cycles = instructionCycles + extraCycles;
+
+    recordExecution(instrPc, instruction, executedBranch, branchTaken, traceTarget);
 
     // Shift load registers
     if(loads[0].index != 32)
@@ -151,25 +177,9 @@ uint32_t CPU::fetchInstruction(uint32_t addr) {
     uint32_t value = interconnect.loadInstruction(addr);
 
     if (interconnect.lastICacheMiss)
-        extraCycles += instructionFetchCycles(addr);
+        extraCycles += memoryAccessCycles(addr, 4, false);
 
     return value;
-}
-
-int CPU::instructionFetchCycles(uint32_t addr) const {
-    uint32_t absAddr = map::maskRegion(addr);
-    uint32_t offset = 0;
-
-    if (map::SCRATCHPAD.contains(absAddr, offset))
-        return 0;
-
-    if (map::RAM.contains(absAddr, offset))
-        return 3;
-
-    if (map::BIOS.contains(absAddr, offset))
-        return 5;
-
-    return memoryAccessCycles(addr, 4, false);
 }
 
 int CPU::memoryAccessCycles(uint32_t addr, uint8_t size, bool write) const {
@@ -247,14 +257,31 @@ static std::string hangHex(uint32_t value) {
     return ss.str();
 }
 
-void CPU::recordMemoryAccess(uint32_t addr, uint32_t value, uint8_t size, bool write) {
-    return;
+void CPU::recordExecution(uint32_t instrPc, Instruction& instruction, bool branch, bool taken, uint32_t target) {
+    disasmState.totalCycles++;
+    disasmState.executionHits[instrPc]++;
 
-    static uint64_t sampledAccesses = 0;
+    if (branch)
+        disasmState.edgeHits[makeEdge(instrPc, target)]++;
 
-    if (++sampledAccesses % DisassemblerState::MemoryTraceSampleInterval != 0)
+    if (disasmState.totalCycles % DisassemblerState::TraceSampleInterval != 0 && !branch)
         return;
 
+    ExecutionTraceEntry entry;
+    entry.pc = instrPc;
+    entry.opcode = instruction.op;
+    entry.target = target;
+    entry.cycle = disasmState.totalCycles;
+    entry.branch = branch;
+    entry.taken = taken;
+
+    disasmState.executionTrace.push_back(entry);
+
+    if (disasmState.executionTrace.size() > DisassemblerState::MaxTrace)
+        disasmState.executionTrace.pop_front();
+}
+
+void CPU::recordMemoryAccess(uint32_t addr, uint32_t value, uint8_t size, bool write) {
     MemoryTraceEntry entry;
     entry.pc = currentpc;
     entry.addr = addr;
@@ -269,7 +296,50 @@ void CPU::recordMemoryAccess(uint32_t addr, uint32_t value, uint8_t size, bool w
         disasmState.memoryTrace.pop_front();
 }
 
+static uint32_t disasmPeekInstruction(Interconnect& interconnect, uint32_t addr) {
+    uint32_t absAddr = map::maskRegion(addr);
+    uint32_t offset = 0;
+
+    if (map::RAM.contains(absAddr, offset))
+        return interconnect._ram.load<uint32_t>(offset);
+
+    if (map::BIOS.contains(absAddr, offset))
+        return interconnect._bios.load<uint32_t>(offset);
+
+    if (map::SCRATCHPAD.contains(absAddr, offset))
+        return interconnect._scratchPad.load<uint32_t>(offset);
+
+    return 0;
+}
+
+static std::vector<uint32_t> sortedAddresses(const std::unordered_set<uint32_t>& addresses) {
+    std::vector<uint32_t> result(addresses.begin(), addresses.end());
+    std::sort(result.begin(), result.end());
+    return result;
+}
+
+static void loadDisassemblerConfig(DisassemblerState& state) {
+    auto& config = Config::Get();
+    config.Load();
+
+    state.breakpoints.insert(config.breakpoints.begin(), config.breakpoints.end());
+    state.bookmarks.insert(config.bookmarks.begin(), config.bookmarks.end());
+    state.print_copied_lines_to_console = config.printDisassemblyCopiesToConsole;
+    state.config_loaded = true;
+}
+
+static void saveDisassemblerConfig(const DisassemblerState& state) {
+    auto& config = Config::Get();
+    config.breakpoints = sortedAddresses(state.breakpoints);
+    config.bookmarks = sortedAddresses(state.bookmarks);
+    config.printDisassemblyCopiesToConsole = state.print_copied_lines_to_console;
+    config.Save();
+}
+
 void CPU::showDisassembler() {
+    if (!disasmState.config_loaded)
+        loadDisassemblerConfig(disasmState);
+
     if (!disasmState.show)
         return;
 
@@ -279,8 +349,15 @@ void CPU::showDisassembler() {
         return it != disasmState.executionHits.end() ? it->second : 0;
     };
 
-    if (ImGui::Button(paused ? "Continue (F5)" : "Pause (F5)"))
-        paused = !paused;
+    if (ImGui::Button(paused ? "Continue (F5)" : "Pause (F5)")) {
+        if (paused) {
+            disasmState.suppress_breakpoint_once = true;
+            disasmState.suppressed_breakpoint_addr = pc;
+            paused = false;
+        } else {
+            paused = true;
+        }
+    }
 
     ImGui::SameLine();
 
@@ -313,6 +390,10 @@ void CPU::showDisassembler() {
 
     ImGui::SameLine();
     ImGui::Checkbox("Show Addresses", &disasmState.show_address);
+
+    ImGui::SameLine();
+    if (ImGui::Checkbox("Print Copies", &disasmState.print_copied_lines_to_console))
+        saveDisassemblerConfig(disasmState);
 
     ImGui::Separator();
 
@@ -436,23 +517,9 @@ void CPU::showDisassembler() {
 
             uint32_t addr = startAddr + line * 4;
 
-            auto it = disasmState.cache.find(addr);
-
-            DisassembledInstruction di;
-
-            if (it != disasmState.cache.end()) {
-                di = it->second;
-            } else {
-                uint32_t    op = interconnect.loadInstruction(addr);
-                Instruction inst(op);
-
-                di = disassemble(inst, addr);
-
-                if (disasmState.cache.size() >= DisassemblerState::MaxDisassemblyCache)
-                    disasmState.cache.clear();
-
-                disasmState.cache[addr] = di;
-            }
+            uint32_t op = disasmPeekInstruction(interconnect, addr);
+            Instruction inst(op);
+            DisassembledInstruction di = disassemble(inst, addr);
 
             if (!filter.empty()) {
                 std::string txt = di.text;
@@ -466,6 +533,8 @@ void CPU::showDisassembler() {
 
             bool isPC      = addr == pc;
             bool isHotspot = h.detected && addr == h.hotspot;
+
+            ImGui::PushID(static_cast<int>(addr));
 
             if (isHotspot)
                 ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 80, 80, 255));
@@ -493,6 +562,14 @@ void CPU::showDisassembler() {
                 ImGui::SameLine();
             }
 
+            if (disasmState.bookmarks.count(addr)) {
+                ImGui::Text("*");
+                ImGui::SameLine();
+            } else {
+                ImGui::Text(" ");
+                ImGui::SameLine();
+            }
+
             if (disasmState.show_address) {
                 ImGui::Text("%08X:", addr);
                 ImGui::SameLine();
@@ -502,9 +579,60 @@ void CPU::showDisassembler() {
                 ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 220, 120, 255));
 
             ImGui::Text("%s", di.text.c_str());
+            const bool lineClicked = ImGui::IsItemClicked();
 
             if (di.is_branch)
                 ImGui::PopStyleColor();
+
+            std::stringstream copyLine;
+            copyLine << std::hex << std::uppercase << std::setw(8) << std::setfill('0') << addr << ": " << di.text;
+
+            if (disasmState.print_copied_lines_to_console &&
+                isPC &&
+                (!disasmState.has_printed_pc_for_cycle ||
+                 disasmState.printed_pc_cycle != disasmState.totalCycles)) {
+                std::cout << copyLine.str() << std::endl;
+                disasmState.has_printed_pc_for_cycle = true;
+                disasmState.printed_pc_cycle = disasmState.totalCycles;
+            }
+
+            if (lineClicked) {
+                ImGui::SetClipboardText(copyLine.str().c_str());
+            }
+
+            if (ImGui::BeginPopupContextItem("##disasm_line_context")) {
+                const bool hasBreakpoint = disasmState.breakpoints.count(addr) != 0;
+                const bool hasBookmark = disasmState.bookmarks.count(addr) != 0;
+
+                if (ImGui::MenuItem(hasBreakpoint ? "Remove Breakpoint" : "Add Breakpoint")) {
+                    if (hasBreakpoint)
+                        disasmState.breakpoints.erase(addr);
+                    else
+                        disasmState.breakpoints.insert(addr);
+
+                    saveDisassemblerConfig(disasmState);
+                }
+
+                if (ImGui::MenuItem(hasBookmark ? "Remove Bookmark" : "Add Bookmark")) {
+                    if (hasBookmark)
+                        disasmState.bookmarks.erase(addr);
+                    else
+                        disasmState.bookmarks.insert(addr);
+
+                    saveDisassemblerConfig(disasmState);
+                }
+
+                ImGui::Separator();
+
+                if (ImGui::MenuItem("Copy Line")) {
+                    ImGui::SetClipboardText(copyLine.str().c_str());
+
+                    if (disasmState.print_copied_lines_to_console)
+                        std::cout << copyLine.str() << std::endl;
+                }
+
+                ImGui::EndPopup();
+            }
 
             if (hits > 100) {
                 ImGui::SameLine();
@@ -546,6 +674,8 @@ void CPU::showDisassembler() {
 
             if (isHotspot || isPC)
                 ImGui::PopStyleColor();
+
+            ImGui::PopID();
         }
     }
 
@@ -609,40 +739,463 @@ void CPU::showDisassembler() {
     ImGui::End();
 }
 
-// TODO; THOSE ARE NOT COMPLETED!
+static std::string disasmHex(uint32_t value, int width = 8) {
+    std::stringstream ss;
+    ss << "0x" << std::hex << std::uppercase << std::setw(width) << std::setfill('0') << value;
+    return ss.str();
+}
+
+static std::string disasmImm(int32_t value) {
+    std::stringstream ss;
+
+    if (value < 0) {
+        int64_t wide = value;
+        ss << "-0x" << std::hex << std::uppercase << -wide;
+    } else {
+        ss << "0x" << std::hex << std::uppercase << value;
+    }
+
+    return ss.str();
+}
+
+static const char* disasmRegName(uint32_t reg) {
+    static const char* names[32] = {
+        "zero(0)", "at(1)", "v0(2)", "v1(3)", "a0(4)", "a1(5)", "a2(6)", "a3(7)",
+        "t0(8)", "t1(9)", "t2(10)", "t3(11)", "t4(12)", "t5(13)", "t6(14)", "t7(15)",
+        "s0(16)", "s1(17)", "s2(18)", "s3(19)", "s4(20)", "s5(21)", "s6(22)", "s7(23)",
+        "t8(24)", "t9(25)", "k0(26)", "k1(27)", "gp(28)", "sp(29)", "fp(30)", "ra(31)"
+    };
+
+    return names[reg & 31];
+}
+
+static const char* disasmCop0RegName(uint32_t reg) {
+    static const char* names[32] = {
+        "Index", "Random", "EntryLo0", "BPC", "Context", "BDA", "JUMPDEST", "DCIC",
+        "BadVaddr", "BDAM", "EntryHi", "BPCM", "SR", "CAUSE", "EPC", "PRID",
+        "COP0_16", "COP0_17", "COP0_18", "COP0_19", "COP0_20", "COP0_21", "COP0_22", "COP0_23",
+        "COP0_24", "COP0_25", "COP0_26", "COP0_27", "COP0_28", "COP0_29", "COP0_30", "COP0_31"
+    };
+
+    return names[reg & 31];
+}
+
+static const char* disasmGteCommandName(uint32_t cmd) {
+    switch (cmd) {
+        case 0x01: return "RTPS";
+        case 0x06: return "NCLIP";
+        case 0x0c: return "OP";
+        case 0x10: return "DPCS";
+        case 0x11: return "INTPL";
+        case 0x12: return "MVMVA";
+        case 0x13: return "NCDS";
+        case 0x14: return "CDP";
+        case 0x16: return "NCDT";
+        case 0x1b: return "NCCS";
+        case 0x1c: return "CC";
+        case 0x1e: return "NCS";
+        case 0x20: return "NCT";
+        case 0x28: return "SQR";
+        case 0x29: return "DCPL";
+        case 0x2a: return "DPCT";
+        case 0x2d: return "AVSZ3";
+        case 0x2e: return "AVSZ4";
+        case 0x30: return "RTPT";
+        case 0x3d: return "GPF";
+        case 0x3e: return "GPL";
+        case 0x3f: return "NCCT";
+        default: return "GTE";
+    }
+}
+
+static std::string disasmAddressRegion(uint32_t addr) {
+    uint32_t absAddr = map::maskRegion(addr);
+    uint32_t offset = 0;
+
+    if (map::RAM.contains(absAddr, offset))
+        return "ram+" + disasmHex(offset, 6);
+    if (map::SCRATCHPAD.contains(absAddr, offset))
+        return "scratchpad+" + disasmHex(offset, 3);
+    if (map::BIOS.contains(absAddr, offset))
+        return "bios+" + disasmHex(offset, 5);
+    if (map::GPU.contains(absAddr, offset))
+        return "gpu+" + disasmHex(offset, 1);
+    if (map::DMA.contains(absAddr, offset))
+        return "dma+" + disasmHex(offset, 2);
+    if (map::SPU.contains(absAddr, offset))
+        return "spu+" + disasmHex(offset, 3);
+    if (map::CDROM.contains(absAddr, offset))
+        return "cdrom+" + disasmHex(offset, 1);
+    if (map::MDEC.contains(absAddr, offset))
+        return "mdec+" + disasmHex(offset, 1);
+    if (map::TIMERS.contains(absAddr, offset))
+        return "timers+" + disasmHex(offset, 2);
+    if (map::IRQ_CONTROL.contains(absAddr, offset))
+        return "irq+" + disasmHex(offset, 1);
+    if (map::PADMEMCARD.contains(absAddr, offset))
+        return "sio+" + disasmHex(offset, 2);
+    if (map::MEMCONTROL.contains(absAddr, offset))
+        return "memctrl+" + disasmHex(offset, 2);
+    if (map::CACHECONTROL.contains(absAddr, offset))
+        return "cachectrl+" + disasmHex(offset, 1);
+    if (map::EXPANSION1.contains(absAddr, offset))
+        return "exp1+" + disasmHex(offset, 5);
+    if (map::EXPANSION2.contains(absAddr, offset))
+        return "exp2+" + disasmHex(offset, 3);
+    if (map::PCSX_REDUX_EXPANSION.contains(absAddr, offset))
+        return "pcsx+" + disasmHex(offset, 1);
+    if (map::RAM_SIZE.contains(absAddr, offset))
+        return "ramsize+" + disasmHex(offset, 1);
+
+    return "unknown";
+}
+
 DisassembledInstruction CPU::disassemble(Instruction& inst, uint32_t address) {
     DisassembledInstruction result;
 
-    uint32_t opcode = inst.op;
-    uint32_t funct = inst.subfunc;
     uint32_t rs = inst.rs;
     uint32_t rt = inst.rt;
     uint32_t rd = inst.rd;
-    uint32_t imm = inst.imm_se;
+    int32_t simm = inst.imm_se;
     uint32_t uimm = inst.imm;
     uint32_t jump_target = inst.jump << 2;
+    uint32_t branch_target = address + 4 + static_cast<uint32_t>(simm * 4);
 
-    result.opcode = opcode;
+    result.opcode = inst.op;
 
     std::stringstream ss;
 
-    auto regname = [](uint32_t reg) {
-        static const char* names[32] = {
-            "zero(0)", "at(1)", "v0(2)", "v1(3)", "a0(4)", "a1(5)", "a2(6)", "a3(7)",
-            "t0(8)", "t1(9)", "t2(10)", "t3(11)", "t4(12)", "t5(13)", "t6(14)", "t7(15)",
-            "s0(16)", "s1(17)", "s2(18)", "s3(19)", "s4(20)", "s5(21)", "s6(22)", "s7(23)",
-            "t8(24)", "t9(25)", "k0(26)", "k1(27)", "gp(28)", "sp(29)", "fp(30)", "ra(31)"
-        };
+    bool hasDetail = false;
 
-        return names[reg];
+    auto appendDetail = [&](const std::string& detail) {
+        if (detail.empty())
+            return;
+
+        if (!hasDetail) {
+            ss << " ; ";
+            hasDetail = true;
+        } else {
+            ss << " ";
+        }
+
+        ss << detail;
+    };
+
+    auto regDetail = [&](uint32_t reg) {
+        return std::string(disasmRegName(reg)) + "=" + disasmHex(regs[reg & 31]);
+    };
+
+    auto cop0Value = [&](uint32_t reg) -> uint32_t {
+        switch (reg & 31) {
+            case 3: return _cop0.bpc;
+            case 5: return _cop0.bda;
+            case 7: return _cop0.dcic;
+            case 8: return _cop0.badVaddr;
+            case 9: return _cop0.bdam;
+            case 11: return _cop0.bpcm;
+            case 12: return _cop0.sr;
+            case 13: return _cop0.cause;
+            case 14: return _cop0.epc;
+            case 15: return 0x00000001;
+            default: return 0;
+        }
+    };
+
+    auto latestMemory = [&](bool write, uint8_t size) -> std::optional<MemoryTraceEntry> {
+        for (auto it = disasmState.memoryTrace.rbegin(); it != disasmState.memoryTrace.rend(); ++it) {
+            if (it->pc == address && it->write == write && it->size == size)
+                return *it;
+        }
+
+        return std::nullopt;
+    };
+
+    auto appendBranchDetails = [&](bool taken) {
+        appendDetail(regDetail(rs));
+        appendDetail(regDetail(rt));
+        appendDetail(std::string("isTaken=") + (taken ? "true" : "false"));
+    };
+
+    auto appendSingleBranchDetails = [&](bool taken) {
+        appendDetail(regDetail(rs));
+        appendDetail(std::string("isTaken=") + (taken ? "true" : "false"));
+    };
+
+    auto memoryOperand = [&](uint32_t base, int32_t imm) {
+        std::stringstream out;
+        out << disasmImm(imm) << "(" << disasmRegName(base) << ")";
+        return out.str();
+    };
+
+    auto appendLoadDetails = [&](uint8_t size, uint32_t effectiveAddr, uint32_t targetReg) {
+        result.memory_access = true;
+        result.reads_memory = true;
+
+        appendDetail(regDetail(rs));
+
+        std::optional<MemoryTraceEntry> mem = latestMemory(false, size);
+        uint32_t shownAddr = mem ? mem->addr : effectiveAddr;
+        std::string addrText = "addr=" + disasmAddressRegion(shownAddr) + "[" + disasmHex(shownAddr) + "]";
+
+        if (mem && currentpc != address)
+            addrText += "(" + disasmHex(mem->value) + ")";
+
+        appendDetail(addrText);
+
+        if (mem && currentpc != address)
+            appendDetail(std::string(disasmRegName(targetReg)) + "=" + disasmHex(mem->value));
+    };
+
+    auto appendStoreDetails = [&](uint8_t size, uint32_t effectiveAddr, uint32_t value) {
+        result.memory_access = true;
+        result.writes_memory = true;
+
+        appendDetail(regDetail(rs));
+        appendDetail(regDetail(rt));
+
+        std::optional<MemoryTraceEntry> mem = latestMemory(true, size);
+        uint32_t shownAddr = mem ? mem->addr : effectiveAddr;
+        uint32_t shownValue = mem ? mem->value : value;
+        appendDetail("addr=" + disasmAddressRegion(shownAddr) + "[" + disasmHex(shownAddr) + "]");
+        appendDetail("stored=" + disasmHex(shownValue));
+    };
+
+    auto appendCopStoreDetails = [&](uint8_t size, uint32_t effectiveAddr, uint32_t value) {
+        result.memory_access = true;
+        result.writes_memory = true;
+
+        appendDetail(regDetail(rs));
+
+        std::optional<MemoryTraceEntry> mem = latestMemory(true, size);
+        uint32_t shownAddr = mem ? mem->addr : effectiveAddr;
+        uint32_t shownValue = mem ? mem->value : value;
+        appendDetail("addr=" + disasmAddressRegion(shownAddr) + "[" + disasmHex(shownAddr) + "]");
+        appendDetail("stored=" + disasmHex(shownValue));
+    };
+
+    auto unsupported = [&](const char* group, uint32_t value) {
+        ss << group << "_" << std::hex << std::uppercase << value;
     };
 
     switch (inst.func) {
+        case 0x00: {
+            if (inst.op == 0) {
+                ss << "NOP";
+                break;
+            }
+
+            switch (inst.subfunc) {
+                case 0x00:
+                    ss << "SLL    " << disasmRegName(rd) << ", " << disasmRegName(rt) << ", " << inst.shamt;
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x02:
+                    ss << "SRL    " << disasmRegName(rd) << ", " << disasmRegName(rt) << ", " << inst.shamt;
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x03:
+                    ss << "SRA    " << disasmRegName(rd) << ", " << disasmRegName(rt) << ", " << inst.shamt;
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x04:
+                    ss << "SLLV   " << disasmRegName(rd) << ", " << disasmRegName(rt) << ", " << disasmRegName(rs);
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x06:
+                    ss << "SRLV   " << disasmRegName(rd) << ", " << disasmRegName(rt) << ", " << disasmRegName(rs);
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x07:
+                    ss << "SRAV   " << disasmRegName(rd) << ", " << disasmRegName(rt) << ", " << disasmRegName(rs);
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x08:
+                    result.target = regs[rs];
+                    result.is_branch = true;
+                    result.branch_taken = true;
+                    ss << "JR     " << disasmRegName(rs);
+                    appendDetail(regDetail(rs));
+                    appendDetail("target=" + disasmHex(result.target));
+                    break;
+                case 0x09:
+                    result.target = regs[rs];
+                    result.is_branch = true;
+                    result.branch_taken = true;
+                    ss << "JALR   " << disasmRegName(rd) << ", " << disasmRegName(rs);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rd));
+                    appendDetail("target=" + disasmHex(result.target));
+                    break;
+                case 0x0c:
+                    ss << "SYSCALL";
+                    appendDetail("code=" + disasmHex((inst.op >> 6) & 0xfffff, 5));
+                    break;
+                case 0x0d:
+                    ss << "BREAK";
+                    appendDetail("code=" + disasmHex((inst.op >> 6) & 0xfffff, 5));
+                    break;
+                case 0x10:
+                    ss << "MFHI   " << disasmRegName(rd);
+                    appendDetail("hi=" + disasmHex(hi));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x11:
+                    ss << "MTHI   " << disasmRegName(rs);
+                    appendDetail(regDetail(rs));
+                    appendDetail("hi=" + disasmHex(hi));
+                    break;
+                case 0x12:
+                    ss << "MFLO   " << disasmRegName(rd);
+                    appendDetail("lo=" + disasmHex(lo));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x13:
+                    ss << "MTLO   " << disasmRegName(rs);
+                    appendDetail(regDetail(rs));
+                    appendDetail("lo=" + disasmHex(lo));
+                    break;
+                case 0x18:
+                    ss << "MULT   " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail("hi=" + disasmHex(hi));
+                    appendDetail("lo=" + disasmHex(lo));
+                    break;
+                case 0x19:
+                    ss << "MULTU  " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail("hi=" + disasmHex(hi));
+                    appendDetail("lo=" + disasmHex(lo));
+                    break;
+                case 0x1a:
+                    ss << "DIV    " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail("hi=" + disasmHex(hi));
+                    appendDetail("lo=" + disasmHex(lo));
+                    break;
+                case 0x1b:
+                    ss << "DIVU   " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail("hi=" + disasmHex(hi));
+                    appendDetail("lo=" + disasmHex(lo));
+                    break;
+                case 0x20:
+                    ss << "ADD    " << disasmRegName(rd) << ", " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x21:
+                    ss << "ADDU   " << disasmRegName(rd) << ", " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x22:
+                    ss << "SUB    " << disasmRegName(rd) << ", " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x23:
+                    ss << "SUBU   " << disasmRegName(rd) << ", " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x24:
+                    ss << "AND    " << disasmRegName(rd) << ", " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x25:
+                    ss << "OR     " << disasmRegName(rd) << ", " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x26:
+                    ss << "XOR    " << disasmRegName(rd) << ", " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x27:
+                    ss << "NOR    " << disasmRegName(rd) << ", " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x2a:
+                    ss << "SLT    " << disasmRegName(rd) << ", " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                case 0x2b:
+                    ss << "SLTU   " << disasmRegName(rd) << ", " << disasmRegName(rs) << ", " << disasmRegName(rt);
+                    appendDetail(regDetail(rs));
+                    appendDetail(regDetail(rt));
+                    appendDetail(regDetail(rd));
+                    break;
+                default:
+                    unsupported("SPECIAL", inst.subfunc);
+                    break;
+            }
+
+            break;
+        }
+
+        case 0x01: {
+            bool validRegimm = rt == 0x00 || rt == 0x01 || rt == 0x10 || rt == 0x11;
+            bool isBgez = rt == 0x01 || rt == 0x11;
+            bool isLink = rt == 0x10 || rt == 0x11;
+            bool taken = isBgez ? static_cast<int32_t>(regs[rs]) >= 0 : static_cast<int32_t>(regs[rs]) < 0;
+
+            if (!validRegimm) {
+                unsupported("REGIMM", rt);
+                break;
+            }
+
+            result.target = branch_target;
+            result.is_branch = true;
+            result.branch_taken = taken;
+
+            switch (rt) {
+                case 0x00: ss << "BLTZ   "; break;
+                case 0x01: ss << "BGEZ   "; break;
+                case 0x10: ss << "BLTZAL "; break;
+                case 0x11: ss << "BGEZAL "; break;
+            }
+
+            ss << disasmRegName(rs) << ", " << getFunctionLabel(result.target);
+            appendSingleBranchDetails(taken);
+
+            if (isLink)
+                appendDetail(regDetail(31));
+
+            break;
+        }
+
         case 0x02:
             result.target = ((address + 4) & 0xf0000000) | jump_target;
             result.is_branch = true;
             result.branch_taken = true;
             ss << "J      " << getFunctionLabel(result.target);
+            appendDetail("target=" + disasmHex(result.target));
             break;
 
         case 0x03:
@@ -650,60 +1203,254 @@ DisassembledInstruction CPU::disassemble(Instruction& inst, uint32_t address) {
             result.is_branch = true;
             result.branch_taken = true;
             ss << "JAL    " << getFunctionLabel(result.target);
+            appendDetail(regDetail(31));
+            appendDetail("target=" + disasmHex(result.target));
             break;
 
         case 0x04:
-            result.target = (address + 4) + (static_cast<int32_t>(imm << 2));
+            result.target = branch_target;
             result.is_branch = true;
             result.branch_taken = regs[rs] == regs[rt];
-            ss << "BEQ    " << regname(rs) << ", " << regname(rt);
+            ss << "BEQ    " << disasmRegName(rs) << ", " << disasmRegName(rt) << ", " << getFunctionLabel(result.target);
+            appendBranchDetails(result.branch_taken);
             break;
 
         case 0x05:
-            result.target = (address + 4) + (static_cast<int32_t>(imm << 2));
+            result.target = branch_target;
             result.is_branch = true;
             result.branch_taken = regs[rs] != regs[rt];
-            ss << "BNE    " << regname(rs) << ", " << regname(rt);
+            ss << "BNE    " << disasmRegName(rs) << ", " << disasmRegName(rt) << ", " << getFunctionLabel(result.target);
+            appendBranchDetails(result.branch_taken);
+            break;
+
+        case 0x06:
+            result.target = branch_target;
+            result.is_branch = true;
+            result.branch_taken = static_cast<int32_t>(regs[rs]) <= 0;
+            ss << "BLEZ   " << disasmRegName(rs) << ", " << getFunctionLabel(result.target);
+            appendSingleBranchDetails(result.branch_taken);
+            break;
+
+        case 0x07:
+            result.target = branch_target;
+            result.is_branch = true;
+            result.branch_taken = static_cast<int32_t>(regs[rs]) > 0;
+            ss << "BGTZ   " << disasmRegName(rs) << ", " << getFunctionLabel(result.target);
+            appendSingleBranchDetails(result.branch_taken);
+            break;
+
+        case 0x08:
+            ss << "ADDI   " << disasmRegName(rt) << ", " << disasmRegName(rs) << ", " << disasmImm(simm);
+            appendDetail(regDetail(rs));
+            appendDetail(regDetail(rt));
+            break;
+
+        case 0x09:
+            ss << "ADDIU  " << disasmRegName(rt) << ", " << disasmRegName(rs) << ", " << disasmImm(simm);
+            appendDetail(regDetail(rs));
+            appendDetail(regDetail(rt));
+            break;
+
+        case 0x0a:
+            ss << "SLTI   " << disasmRegName(rt) << ", " << disasmRegName(rs) << ", " << disasmImm(simm);
+            appendDetail(regDetail(rs));
+            appendDetail(regDetail(rt));
+            break;
+
+        case 0x0b:
+            ss << "SLTIU  " << disasmRegName(rt) << ", " << disasmRegName(rs) << ", " << disasmImm(simm);
+            appendDetail(regDetail(rs));
+            appendDetail(regDetail(rt));
+            break;
+
+        case 0x0c:
+            ss << "ANDI   " << disasmRegName(rt) << ", " << disasmRegName(rs) << ", " << disasmHex(uimm, 4);
+            appendDetail(regDetail(rs));
+            appendDetail(regDetail(rt));
+            break;
+
+        case 0x0d:
+            ss << "ORI    " << disasmRegName(rt) << ", " << disasmRegName(rs) << ", " << disasmHex(uimm, 4);
+            appendDetail(regDetail(rs));
+            appendDetail(regDetail(rt));
+            break;
+
+        case 0x0e:
+            ss << "XORI   " << disasmRegName(rt) << ", " << disasmRegName(rs) << ", " << disasmHex(uimm, 4);
+            appendDetail(regDetail(rs));
+            appendDetail(regDetail(rt));
+            break;
+
+        case 0x0f:
+            ss << "LUI    " << disasmRegName(rt) << ", " << disasmHex(uimm, 4);
+            appendDetail(regDetail(rt));
+            break;
+
+        case 0x10:
+            switch (rs) {
+                case 0x00:
+                    ss << "MFC0   " << disasmRegName(rt) << ", " << disasmCop0RegName(rd);
+                    appendDetail(std::string(disasmCop0RegName(rd)) + "=" + disasmHex(cop0Value(rd)));
+                    appendDetail(regDetail(rt));
+                    break;
+                case 0x04:
+                    ss << "MTC0   " << disasmRegName(rt) << ", " << disasmCop0RegName(rd);
+                    appendDetail(regDetail(rt));
+                    appendDetail(std::string(disasmCop0RegName(rd)) + "=" + disasmHex(cop0Value(rd)));
+                    break;
+                case 0x10:
+                    if ((inst.op & 0x3f) == 0x10)
+                        ss << "RFE";
+                    else
+                        unsupported("COP0", inst.op & 0x01ffffff);
+                    break;
+                default:
+                    unsupported("COP0", rs);
+                    break;
+            }
+
+            break;
+
+        case 0x11:
+            unsupported("COP1", rs);
+            break;
+
+        case 0x12:
+            if (inst.op & (1 << 25)) {
+                uint32_t cmd = inst.op & 0x3f;
+                ss << disasmGteCommandName(cmd) << "  " << disasmHex(inst.op & 0x01ffffff, 7);
+            } else {
+                switch (rs) {
+                    case 0x00:
+                        ss << "MFC2   " << disasmRegName(rt) << ", data" << rd;
+                        appendDetail(regDetail(rt));
+                        break;
+                    case 0x02:
+                        ss << "CFC2   " << disasmRegName(rt) << ", ctrl" << rd;
+                        appendDetail(regDetail(rt));
+                        break;
+                    case 0x04:
+                        ss << "MTC2   " << disasmRegName(rt) << ", data" << rd;
+                        appendDetail(regDetail(rt));
+                        break;
+                    case 0x06:
+                        ss << "CTC2   " << disasmRegName(rt) << ", ctrl" << rd;
+                        appendDetail(regDetail(rt));
+                        break;
+                    default:
+                        unsupported("COP2", rs);
+                        break;
+                }
+            }
+
+            break;
+
+        case 0x13:
+            unsupported("COP3", rs);
             break;
 
         case 0x20:
-            result.memory_access = true;
-            result.reads_memory = true;
-            ss << "LB";
+            ss << "LB     " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(1, regs[rs] + simm, rt);
             break;
 
         case 0x21:
-            result.memory_access = true;
-            result.reads_memory = true;
-            ss << "LH";
+            ss << "LH     " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(2, regs[rs] + simm, rt);
+            break;
+
+        case 0x22:
+            ss << "LWL    " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(4, (regs[rs] + simm) & ~3u, rt);
             break;
 
         case 0x23:
-            result.memory_access = true;
-            result.reads_memory = true;
-            ss << "LW";
+            ss << "LW     " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(4, regs[rs] + simm, rt);
+            break;
+
+        case 0x24:
+            ss << "LBU    " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(1, regs[rs] + simm, rt);
+            break;
+
+        case 0x25:
+            ss << "LHU    " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(2, regs[rs] + simm, rt);
+            break;
+
+        case 0x26:
+            ss << "LWR    " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(4, (regs[rs] + simm) & ~3u, rt);
             break;
 
         case 0x28:
-            result.memory_access = true;
-            result.writes_memory = true;
-            ss << "SB";
+            ss << "SB     " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendStoreDetails(1, regs[rs] + simm, regs[rt] & 0xff);
             break;
 
         case 0x29:
-            result.memory_access = true;
-            result.writes_memory = true;
-            ss << "SH";
+            ss << "SH     " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendStoreDetails(2, regs[rs] + simm, regs[rt] & 0xffff);
+            break;
+
+        case 0x2a:
+            ss << "SWL    " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendStoreDetails(4, (regs[rs] + simm) & ~3u, regs[rt]);
             break;
 
         case 0x2B:
-            result.memory_access = true;
-            result.writes_memory = true;
-            ss << "SW";
+            ss << "SW     " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendStoreDetails(4, regs[rs] + simm, regs[rt]);
+            break;
+
+        case 0x2e:
+            ss << "SWR    " << disasmRegName(rt) << ", " << memoryOperand(rs, simm);
+            appendStoreDetails(4, (regs[rs] + simm) & ~3u, regs[rt]);
+            break;
+
+        case 0x30:
+            ss << "LWC0   cop0data" << rt << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(4, regs[rs] + simm, rt);
+            break;
+
+        case 0x31:
+            ss << "LWC1   cop1data" << rt << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(4, regs[rs] + simm, rt);
+            break;
+
+        case 0x32:
+            ss << "LWC2   data" << rt << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(4, regs[rs] + simm, rt);
+            break;
+
+        case 0x33:
+            ss << "LWC3   cop3data" << rt << ", " << memoryOperand(rs, simm);
+            appendLoadDetails(4, regs[rs] + simm, rt);
+            break;
+
+        case 0x38:
+            ss << "SWC0   cop0data" << rt << ", " << memoryOperand(rs, simm);
+            appendCopStoreDetails(4, regs[rs] + simm, 0);
+            break;
+
+        case 0x39:
+            ss << "SWC1   cop1data" << rt << ", " << memoryOperand(rs, simm);
+            appendCopStoreDetails(4, regs[rs] + simm, 0);
+            break;
+
+        case 0x3a:
+            ss << "SWC2   data" << rt << ", " << memoryOperand(rs, simm);
+            appendCopStoreDetails(4, regs[rs] + simm, latestMemory(true, 4).value_or(MemoryTraceEntry{}).value);
+            break;
+
+        case 0x3b:
+            ss << "SWC3   cop3data" << rt << ", " << memoryOperand(rs, simm);
+            appendCopStoreDetails(4, regs[rs] + simm, 0);
             break;
 
         default:
-            ss << "OP_" << std::hex << inst.func;
+            unsupported("ILLEGAL", inst.func);
             break;
     }
 

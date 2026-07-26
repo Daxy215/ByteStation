@@ -371,9 +371,17 @@ uint32_t Emulator::Gpu::status() {
     // Bits 29-30: DMA Direction (0=Off, 1=?, 2=CPUtoGP0, 3=GPUREADtoCPU)
     status |= (static_cast<uint32_t>(dmaDirection) & 0x03) << 29;
 
+    /**
+     * My GPU timing is still very trash,
+     * so doing this allows openbios to boot
+     */
+    static int test = 0;
+
     // Bit 31: Drawing even/odd lines in interlace mode (0=Even, 1=Odd)
-    if (!isInVBlank)
-        status |= uint32_t(isOddLine ? 1 : 0) << 31;
+    status |= /*uint32_t(isOddLine ? 1 : 0)*/ (test % 2 == 1 ? 1 : 0)  << 31;
+
+    test++;
+    //printf("Test: ")
 
     /**
     * A(4Eh) - gpu_sync()
@@ -438,7 +446,6 @@ void Emulator::Gpu::gp0(uint32_t val) {
                     const bool gouraud   = fields["isGouraud"];
                     const bool fourVerts = fields["isFourVerts"];
                     const bool textured  = fields["isTextured"];
-                    const bool rawTexture = textured && fields["isRawTexture"];
 
                     const bool isTextured = textured;
                     const uint8_t verticesCount = fourVerts ? 4 : 3;

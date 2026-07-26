@@ -481,7 +481,7 @@ void handleLoadExe(std::string path) {
      * Okay so I found out that the issue IS actually caused by,
      * the timers being wrong or the VBlank interrupt.
      */
-    std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/ps1-tests/timers/timers.exe");
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/ps1-tests/timers/timers.exe");
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/ps1-tests-master/timers/timers.exe");
 
     /**
@@ -529,7 +529,7 @@ void handleLoadExe(std::string path) {
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase7/gpu-raster-phase7.ps-exe"); // TODO;
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase8/gpu-raster-phase8.ps-exe"); // TODO;
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase9/gpu-raster-phase9.ps-exe"); // TODO;
-    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase10/gpu-raster-phase10.ps-exe"); // TODO;
+    std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase10/gpu-raster-phase10.ps-exe"); // TODO;
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase11/gpu-raster-phase11.ps-exe"); // TODO;
 
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/psx-hardware-tests-master/_ps-exe/irq_reg.psexe");
@@ -577,25 +577,26 @@ static uint64_t  instructionsExecuted = 0;
 static uint64_t  cyclesExecuted       = 0;
 
 // 53693175?
-//const uint32_t PSX_CPU_CLOCK = 33868800;
+const uint32_t PSX_CPU_CLOCK = 33868800;
 
 // NTSC runs at ~59.94 Hz
-//const uint32_t CYCLES_PER_FRAME_NTSC = PSX_CPU_CLOCK / 60; // ≈ 564,480
+const uint32_t CYCLES_PER_FRAME_NTSC = PSX_CPU_CLOCK / 60; // ≈ 564,480
 // PAL runs at ~49.76 Hz
-//const uint32_t CYCLES_PER_FRAME_PAL = PSX_CPU_CLOCK / 50; // ≈ 677,376
+const uint32_t CYCLES_PER_FRAME_PAL = PSX_CPU_CLOCK / 50; // ≈ 677,376
 
 void runFrame() {
     uint32_t frameCycles = 0;
 
-    //auto cyclesPerFrame = gpu->vmode == Emulator::VMode::Pal ? CYCLES_PER_FRAME_PAL : CYCLES_PER_FRAME_NTSC;
+    auto cyclesPerFrame = gpu->vmode == Emulator::VMode::Pal ? CYCLES_PER_FRAME_PAL : CYCLES_PER_FRAME_NTSC;
     bool vblanked       = false;
 
-    while (/*frameCycles < cyclesPerFrame*/ !vblanked) {
+    while (cpu->paused ? frameCycles < cyclesPerFrame : !vblanked) {
         uint32_t currentPC = cpu->pc;
 
         int cycles = 0;
 
         bool stepped = false;
+        x++;
 
         if (!cpu->paused) {
             cycles = cpu->executeNextInstruction();
@@ -604,7 +605,7 @@ void runFrame() {
             stepped = true;
 
             cpu->stepRequested = false;
-            printf("X; %d\n", x);
+            //printf("X; %d\n", x);
         } else if (cpu->stepUntilBranchTakenRequested) {
             auto pc = cpu->pc;
             stepped = true;
@@ -659,17 +660,21 @@ void runFrame() {
 
         bool didVBlank = false;
 
-        if (!cpu->paused) {
+        //if (!cpu->paused) {
             for (uint32_t i = 0; i < cycles; i++) {
                 if (cpu->interconnect.step(1)) {
                     didVBlank = true;
                 }
             }
-        }
+        //}
 
         if (didVBlank) {
             //IRQ::trigger(IRQ::VBlank);
             vblanked = true;
+        }
+
+        if (cycles == 0 && cpu->paused) {
+            cycles++;
         }
 
         frameCycles += cycles;
@@ -997,12 +1002,12 @@ int main(int argc, char *argv[]) {
      * Had an issue with the controller but now it's fixed,
      * FIXED; Missing; GP0(48h) - Monochrome Poly-line, opaque
      */
-    cpu->interconnect._cdrom.swapDisk("../../ROMS/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It)/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It).cue");
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It)/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It).cue");
 
     /**
      * Also had controller issues.
      */
-    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Crash Bandicoot - Warped (USA)/Crash Bandicoot - Warped (USA).cue");
+    cpu->interconnect._cdrom.swapDisk("../../ROMS/Crash Bandicoot - Warped (USA)/Crash Bandicoot - Warped (USA).cue");
 
     // Works but need to skip all cut scenes to see anything(dont have MDEC)
     // TODO; Uses line rendering but doesn't crash
@@ -1048,11 +1053,10 @@ int main(int argc, char *argv[]) {
     double                                fps       = 0.0;
     int                                   frames    = 0;
     double                                frameTime = 0;
-    std::chrono::steady_clock::time_point firstTime;
     std::chrono::steady_clock::time_point lastTime        = std::chrono::steady_clock::now();
     double                                passedTime      = 0;
     double                                unprocessedTime = 0;
-    const double                          UPDATE_CAP      = 1.0 / 60.0;
+    constexpr double                      UPDATE_CAP      = 1.0 / 60.0;
 
     bool render         = false;
     bool showVramViewer = false;
@@ -1064,9 +1068,8 @@ int main(int argc, char *argv[]) {
 
         glfwPollEvents();
 
-        firstTime  = std::chrono::steady_clock::now();
-        passedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(firstTime - lastTime).count() /
-                     1000000000.0; // firstTime - lastTime;
+        std::chrono::steady_clock::time_point firstTime = std::chrono::steady_clock::now();
+        passedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(firstTime - lastTime).count() / 1000000000.0; // firstTime - lastTime;
         lastTime   = firstTime;
         unprocessedTime += passedTime;
         frameTime += passedTime;
@@ -1084,7 +1087,7 @@ int main(int argc, char *argv[]) {
                 glfwGetFramebufferSize(gpu->renderer->window, &width, &height);
                 glViewport(0, 0, width, height);
 
-                //std::cerr << "FPS: " << std::to_string(fps) << " - " << std::to_string(gpu->frames) << "\n";
+                std::cerr << "FPS: " << std::to_string(fps) << " - " << std::to_string(gpu->frames) << "\n";
 
                 gpu->frames = 0;
             }

@@ -65,8 +65,8 @@ public:
         _ram = Ram();
         
         // TODO;
-        _bios = Bios("../../BIOS/ps-22a.bin");
-        //_bios = Bios("../../BIOS/openbios.bin");
+        //_bios = Bios("../../BIOS/ps-22a.bin");
+        _bios = Bios("../../BIOS/openbios.bin");
         //_bios = Bios("../BIOS/openbios2.bin");
         //_bios = Bios("../BIOS/openbios-fastboot.bin");
         //_bios = Bios("../BIOS/openbios-unirom.bin");
@@ -371,7 +371,7 @@ public:
             return 0;
         }
 
-        throw std::runtime_error("Unhandled load at address 0x");
+        //throw std::runtime_error("Unhandled load at address 0x");
         return 0;
     }
 
@@ -381,6 +381,10 @@ public:
         uint32_t offset = 0;
 
         if (map::RAM.contains(abs_addr, offset)) {
+            if (addr >= 0x80010000 && addr < 0x80020000) {
+                printf("Writing to game RAM at 0x%08X: 0x%08X\n", addr, val);
+            }
+
             _ram.store<T>(offset, val);
 
             return;
@@ -533,9 +537,9 @@ public:
         
         if (map::EXPANSION2.contains(abs_addr, offset)) {
             // TTY
-            if(offset == 0x23) {
+            //if(offset == 0x23) {
                 std::cerr << static_cast<char>(val) << "";
-            }
+            //}
             
             return;
         }

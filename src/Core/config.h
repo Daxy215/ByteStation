@@ -17,4 +17,5 @@ class Config {
     public:
         std::vector<uint32_t> breakpoints;
         std::vector<uint32_t> bookmarks;
+        bool printDisassemblyCopiesToConsole = false;
 };

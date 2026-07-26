@@ -193,8 +193,16 @@ uint8_t CDROM::load(uint32_t addr) {
 	} else if(addr == 1) {
 		uint8_t response = 0;// = responses.front();
 		//responses.pop();
+
+	    if(!interrupts.is_empty()) {
+	        auto& in = interrupts.ref();
+
+	        if(!in.responses.is_empty()) {
+	            response = in.responses.get();
+	        }
+	    }
 		
-		if(!interrupts.is_empty()) {
+		/*if(!interrupts.is_empty()) {
 			auto& in = interrupts.ref();
 			
 			if(!in.responses.is_empty()) {
@@ -204,7 +212,7 @@ uint8_t CDROM::load(uint32_t addr) {
 					interrupts.get();
 				}
 			}
-		}
+		}*/
 		
 		return response;
 	} else if(addr == 2) {
@@ -318,7 +326,7 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 				//7   BFRD Want Data(0 = No / Reset Data Fifo, 1 = Yes / Load Data Fifo)
 				if(val & 0x80) {
 					// Load fifo
-					if(isEmpty()) {
+				    if(_sector.isEmpty()) {
 						_sector.set(_readSector.read());
 						isBufferEmpty = false;
 					}
@@ -331,6 +339,11 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 			}
 			
 			case 1: {
+			    if (!interrupts.is_empty()) {
+			        printf("Acknowledging interrupt %d\n", interrupts.peek()._interrupt);
+			        interrupts.get();
+			    }
+
 				if (!interrupts.is_empty()) {
 					interrupts.ref().ack = true;
 					
@@ -371,14 +384,15 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 
 uint8_t CDROM::readByte() {
 	if (_sector.isEmpty()) {
+	    printf("readByte: Sector is empty!\n");
 		assert(false);
 		return 0;
 	}
 	
 	// 0 - 0x800 - just data
 	// 1 - 0x924 - whole sector without sync
-	int dataStart = 12;
-	if (!mode.sectorSize) dataStart += 12;
+	int dataStart = 24; //12 (12 sync, 4 header, 4 sub-header, 4 copy)
+	//if (!mode.sectorSize) dataStart += 12;
 	
 	/**
 	* The PSX hardware allows to read 800h-byte or 924h-byte sectors,
@@ -394,7 +408,7 @@ uint8_t CDROM::readByte() {
 	}
 	
 	uint8_t data = _sector.loadAt(dataStart + _sector._pointer++);
-	
+
 	if(isEmpty()) {
 		isBufferEmpty = true;
 	}
@@ -453,7 +467,7 @@ void CDROM::decodeAndExecute(uint8_t command) {
 	
 	interrupts.clear();
 	
-	//printf("CMD: %x\n", command);
+	printf("CMD: %x\n", command);
 	//std::cerr << "\n";
 	
 	if(command == 0x01) {
@@ -637,6 +651,9 @@ void CDROM::decodeAndExecute(uint8_t command) {
 		INT(2, 500000);
 		addResponse(_stats._reg);
 		_stats.setMode(Stats::Mode::None);
+	} else if (command == 0x0E) {
+	    INT(3);
+	    addResponse(_stats._reg);
 	} else if (command == 0x1E) {
 		// ReadTOC - Command 1Eh --> INT3(stat) --> INT2(stat)
 		INT3();
@@ -816,10 +833,16 @@ void CDROM::ReadN() {
 	
 	INT(3, 1000);
 	addResponse(_stats._reg);
-	
+
+    /*Location pos = Location::fromLBA(readLocation);
+    auto rawSector = _disk.read(pos);
+    _readSector.set(rawSector);
+
 	// Read data after 30ms
-	//INT(1, 30000);
-	//addResponse(_stats._reg);
+	INT(1, 30000);
+	addResponse(_stats._reg);
+
+    readLocation++;*/
 }
 
 void CDROM::Stop() {
@@ -862,8 +885,12 @@ void CDROM::SetMode() {
      * 0   CDDA        (0=Off, 1=Allow to Read CD-DA Sectors; ignore missing EDC)
 	 */
 	auto parm = getParamater();
-	
+    mode._reg = parm;
+
 	mode = Mode(parm);
+
+    printf("SetMode: 0x%02X (sectorSize=%d, cdda=%d)\n",
+           parm, mode.sectorSize, mode.cdda);
 	
 	INT(3, 2000);
 	addResponse(_stats._reg);
@@ -956,10 +983,20 @@ void CDROM::GetID() {
 	addResponse(_stats._reg);
 	
 	if (diskPresent) {
-		INT(2, 449000);
+		//INT(2, 449000);
+	    INT(2, 200); // random ass number
+
+	    addResponse(0x02);
+	    addResponse(0x00);
+	    addResponse(0x20);
+	    addResponse(0x00);
+	    addResponse('S');
+	    addResponse('C');
+	    addResponse('E');
+	    addResponse('A');
 	} else {
 	    // No Disk                INT3(stat)     INT5(08h,40h, 00h,00h, 00h,00h,00h,00h)
-		INT(5);
+		INT(5, 200);
 
 		addResponse(0x08);
 		addResponse(0x40);
@@ -974,7 +1011,7 @@ void CDROM::GetID() {
 	}
 	
 	// Licensed:Mode2         INT3(stat)     INT2(02h,00h, 20h,00h, 53h,43h,45h,4xh)
-	addResponse(0x02); // Stat
+	/*addResponse(0x02); // Stat
 	addResponse(0x00); // Flags
 	addResponse(0x20); // Type
 	addResponse(0x00); // Atip (Always zero)
@@ -982,7 +1019,7 @@ void CDROM::GetID() {
 	addResponse('S'); // 'S' 0x53
 	addResponse('C'); // 'C' 0x43
 	addResponse('E'); // 'E' 0x45
-	addResponse('A'); // // Region code (A=USA, E=Europe, I=Japan)
+	addResponse('A'); // // Region code (A=USA, E=Europe, I=Japan)*/
 }
 
 void CDROM::ReadS() {

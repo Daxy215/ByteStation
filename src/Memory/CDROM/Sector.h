@@ -39,7 +39,7 @@ public:
 	bool isEmpty();
 	void empty();
 
-private:
+public:
 	size_t _size;
 	
 public:

@@ -3,21 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/EventBus" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/EventBus/performance/benchmark" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/SDL2" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/catch" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/cereal" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/filesystem" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/flac" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/fmt" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/imgui" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/json" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/libchdr" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/lzma" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/externals/magic_enum" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/Avocado/premake/androidmk" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libs/imgui-1.91.9b" vcs="Git" />
   </component>
 </project>
