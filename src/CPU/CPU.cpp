@@ -40,8 +40,7 @@ int CPU::executeNextInstruction() {
         return 1;
     }
 
-    const bool stepping =
-        stepRequested || stepUntilBranchTakenRequested || stepUntilBranchNotTakenRequested;
+    const bool stepping = stepRequested || stepUntilBranchTakenRequested || stepUntilBranchNotTakenRequested;
 
     if (disasmState.suppress_breakpoint_once && disasmState.suppressed_breakpoint_addr == currentpc) {
         disasmState.suppress_breakpoint_once = false;
@@ -80,7 +79,7 @@ int CPU::executeNextInstruction() {
     IRQ::step();
 
     const bool irqPending =
-        ((_cop0.cause & _cop0.sr & 0x400) != 0) &&
+        ((_cop0.cause & _cop0.sr & 0xFF00) != 0) &&
         ((_cop0.sr & 0x1) != 0);
 
     const bool delayIrqUntilAfterThisInstruction = irqPending && isCop2Command(instruction.op);
@@ -99,9 +98,9 @@ int CPU::executeNextInstruction() {
     pc = nextpc;
     nextpc += 4;
 
-    if (pc == 0x800419fc || nextpc == 0x800419fc || currentpc == 0x800419fc || this->_cop0.epc == 0x800419fc) {
+    //if (pc == 0x800419fc || nextpc == 0x800419fc || currentpc == 0x800419fc || this->_cop0.epc == 0x800419fc) {
         //printf("f");
-    }
+    //}
 
     uint32_t instrPc = currentpc;
 
@@ -130,6 +129,44 @@ int CPU::executeNextInstruction() {
 }
 
 int CPU::decodeAndExecuteSubFunctions(Instruction& instruction) {
+    switch (instruction.subfunc) {
+        case 0b000000: return opsll(instruction);
+        case 0b000010: return opsrl(instruction);
+        case 0b000011: return opsra(instruction);
+        case 0b000100: return opsllv(instruction);
+        case 0b000110: return opsrlv(instruction);
+        case 0b000111: return opsrav(instruction);
+        case 0b001000: return opjr(instruction);
+        case 0b001001: return opjalr(instruction);
+        case 0b001100: return opSyscall(instruction);
+        case 0b001101: return opbreak(instruction);
+        case 0b010000: return opmfhi(instruction);
+        case 0b010001: return opmthi(instruction);
+        case 0b010010: return opmflo(instruction);
+        case 0b010011: return opmtlo(instruction);
+        case 0b011000: return opmult(instruction);
+        case 0b011001: return opmultu(instruction);
+        case 0b011010: return opdiv(instruction);
+        case 0b011011: return opdivu(instruction);
+        case 0b100000: return opadd(instruction);
+        case 0b100001: return opaddu(instruction);
+        case 0b100010: return opsub(instruction);
+        case 0b100011: return opsubu(instruction);
+        case 0b100100: return opand(instruction);
+        case 0b100101: return opor(instruction);
+        case 0b100110: return opxor(instruction);
+        case 0b100111: return opnor(instruction);
+        case 0b101010: return opslt(instruction);
+        case 0b101011: return opsltu(instruction);
+    }
+
+    opillegal(instruction);
+    printf("Unhandled sub instruction %0x8. Function call was: %x\n", instruction.op, instruction.subfunc);
+
+    return 0;
+}
+
+/*int CPU::decodeAndExecuteSubFunctions(Instruction& instruction) {
     using OpHandler = int (CPU::*)(Instruction&);
     static const std::unordered_map<uint32_t, OpHandler> table = {
         {0b000000, &CPU::opsll},
@@ -171,7 +208,7 @@ int CPU::decodeAndExecuteSubFunctions(Instruction& instruction) {
     std::cerr << "";
 
     return 0;
-}
+}*/
 
 uint32_t CPU::fetchInstruction(uint32_t addr) {
     uint32_t value = interconnect.loadInstruction(addr);
@@ -258,6 +295,10 @@ static std::string hangHex(uint32_t value) {
 }
 
 void CPU::recordExecution(uint32_t instrPc, Instruction& instruction, bool branch, bool taken, uint32_t target) {
+    if (!disasmState.show) {
+        return;
+    }
+
     disasmState.totalCycles++;
     disasmState.executionHits[instrPc]++;
 
@@ -282,6 +323,10 @@ void CPU::recordExecution(uint32_t instrPc, Instruction& instruction, bool branc
 }
 
 void CPU::recordMemoryAccess(uint32_t addr, uint32_t value, uint8_t size, bool write) {
+    if (!disasmState.show) {
+        return;
+    }
+
     MemoryTraceEntry entry;
     entry.pc = currentpc;
     entry.addr = addr;
@@ -1753,6 +1798,7 @@ int CPU::opsw(Instruction& instruction) {
         checkDataWriteBreakpoint(addr);
     } else {
         _cop0.badVaddr = addr;
+
         exception(StoreAddressError);
     }
 
@@ -1886,18 +1932,20 @@ int CPU::oplw(Instruction& instruction) {
     auto i = instruction.imm_se;
     auto t = instruction.rt;
     auto s = instruction.rs;
-
+    
     auto addr = reg(s) + i;
-
+    
     if(addr % 4 == 0) {
         uint32_t v = load32(addr);
 
         // Put the load in the delay slot
         setLoad(t, v);
     } else {
+        _cop0.badVaddr = addr;
+
         exception(LoadAddressError);
     }
-
+    
     return 1;
 }
 
@@ -2124,7 +2172,9 @@ int CPU::opmultu(Instruction& instruction) {
     hi = static_cast<uint32_t>(v >> 32);
     lo = static_cast<uint32_t>(v);
 
-    return 12;
+    uint32_t rsVal = reg(s);
+
+    return (rsVal < 0x800) ? 6 : ((rsVal < 0x100000) ? 9 : 13);
 }
 
 int CPU::opmult(Instruction& instruction) {
@@ -2139,7 +2189,12 @@ int CPU::opmult(Instruction& instruction) {
     hi = static_cast<uint32_t>(v >> 32);
     lo = static_cast<uint32_t>(v);
 
-    return 12;
+    int32_t rsVal = static_cast<int32_t>(reg(s));
+
+    if (rsVal < 0)
+        return (rsVal >= -2048) ? 6 : ((rsVal >= -1048576) ? 9 : 13);
+
+    return (rsVal < 0x800) ? 6 : ((rsVal < 0x100000) ? 9 : 13);
 }
 
 int CPU::opdiv(Instruction& instruction) {
@@ -2247,6 +2302,8 @@ int CPU::oplwc2(Instruction& instruction) {
         gte.write(t, v);
         //_cop2.setData(t, v);
     } else {
+        _cop0.badVaddr = addr;
+
         exception(LoadAddressError);
     }
 
@@ -2286,6 +2343,8 @@ int CPU::opswc2(Instruction& instruction) {
 
         store32(addr, v);
     } else {
+        _cop0.badVaddr = addr;
+
         exception(LoadAddressError);
     }
 
@@ -2372,6 +2431,7 @@ int CPU::opcop0(Instruction& instruction) {
         opillegal(instruction);
         std::cerr << "Unhandled COP0 instruction\n";
         //throw std::runtime_error("Unhandled COP instruction: " + std::to_string((instruction.copOpcode())));
+        return 1;
     }
 }
 
@@ -2680,7 +2740,7 @@ void CPU::exception(const Exception exception, uint32_t handlerOverride) {
 
     if (exception == CoprocessorError) {
         Instruction load{interconnect.loadInstruction(currentpc)};
-        uint8_t coprocessorNumber = load.func & 0x3;
+        uint8_t coprocessorNumber = load.op & 0x3; // was .func nice
         _cop0.cause |= static_cast<uint32_t>(coprocessorNumber) << 28;
     }
 
@@ -3119,84 +3179,6 @@ static const char* g_psx_cpu_c_kcall_symtable[] = {
 
 void CPU::checkForTTY() {
     uint32_t r9 = regs[9];
-
-    /*auto log_strncmp = [this]() {
-        uint32_t str1 = regs[4];  // $a0
-        uint32_t str2 = regs[5];  // $a1
-        uint32_t len = regs[6];   // $a2
-
-        char s1[256] = {0};
-        char s2[256] = {0};
-
-        uint32_t copy_len = std::min(len, 255u);
-
-        for(uint32_t i = 0; i < copy_len; i++) {
-            s1[i] = load8(str1 + i);
-            s2[i] = load8(str2 + i);
-
-            // Stop at null terminator if present
-            if(s1[i] == '\0' || s2[i] == '\0') break;
-        }
-
-        std::cerr << "STRNCMP: '";
-        for(uint32_t i = 0; i < copy_len && s1[i] != '\0'; i++) {
-            std::cerr << (s1[i] >= 32 && s1[i] <= 126 ? s1[i] : '.');
-        }
-
-        std::cerr << "' vs '";
-        for(uint32_t i = 0; i < copy_len && s2[i] != '\0'; i++) {
-            std::cerr << (s2[i] >= 32 && s2[i] <= 126 ? s2[i] : '.');
-        }
-
-        std::cerr << "' (len: " << len << ")\n";
-    };
-
-    // Bios functions - Tests
-    if(pc == 0x000000A0) {
-        if(r9 < std::size(g_psx_cpu_a_kcall_symtable)) {
-
-            // tty/syscalls
-            if(r9 == 0x3C || r9 == 0x3E || r9 == 0x3F) {
-                return;
-            }
-
-            //std::cerr << g_psx_cpu_a_kcall_symtable[r9] << '\n';
-        }
-    }
-
-    if(pc == 0x000000A0) {
-        if(r9 < std::size(g_psx_cpu_a_kcall_symtable)) {
-            auto function = g_psx_cpu_a_kcall_symtable[r9];
-
-            if(r9 == 24) {  // strncmp is at index 23
-                log_strncmp();
-            } else {
-                std::cerr << function << "\n";
-            }
-        } else {
-            printf("");
-        }
-    }
-
-    if(pc == 0x000000B0) {
-        if(r9 < std::size(g_psx_cpu_b_kcall_symtable) && r9 != 44) {
-            auto function = g_psx_cpu_b_kcall_symtable[r9];
-
-            std::cerr << function << "\n";
-        } else {
-            printf("");
-        }
-    }
-
-    if(pc == 0x000000C0) {
-        if(r9 < std::size(g_psx_cpu_c_kcall_symtable)) {
-            auto function = g_psx_cpu_c_kcall_symtable[r9];
-
-            std::cerr << function << "\n";
-        } else {
-            printf("");
-        }
-    }*/
 
     if ((pc == 0x000000A0 || pc == 0x000000B0 || pc == 0x000000C0)) {
         if (reg(9) == 0x3c) {

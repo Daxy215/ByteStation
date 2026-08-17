@@ -120,7 +120,10 @@ namespace Emulator {
             
             // Current number of vertices in the buffers
             uint32_t nVertices;
-            
+            uint32_t drawCalls = 0;
+
+            GLsync drawFence = nullptr;
+
             GLFWwindow* window;
         public:
             // Bloom

@@ -7,19 +7,23 @@
 #include "../CPU/CPU.h"
 
 bool Interconnect::step(uint32_t cycles) {
-    _cdrom.step(cycles);
-    
-    int16_t cdLeft = 0;
-    int16_t cdRight = 0;
-    while (_cdrom.popAudioSample(cdLeft, cdRight)) {
-        spu.pushCdAudioSample(cdLeft, cdRight);
-    }
-    
-    _sio.step(cycles);
-    _dma.step();
-    spu.step(cycles);
-
     bool didVBlank = _gpu->step(cycles);
+
+    for (uint32_t cycle = 0; cycle < cycles; cycle++) {
+        _cdrom.step(1);
+
+        int16_t cdLeft = 0;
+        int16_t cdRight = 0;
+
+        while (_cdrom.popAudioSample(cdLeft, cdRight)) {
+            spu.pushCdAudioSample(cdLeft, cdRight);
+        }
+
+        spu.step(1);
+    }
+
+    _dma.step();
+    //_sio.step(cycles);
 
     _timers.step(cycles, _gpu->lastDotTicks);
     _timers.sync(_gpu->isInHBlank, _gpu->isInVBlank, _gpu->dot, _gpu->dotClockDivider());

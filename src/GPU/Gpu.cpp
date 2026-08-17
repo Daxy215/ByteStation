@@ -14,15 +14,13 @@
 #include <thread>
 
 #include "../Memory/IRQ.h"
-//#include "gte.h"
+// #include "gte.h"
 
 namespace {
     unsigned long long gpuLogSequence = 0;
 
-    unsigned long long nextGpuLogSequence() {
-        return gpuLogSequence++;
-    }
-}
+    unsigned long long nextGpuLogSequence() { return gpuLogSequence++; }
+} // namespace
 
 static const Emulator::Gpu::BitField polygonFields[] = {
     {"rgb",               0, 24},
@@ -87,10 +85,10 @@ bool Emulator::Gpu::step(uint32_t cpuCycles) {
     lastDotTicks = 0;
 
     uint64_t num = vmode == VMode::Pal ? PAL_CRTC_NUM : NTSC_CRTC_NUM;
+    uint64_t den = vmode == VMode::Pal ? PAL_CRTC_DEN : NTSC_CRTC_DEN;
 
-    uint64_t n = uint64_t(cpuCycles) * num + _gpuFrac;
-    uint32_t ticks = uint32_t(n / CRTC_DEN);
-    _gpuFrac = n % CRTC_DEN;
+    uint64_t n     = uint64_t(cpuCycles) * num + _gpuFrac;
+    uint32_t ticks = uint32_t(n / den);
 
     lastGpuCycles = ticks;
 
@@ -100,22 +98,25 @@ bool Emulator::Gpu::step(uint32_t cpuCycles) {
 bool Emulator::Gpu::stepCRTC(uint32_t ticks) {
     bool enteredVBlank = false;
 
+    const uint32_t lineTotal = htotal();
+    const uint32_t frameTotal = vtotal();
+
     while (ticks > 0) {
-        uint32_t next = ticksUntilNextCRTCEvent();
-        uint32_t run = std::min(ticks, next);
+        const uint32_t divider = dotClockDivider();
+        const uint32_t run = std::min(ticks, ticksUntilNextCRTCEvent());
 
         dotFrac += run;
-        lastDotTicks += dotFrac / dotClockDivider();
-        dotFrac %= dotClockDivider();
+        lastDotTicks += dotFrac / divider;
+        dotFrac %= divider;
 
         _hpos += run;
         ticks -= run;
 
-        if (_hpos >= htotal()) {
-            _hpos -= htotal();
+        if (_hpos >= lineTotal) {
+            _hpos -= lineTotal;
             _scanLine++;
 
-            if (_scanLine >= vtotal()) {
+            if (_scanLine >= frameTotal) {
                 _scanLine = 0;
                 frames++;
             }
@@ -123,8 +124,8 @@ bool Emulator::Gpu::stepCRTC(uint32_t ticks) {
 
         updateDotClock();
 
-        bool oldHBlank = isInHBlank;
-        bool oldVBlank = isInVBlank;
+        const bool oldHBlank = isInHBlank;
+        const bool oldVBlank = isInVBlank;
 
         isInHBlank = calcHBlank();
         isInVBlank = calcVBlank();
@@ -136,7 +137,10 @@ bool Emulator::Gpu::stepCRTC(uint32_t ticks) {
             onHBlankEnd();
 
         if (!oldVBlank && isInVBlank) {
+            displayField = !displayField;
+
             onVBlankStart();
+
             enteredVBlank = true;
         }
 
@@ -151,7 +155,7 @@ bool Emulator::Gpu::stepCRTC(uint32_t ticks) {
 
 uint32_t Emulator::Gpu::ticksUntilNextCRTCEvent() const {
     uint32_t total = htotal();
-    
+
     uint32_t hblankS = hblankStart();
     uint32_t hblankE = hblankEnd();
 
@@ -164,7 +168,7 @@ uint32_t Emulator::Gpu::ticksUntilNextCRTCEvent() const {
         next = std::min(next, hblankS - _hpos);
 
     uint32_t vstart = std::min<uint32_t>(displayLineStart, vtotal());
-    uint32_t vend   = std::min<uint32_t>(displayLineEnd,   vtotal());
+    uint32_t vend   = std::min<uint32_t>(displayLineEnd, vtotal());
 
     if (_hpos == 0) {
         if (_scanLine < vstart)
@@ -203,9 +207,10 @@ uint32_t Emulator::Gpu::ticksUntilNextCRTCEvent() const {
     static constexpr uint32_t FP_SHIFT = 32;
     static constexpr uint64_t FP_ONE = 1ULL << FP_SHIFT;
 
-    static constexpr uint64_t HTIMING_NTSC = static_cast<uint64_t>((static_cast<u128>(GPU_CLOCK_NTSC) * 1001 * 2 * FP_ONE + ((60000ULL * 525) / 2)) / (60000ULL * 525));
-    static constexpr uint64_t HTIMING_PAL = static_cast<uint64_t>((static_cast<u128>(GPU_CLOCK_PAL) * FP_ONE + (15625 / 2)) / 15625);
-    uint64_t gpuClock = vmode == VMode::Pal ? GPU_CLOCK_PAL : GPU_CLOCK_NTSC;
+    static constexpr uint64_t HTIMING_NTSC = static_cast<uint64_t>((static_cast<u128>(GPU_CLOCK_NTSC) * 1001 * 2 *
+FP_ONE + ((60000ULL * 525) / 2)) / (60000ULL * 525)); static constexpr uint64_t HTIMING_PAL =
+static_cast<uint64_t>((static_cast<u128>(GPU_CLOCK_PAL) * FP_ONE + (15625 / 2)) / 15625); uint64_t gpuClock = vmode ==
+VMode::Pal ? GPU_CLOCK_PAL : GPU_CLOCK_NTSC;
 
     /**
      * Horizontal Timings
@@ -282,9 +287,9 @@ uint32_t Emulator::Gpu::ticksUntilNextCRTCEvent() const {
 
 uint32_t Emulator::Gpu::status() {
     // https://psx-spx.consoledev.net/graphicsprocessingunitgpu/#1f801814h-gpustat-gpu-status-register-r
-    
+
     uint32_t status = 0;
-    
+
     // Bits 0-3: Texture page X base (N * 64)
     status |= (static_cast<uint32_t>(pageBaseX) & 0x0F) << 0;
 
@@ -311,8 +316,8 @@ uint32_t Emulator::Gpu::status() {
 
     // Bit 13: Interlace Field (0 = Top, 1 = Bottom)
     // (or, always 1 when GP1(08h).5=0)
-    //status |= (interlaced ? 1 : static_cast<uint8_t>(field)) << 13;
-    //status |= (static_cast<uint8_t>(field)) << 13;
+    // status |= (interlaced ? 1 : static_cast<uint8_t>(field)) << 13;
+    // status |= (static_cast<uint8_t>(field)) << 13;
     status |= static_cast<uint32_t>(interlaced ? (frames & 1u) : 1u) << 13;
 
     // Bit 14: Flip screen horizontally (0=Off, 1=On, v1 only)
@@ -354,7 +359,7 @@ uint32_t Emulator::Gpu::status() {
      * and stays set until all data words are received; used as DMA request in DMA Mode 3.
      */
     status |= readyToReadVram << 27;
-
+    
     // Bit 28: Ready to receive DMA block (0=No, 1=Ready)
     /**
      * Bit28: Normally, this bit gets cleared when the command execution is busy
@@ -367,22 +372,18 @@ uint32_t Emulator::Gpu::status() {
      * are transferred in a separate DMA block (ie. the DMA probably starts ONLY on command words).
      */
     status |= readyForDmaBlock << 28;
-
+    
     // Bits 29-30: DMA Direction (0=Off, 1=?, 2=CPUtoGP0, 3=GPUREADtoCPU)
     status |= (static_cast<uint32_t>(dmaDirection) & 0x03) << 29;
 
-    /**
-     * My GPU timing is still very trash,
-     * so doing this allows openbios to boot
-     */
+    // Bit 31: Drawing even/odd lines in interlace mode (0=Even, 1=Odd)
+    //status |= uint32_t(isOddLine ? 1 : 0) << 31;
     static int test = 0;
 
-    // Bit 31: Drawing even/odd lines in interlace mode (0=Even, 1=Odd)
-    status |= /*uint32_t(isOddLine ? 1 : 0)*/ (test % 2 == 1 ? 1 : 0)  << 31;
+    status |= (test % 2 == 1 ? 1 : 0) << 31;
 
     test++;
-    //printf("Test: ")
-
+    
     /**
     * A(4Eh) - gpu_sync()
     * If DMA is off (when GPUSTAT.Bit29-30 are zero): Waits until GPUSTAT.Bit28=1 (or until timeout).
@@ -400,9 +401,9 @@ uint32_t Emulator::Gpu::status() {
     } else if (dmaDirection == DmaDirection::VRamToCpu) {
         dma = readyToReadVram;
     }
-
+    
     status |= dma << 25;
-
+    
     return status;
 }
 
@@ -410,9 +411,7 @@ bool Emulator::Gpu::readyToReceiveCommandWord() const {
     return readMode != VRam && gp0Mode == Command && gp0CommandRemaining == 0;
 }
 
-bool Emulator::Gpu::readyToSendVramToCpu() const {
-    return readMode == VRam;
-}
+bool Emulator::Gpu::readyToSendVramToCpu() const { return readMode == VRam; }
 
 bool Emulator::Gpu::readyToReceiveDmaBlock() const {
     if (readMode == VRam) {
@@ -462,9 +461,7 @@ void Emulator::Gpu::gp0(uint32_t val) {
                     uint16_t page = isTextured ? gp0Command.index(1 + stepping + 1) >> 16 : 0;
 
                     for (int i = 1; i < gp0Command.len; i += stepping) {
-                        colors[idx] = (gouraud && i != 1)
-                            ? Color::fromGp0(gp0Command.index(i - 1))
-                            : c0;
+                        colors[idx] = (gouraud && i != 1) ? Color::fromGp0(gp0Command.index(i - 1)) : c0;
 
                         if (isTextured)
                             uvs[idx] = UV::fromGp0(gp0Command.index(i + 1), clut, page, *this);
@@ -1557,16 +1554,16 @@ void Emulator::Gpu::gp0DrawingAreaTopLeft(uint32_t val) {
 void Emulator::Gpu::gp0DrawingAreaBottomRight(uint32_t val) {
     drawingAreaBottom = static_cast<uint16_t>((val >> 10) & 0x3FF); // Y: bits 10-19
     drawingAreaRight  = static_cast<uint16_t>(val & 0x3FF);         // X: bits 0-9
-    
-    //uint16_t width  = std::max(drawingAreaLeft, drawingAreaRight) - std::min(drawingAreaLeft, drawingAreaRight) + 1;
-    //uint16_t height = std::max(drawingAreaTop, drawingAreaBottom) - std::min(drawingAreaTop, drawingAreaBottom) + 1;
-    
-    //printf("So; %d - %d =? %d\n", drawingAreaRight, drawingAreaBottom, width);
-    
+
+    // uint16_t width  = std::max(drawingAreaLeft, drawingAreaRight) - std::min(drawingAreaLeft, drawingAreaRight) + 1;
+    // uint16_t height = std::max(drawingAreaTop, drawingAreaBottom) - std::min(drawingAreaTop, drawingAreaBottom) + 1;
+
+    // printf("So; %d - %d =? %d\n", drawingAreaRight, drawingAreaBottom, width);
+
     // TODO;
-    //renderer->setDrawingArea(0, 0, width, height);
+    // renderer->setDrawingArea(0, 0, width, height);
     renderer->setDrawingArea(drawingAreaLeft, drawingAreaRight, drawingAreaTop, drawingAreaBottom);
-    //renderer->setDrawingArea(0, 0, 1024, 512);
+    // renderer->setDrawingArea(0, 0, 1024, 512);
 }
 
 void Emulator::Gpu::gp0DrawingOffset(const uint32_t val) const {
@@ -1599,11 +1596,11 @@ void Emulator::Gpu::gp0DrawingOffset(const uint32_t val) const {
     // to force a sign extension
     drawingXOffset = static_cast<int16_t>(x << 5) >> 5;
     drawingYOffset = static_cast<int16_t>(y << 5) >> 5;
-    
-    //printf("So; %d - %d from: {%u}\n", drawingXOffset, drawingYOffset, val);
-    
+
+    // printf("So; %d - %d from: {%u}\n", drawingXOffset, drawingYOffset, val);
+
     // Update rendering offset
-    //renderer->setDrawingOffset(drawingXOffset, drawingYOffset);
+    // renderer->setDrawingOffset(drawingXOffset, drawingYOffset);
 }
 
 void Emulator::Gpu::gp0TextureWindow(uint32_t val) {
@@ -2451,8 +2448,17 @@ void Emulator::Gpu::gp1DisplayMode(uint32_t val) {
     hres = HorizontalRes::fromFields(hr1, hr2);
     
     vres = (val & 0x4) != 0 ? VerticalRes::Y480Lines : VerticalRes::Y240Lines;
-    vmode = (val & 0x8) != 0 ? VMode::Pal : VMode::Ntsc;
-    
+
+    VMode mode = (val & 0x8) != 0 ? VMode::Pal : VMode::Ntsc;
+
+    if (mode != vmode) {
+        _gpuFrac = 0;
+        printf("GPU Switched display mode to: %s\n", (val & 0x8) != 0 ? "PAL" : "NTSC");
+    }
+
+    vmode = mode;
+    // vmode = (val & 0x8) != 0 ? VMode::Pal : VMode::Ntsc;
+
     displayDepth = (val & 0x10) != 0 ? DisplayDepth::D24Bits : DisplayDepth::D15Bits;
     
     interlaced = (val & 0x20) != 0;

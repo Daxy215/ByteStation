@@ -18,23 +18,26 @@ std::vector<uint8_t> Disk::read(Location location) {
 		printf("");
 		return {};
 	}
-		
-	auto f = fopen(tracks[pos].filePath.c_str(), "rb");
-	if (!f) {
-		std::printf("Unable to load file %s\n", tracks[pos].filePath.c_str());
-		return {};
-	}
-	
-	auto seek = location - (getTrackBegin(pos) + tracks[pos].pregap);
-	
-	// 0 -> track num
-	long offset = tracks[pos].fileDataOffset
-	              + (tracks[pos].trackIndex + seek.toLba()) * tracks[pos].modeType;
-	
-	fseek(f, offset, SEEK_SET);
-	fread(buffer.data(), 1, std::min<size_t>(tracks[pos].modeType, buffer.size()), f);
-	fclose(f);
-	
+
+    uint32_t begin = (getTrackBegin(pos) + tracks[pos].pregap).toLba();
+    uint32_t loc = location.toLba();
+
+    if (loc < begin) {
+        return buffer;
+    }
+
+    auto f = fopen(tracks[pos].filePath.c_str(), "rb");
+    if (!f) {
+        std::printf("Unable to load file %s\n", tracks[pos].filePath.c_str());
+        return {};
+    }
+
+    long offset = tracks[pos].fileDataOffset + (long)(tracks[pos].trackIndex + (loc - begin)) * tracks[pos].modeType;
+
+    fseek(f, offset, SEEK_SET);
+    fread(buffer.data(), 1, std::min<size_t>(tracks[pos].modeType, buffer.size()), f);
+    fclose(f);
+
 	return buffer;
 }
 

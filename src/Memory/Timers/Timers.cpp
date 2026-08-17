@@ -32,10 +32,10 @@ uint32_t Emulator::IO::Timers::load(uint32_t addr) {
 		    /**
 		     * Unsure why but freebios seems to wait till timer2.counter > 0x00004E84
 		     */
-		    if (index == 1/* && timer.counter > 0x00004E84*/) {
+		    //if (index == 1/* && timer.counter > 0x00004E84*/) {
                 //printf("ayo\n");
-		        return static_cast<uint16_t>((timer.counter + 0x00004E84));
-		    }
+		    //    return static_cast<uint16_t>((timer.counter + 0x00004E84));
+		   // }
 
 			return static_cast<uint16_t>((timer.counter));
 		}

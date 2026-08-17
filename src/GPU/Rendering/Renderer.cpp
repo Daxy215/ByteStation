@@ -444,6 +444,7 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
 
         setupScreenQuad();
 
+#ifdef GL_DEBUG_ENABLED
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(
@@ -457,6 +458,7 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
                 nullptr);
 
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+#endif
 
         GLenum constructorError = glGetError();
         if (constructorError != GL_NO_ERROR) {
@@ -478,8 +480,8 @@ void        Emulator::Renderer::display(const bool displayEntireScreen) {
     glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO[curTex]);
     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    int winWidth = WIDTH, winHeight = HEIGHT;
-    glfwGetFramebufferSize(window, &winWidth, &winHeight);
+    //int winWidth = WIDTH, winHeight = HEIGHT;
+    //glfwGetFramebufferSize(window, &winWidth, &winHeight);
 
     glViewport(0, 0, WIDTH, HEIGHT);
     // glViewport(0, 0, winWidth, winHeight);
@@ -493,9 +495,10 @@ void        Emulator::Renderer::display(const bool displayEntireScreen) {
     if (!useShaders) {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        int winWidth, winHeight;
-        glfwGetFramebufferSize(window, &winWidth, &winHeight);
-        glViewport(0, 0, winWidth, winHeight);
+        //int winWidth, winHeight;
+        //glfwGetFramebufferSize(window, &winWidth, &winHeight);
+        //glViewport(0, 0, winWidth, winHeight);
+        glViewport(0, 0, WIDTH, HEIGHT);
 
         glUseProgram(postProcessProgram);
 
@@ -594,7 +597,8 @@ void        Emulator::Renderer::display(const bool displayEntireScreen) {
     // glfwGetFramebufferSize(window, &winWidth, &winHeight);
 
     // Render scene
-    glViewport(0, 0, winWidth, winHeight);
+    //glViewport(0, 0, winWidth, winHeight);
+    glViewport(0, 0, WIDTH, HEIGHT);
     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glUseProgram(postProcessProgram);
@@ -670,7 +674,9 @@ void Emulator::Renderer::renderFrame() {
     // gpu.vram->copyToTexture(0, 0, 1024, 512, sceneTex[curTex]);
 
     display(!cropToDisplayArea);
+    //printf("draws=%u\n", drawCalls);
 
+    drawCalls = 0;
     curTex    = 0;
     nVertices = 0;
 }
@@ -684,7 +690,6 @@ void Emulator::Renderer::flushDrawCommands() {
     glViewport(0, 0, WIDTH, HEIGHT);
 
     draw();
-    glFinish();
 
     nVertices = 0;
 }
@@ -779,6 +784,14 @@ void Emulator::Renderer::draw() {
         return;
     }
 
+    if (drawFence) {
+        glClientWaitSync(drawFence, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
+        glDeleteSync(drawFence);
+        drawFence = nullptr;
+    }
+
+    drawCalls++;
+
     positions.flush();
     colors.flush();
     uvs.flush();
@@ -815,17 +828,20 @@ void Emulator::Renderer::draw() {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, sceneTex[curTex]);
 
-    if (primitiveMode == GL_TRIANGLES) {
+    glDrawArrays(primitiveMode, 0, static_cast<GLsizei>(nVertices));
+    /*if (primitiveMode == GL_TRIANGLES && gpu.semiTransparencyEnabled) {
         for (uint32_t i = 0; i + 2 < nVertices; i += 3) {
             glTextureBarrier();
             glDrawArrays(GL_TRIANGLES, static_cast<GLint>(i), 3);
         }
     } else {
         glDrawArrays(primitiveMode, 0, static_cast<GLsizei>(nVertices));
-    }
+    }*/
 
     glBindVertexArray(0);
     glUseProgram(0);
+
+    drawFence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
     /*glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO[curTex]);
     glViewport(0, 0, WIDTH, HEIGHT);

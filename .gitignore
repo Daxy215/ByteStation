@@ -8,3 +8,9 @@ ROMS/
 *.chd
 *.mp4
 *.db
+/build
+/src/CMakeFiles
+/CMakeFiles
+/src/CMakeFiles
+src/Makefile
+src/PS1Emulator

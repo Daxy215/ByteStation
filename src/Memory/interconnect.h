@@ -381,10 +381,6 @@ public:
         uint32_t offset = 0;
 
         if (map::RAM.contains(abs_addr, offset)) {
-            if (addr >= 0x80010000 && addr < 0x80020000) {
-                printf("Writing to game RAM at 0x%08X: 0x%08X\n", addr, val);
-            }
-
             _ram.store<T>(offset, val);
 
             return;

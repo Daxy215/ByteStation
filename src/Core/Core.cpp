@@ -576,19 +576,60 @@ static TimePoint lastSecond           = Clock::now();
 static uint64_t  instructionsExecuted = 0;
 static uint64_t  cyclesExecuted       = 0;
 
-// 53693175?
 const uint32_t PSX_CPU_CLOCK = 33868800;
 
-// NTSC runs at ~59.94 Hz
-const uint32_t CYCLES_PER_FRAME_NTSC = PSX_CPU_CLOCK / 60; // ≈ 564,480
-// PAL runs at ~49.76 Hz
-const uint32_t CYCLES_PER_FRAME_PAL = PSX_CPU_CLOCK / 50; // ≈ 677,376
+const uint32_t GPU_CLOCK_NTSC = 53222400;
+const uint32_t GPU_CLOCK_PAL = 53203425;
+
+const uint32_t SCANLINES_NTSC = 263;
+const uint32_t SCANLINES_PAL = 314;
+
+const uint32_t GPU_CYCLES_PER_SCANLINE_NTSC = 3413;
+const uint32_t GPU_CYCLES_PER_SCANLINE_PAL = 3406;
+
+const uint32_t CYCLES_PER_FRAME_NTSC = uint64_t(SCANLINES_NTSC) * GPU_CYCLES_PER_SCANLINE_NTSC * PSX_CPU_CLOCK / GPU_CLOCK_NTSC;
+const uint32_t CYCLES_PER_FRAME_PAL = uint64_t(SCANLINES_PAL) * GPU_CYCLES_PER_SCANLINE_PAL * PSX_CPU_CLOCK / GPU_CLOCK_PAL;
 
 void runFrame() {
     uint32_t frameCycles = 0;
 
     auto cyclesPerFrame = gpu->vmode == Emulator::VMode::Pal ? CYCLES_PER_FRAME_PAL : CYCLES_PER_FRAME_NTSC;
     bool vblanked       = false;
+
+    while(frameCycles < cyclesPerFrame) {
+        int cycles = cpu->executeNextInstruction();
+
+
+        //for (uint32_t i = 0; i < cycles; i++) {
+            if (cpu->interconnect.step(cycles)) {
+                //didVBlank = true;
+            }
+        //}
+
+        //static uint64_t cyclesThisSecond = 0;
+        //static uint64_t framesThisSecond = 0;
+        //static auto lastReport = std::chrono::steady_clock::now();
+
+        //cyclesThisSecond += cycles;
+        frameCycles += cycles;
+
+        /*auto now = std::chrono::steady_clock::now();
+        double elapsed = std::chrono::duration<double>(now - lastReport).count();
+
+        if (elapsed >= 1.0) {
+            double mhz = (cyclesThisSecond / elapsed) / 1000000.0;
+            double target = 33.8688;
+            double fps = framesThisSecond / elapsed;
+
+            //printf("%.3f MHz (%.1f%%) | %.2f fps\n", mhz, (mhz / target) * 100.0, fps);
+
+            cyclesThisSecond = 0;
+            framesThisSecond = 0;
+            lastReport = now;
+        }*/
+    }
+
+    return;
 
     while (cpu->paused ? frameCycles < cyclesPerFrame : !vblanked) {
         uint32_t currentPC = cpu->pc;
@@ -672,6 +713,8 @@ void runFrame() {
             //IRQ::trigger(IRQ::VBlank);
             vblanked = true;
         }
+
+
 
         if (cycles == 0 && cpu->paused) {
             cycles++;
@@ -1061,7 +1104,8 @@ int main(int argc, char *argv[]) {
     bool render         = false;
     bool showVramViewer = false;
 
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
+    printf("ok?\n");
 
     while (!glfwWindowShouldClose(gpu->renderer->window)) {
         render = false;
@@ -1074,7 +1118,7 @@ int main(int argc, char *argv[]) {
         unprocessedTime += passedTime;
         frameTime += passedTime;
 
-        while (unprocessedTime >= UPDATE_CAP) {
+        /*while (unprocessedTime >= UPDATE_CAP) {
             unprocessedTime -= UPDATE_CAP;
             render = true;
 
@@ -1091,6 +1135,24 @@ int main(int argc, char *argv[]) {
 
                 gpu->frames = 0;
             }
+        }*/
+        if (unprocessedTime >= UPDATE_CAP) {
+            unprocessedTime -= UPDATE_CAP;
+            render = true;
+        }
+
+        if (frameTime >= 1.0) {
+            frameTime = 0;
+            fps       = frames;
+            frames    = 0;
+
+            int width, height;
+            glfwGetFramebufferSize(gpu->renderer->window, &width, &height);
+            glViewport(0, 0, width, height);
+
+            std::cerr << "FPS: " << std::to_string(fps) << " - " << std::to_string(gpu->frames) << "\n";
+
+            gpu->frames = 0;
         }
 
         if (glfwGetWindowAttrib(gpu->renderer->window, GLFW_ICONIFIED)) {
@@ -1107,7 +1169,7 @@ int main(int argc, char *argv[]) {
             if (cpu->paused)
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            runFrame();
+            //runFrame();
 
             /*static bool f = true;
 
@@ -1291,12 +1353,14 @@ int main(int argc, char *argv[]) {
         ImGui::Render();
 
         if (render) {
-            gpu->vram->endTransfer();
-            gpu->renderer->renderFrame();
+            runFrame();
 
-            // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            //gpu->vram->endTransfer();
+            //gpu->renderer->renderFrame();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
             glfwSwapBuffers(gpu->renderer->window);
+            glFinish();
 
             frames++;
         } else {

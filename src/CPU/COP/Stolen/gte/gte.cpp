@@ -272,28 +272,28 @@ int GTE::command(gte::Command& cmd) {
     this->lm = cmd.lm;
     
     switch (cmd.cmd) {
-        case 0x01: rtps(); return 13;
+        case 0x01: rtps(); return 15;
         case 0x06: nclip(); return 8;
-        case 0x0c: op(); return 5;
-        case 0x10: dpcs(); return 7;
-        case 0x11: intpl(); return 7;
-        case 0x12: mvmva(cmd.mvmvaMultiplyMatrix, cmd.mvmvaMultiplyVector, cmd.mvmvaTranslationVector); return 17;
-        case 0x13: ncds(); return 13;
+        case 0x0c: op(); return 6;
+        case 0x10: dpcs(); return 8;
+        case 0x11: intpl(); return 8;
+        case 0x12: mvmva(cmd.mvmvaMultiplyMatrix, cmd.mvmvaMultiplyVector, cmd.mvmvaTranslationVector); return 8;
+        case 0x13: ncds(); return 19;
         case 0x14: cdp(); return 13;
-        case 0x16: ncdt(); return 19;
-        case 0x1b: nccs(); return 13;
-        case 0x1c: cc(); return 6;
-        case 0x1e: ncs(); return 9;
-        case 0x20: nct(); return 15;
-        case 0x2a: dpct(); return 19;
-        case 0x28: sqr(); return 10;
-        case 0x29: dcpl(); return 15;
-        case 0x2d: avsz3(); return 6;
-        case 0x2e: avsz4(); return 8;
-        case 0x30: rtpt(); return 16;
-        case 0x3d: gpf(); return 6;
-        case 0x3e: gpl(); return 6;
-        case 0x3f: ncct(); return 13;
+        case 0x16: ncdt(); return 44;
+        case 0x1b: nccs(); return 17;
+        case 0x1c: cc(); return 11;
+        case 0x1e: ncs(); return 14;
+        case 0x20: nct(); return 30;
+        case 0x2a: dpct(); return 17;
+        case 0x28: sqr(); return 5;
+        case 0x29: dcpl(); return 8;
+        case 0x2d: avsz3(); return 5;
+        case 0x2e: avsz4(); return 6;
+        case 0x30: rtpt(); return 23;
+        case 0x3d: gpf(); return 5;
+        case 0x3e: gpl(); return 5;
+        case 0x3f: ncct(); return 39;
         default:
             return 1;
     }

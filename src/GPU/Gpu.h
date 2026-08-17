@@ -144,10 +144,11 @@ namespace Emulator {
 
         static constexpr uint32_t NTSC_TOTAL_LINES = 263;
         static constexpr uint32_t PAL_TOTAL_LINES = 314;
+        static constexpr uint64_t NTSC_CRTC_NUM = 11;
+        static constexpr uint64_t NTSC_CRTC_DEN = 7;
 
-        static constexpr uint64_t NTSC_CRTC_NUM = 715909;
         static constexpr uint64_t PAL_CRTC_NUM = 709379;
-        static constexpr uint64_t CRTC_DEN = 451584;
+        static constexpr uint64_t PAL_CRTC_DEN = 451584;
 
         public:
             // TODO; Change this back to GLint
@@ -454,15 +455,23 @@ namespace Emulator {
             }
 
             void updateOddLineBit() {
-                if (isInVBlank) {
-                    isOddLine = false;
+                if (interlaced && vres == VerticalRes::Y480Lines) {
+                    isOddLine = (displayVramYStart + (isInVBlank ? 0 : (displayField ? 1 : 0))) & 1;
                     return;
                 }
 
-                if (interlaced && vres == VerticalRes::Y480Lines)
+                 isOddLine = (displayVramYStart + _scanLine) & 1;
+                //if (i/sInVBlank) {
+                    //isOddLine = false;
+                    //return;
+                //}
+                
+                //isOddLine = (_scanLine + displayVramYStart) & 1;
+                
+                /*if (interlaced && vres == VerticalRes::Y480Lines)
                     isOddLine = frames & 1;
                 else
-                    isOddLine = (_scanLine + displayVramYStart) & 1;
+                    isOddLine = (_scanLine + displayVramYStart) & 1;*/
             }
 
             uint32_t status();
@@ -718,6 +727,7 @@ namespace Emulator {
         public:
             bool isInHBlank = false;
             bool isInVBlank = false;
+            bool displayField = false;
 
             uint32_t dot = 1;
             
