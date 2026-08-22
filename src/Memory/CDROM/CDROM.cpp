@@ -5,6 +5,7 @@
 #include <cassert>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 
 /**
  * Error Notes: If the command has been rejected (INT5 sent as 1st response)
@@ -51,9 +52,12 @@ void CDROM::step(uint32_t cycles) {
 		transmittingCommand = false;
 	
 	const int sectorsPerSecond = _stats.play ? 75 : (mode.speed ? 150 : 75);
-	
-	// (44100 * 768) -> CPU clock speed
-	const int cyclesPerSector = (44100 * 768) / sectorsPerSecond;
+
+	// SystemClock*930/4/44100Hz
+	const int cyclesPerSector = (930 * 4 * 44100) / sectorsPerSecond;
+
+	// (44100 * 768) -> CPU clock speed (Unsure where I got this from)
+	//const int cyclesPerSector = (44100 * 768) / sectorsPerSecond;
 	
 	this->cycles += cycles;
 	
@@ -62,6 +66,14 @@ void CDROM::step(uint32_t cycles) {
 	}
 	
 	this->cycles %= cyclesPerSector;
+}
+
+uint32_t CDROM::cyclesUntilNextInterrupt() const {
+	if (interrupts.is_empty())
+		return std::numeric_limits<uint32_t>::max();
+
+	int32_t delay = interrupts.peek().delay;
+	return delay > 0 ? static_cast<uint32_t>(delay) : 1;
 }
 
 void CDROM::handleSector() {
@@ -87,9 +99,12 @@ void CDROM::handleSector() {
 	readLocation++;
 	
 	if (_stats.play) {
+		//printf("uh\n");
+
 		if (!mute && _disk.isAudio(pos)) {
 			queueCdAudioSector(rawSector);
 		}
+
 		return;
 	}
 	
@@ -98,6 +113,8 @@ void CDROM::handleSector() {
 	
 	if (memcmp(_readSector.data(), sync.data(), sync.size()) != 0) {
 		// TODO; This.. does happen on Tekken 3
+		printf("CDROM; Sync failed\n");
+
 		//assert(false);
 		return;
 	}
@@ -106,12 +123,38 @@ void CDROM::handleSector() {
 	// uint8_t second = rawSector[13];
 	// uint8_t frame = rawSector[14];
 	uint8_t mode = _readSector.loadAt(15);
-	
+
+	//   0-7 File Number    (00h..FFh) (for Audio/Video Interleave, see below)
 	uint8_t file = _readSector.loadAt(16);
+
+	/*
+	 * 0-4 Channel Number (00h..1Fh) (for Audio/Video Interleave, see below)
+     * 5-7 Should be always zero
+	 */
 	uint8_t channel = _readSector.loadAt(17);
-	//auto submode = (_readSector.loadAt(18));
-	//auto codinginfo = (_readSector.loadAt(19));
-	
+
+	/**
+	 * 0   End of Record (EOR) (all Volume Descriptors, and all sectors with EOF)
+	 * 1   Video     ;\Sector Type (usually ONE of these bits should be set)
+	 * 2   Audio     ; Note: PSX .STR files are declared as Data (not as Video)
+	 * 3   Data      ;/
+	 * 4   Trigger           (for application use)
+	 * 5   Form2             (0=Form1/800h-byte data, 1=Form2, 914h-byte data)
+	 * 6   Real Time (RT)
+	 * 7   End of File (EOF) (or end of Directory/PathTable/VolumeTerminator)
+	 */
+	auto submode = (_readSector.loadAt(18));
+
+	/**
+	 * 0-1 Mono/Stereo     (0=Mono, 1=Stereo, 2-3=Reserved)
+	 * 2-2 Sample Rate     (0=37800Hz, 1=18900Hz, 2-3=Reserved)
+	 * 4-5 Bits per Sample (0=Normal/4bit, 1=8bit, 2-3=Reserved)
+	 * 6   Emphasis        (0=Normal/Off, 1=Emphasis)
+	 * 7   Reserved        (0)
+	 */
+	auto codinginfo = (_readSector.loadAt(19));
+
+	assert((submode >> 5 & 1) == 0); // Form1
 	assert(mode == 2);
 	
 	// TODO;
@@ -194,25 +237,25 @@ uint8_t CDROM::load(uint32_t addr) {
 		uint8_t response = 0;// = responses.front();
 		//responses.pop();
 
-	    if(!interrupts.is_empty()) {
+	    /*if(!interrupts.is_empty()) {
 	        auto& in = interrupts.ref();
 
 	        if(!in.responses.is_empty()) {
 	            response = in.responses.get();
 	        }
-	    }
+	    }*/
 		
-		/*if(!interrupts.is_empty()) {
+		if(!interrupts.is_empty()) {
 			auto& in = interrupts.ref();
-			
+
 			if(!in.responses.is_empty()) {
 				response = in.responses.get();
-				
+
 				if(in.responses.is_empty() && in.ack == true) {
 					interrupts.get();
 				}
 			}
-		}*/
+		}
 		
 		return response;
 	} else if(addr == 2) {
@@ -339,10 +382,10 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 			}
 			
 			case 1: {
-			    if (!interrupts.is_empty()) {
-			        printf("Acknowledging interrupt %d\n", interrupts.peek()._interrupt);
-			        interrupts.get();
-			    }
+			    //if (!interrupts.is_empty()) {
+			    //    printf("Acknowledging interrupt %d\n", interrupts.peek()._interrupt);
+			    //    interrupts.get();
+			    //}
 
 				if (!interrupts.is_empty()) {
 					interrupts.ref().ack = true;
@@ -350,6 +393,7 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 					if (interrupts.ref().responses.is_empty()) {
 						interrupts.get();
 					} else {
+						// TODO:
 						if(interrupts.ref().attempts++ > 200) {
 							interrupts.ref().responses.get();
 							interrupts.ref().attempts = 0;
@@ -391,8 +435,8 @@ uint8_t CDROM::readByte() {
 	
 	// 0 - 0x800 - just data
 	// 1 - 0x924 - whole sector without sync
-	int dataStart = 24; //12 (12 sync, 4 header, 4 sub-header, 4 copy)
-	//if (!mode.sectorSize) dataStart += 12;
+	int dataStart = 12; //12 (12 sync, 4 header, 4 sub-header, 4 copy)
+	if (!mode.sectorSize) dataStart += 12;
 	
 	/**
 	* The PSX hardware allows to read 800h-byte or 924h-byte sectors,
@@ -402,7 +446,9 @@ uint8_t CDROM::readByte() {
 	if (!mode.sectorSize && _sector._pointer >= 0x800) {
 		_sector._pointer++;
 		return _sector.loadAt(dataStart + 0x800 - 8);
-	} else if (mode.sectorSize && _sector._pointer >= 0x924) {
+	}
+
+	if (mode.sectorSize && _sector._pointer >= 0x924) {
 		_sector._pointer++;
 		return _sector.loadAt(dataStart + 0x924 - 4);
 	}
@@ -852,6 +898,7 @@ void CDROM::Stop() {
 	// Stops motor with magnetic brakes
 	// moves the drive head to the beginning of the first track.
 	_stats.setMode(Stats::Mode::None);
+
 	// TODO; Stop audio
 	audioSamples.clear();
 	_stats.motor = 0;
@@ -885,12 +932,9 @@ void CDROM::SetMode() {
      * 0   CDDA        (0=Off, 1=Allow to Read CD-DA Sectors; ignore missing EDC)
 	 */
 	auto parm = getParamater();
-    mode._reg = parm;
+    //mode._reg = parm;
 
 	mode = Mode(parm);
-
-    printf("SetMode: 0x%02X (sectorSize=%d, cdda=%d)\n",
-           parm, mode.sectorSize, mode.cdda);
 	
 	INT(3, 2000);
 	addResponse(_stats._reg);
@@ -981,8 +1025,27 @@ void CDROM::GetID() {
 	
 	INT(3, 0x4A00);
 	addResponse(_stats._reg);
-	
+
 	if (diskPresent) {
+		INT(2, 449000);
+	} else {
+		INT(5);
+		// TODO;
+		assert(false);
+	}
+
+	// Licensed:Mode2         INT3(stat)     INT2(02h,00h, 20h,00h, 53h,43h,45h,4xh)
+	addResponse(0x02); // Stat
+	addResponse(0x00); // Flags
+	addResponse(0x20); // Type
+	addResponse(0x00); // Atip (Always zero)
+
+	addResponse('S'); // 'S' 0x53
+	addResponse('C'); // 'C' 0x43
+	addResponse('E'); // 'E' 0x45
+	addResponse('A'); // // Region code (A=USA, E=Europe, I=Japan)
+	
+	/*if (diskPresent) {
 		//INT(2, 449000);
 	    INT(2, 200); // random ass number
 
@@ -1008,7 +1071,7 @@ void CDROM::GetID() {
 		addResponse(0x00);
 
 		return;
-	}
+	}*/
 	
 	// Licensed:Mode2         INT3(stat)     INT2(02h,00h, 20h,00h, 53h,43h,45h,4xh)
 	/*addResponse(0x02); // Stat

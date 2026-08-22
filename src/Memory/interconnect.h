@@ -5,6 +5,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 
 #include "../DMA/Dma.h"
 #include "../GPU/Gpu.h"
@@ -18,6 +19,7 @@
 #include "MDEC/MDEC.h"
 #include "Memories/Ram.h"
 #include "Range.h"
+#include "Scheduler.h"
 #include "SPU/SPU.h"
 
 //#include "CDROM/cdrom.h"
@@ -55,12 +57,12 @@ struct ICache {
 
 class Interconnect {
 public:
-    Interconnect()  : memControl{}, _gpu(nullptr), _spu(nullptr) {
+    Interconnect()  : memControl{}, _gpu(nullptr), _spu(nullptr), scheduler(this) {
         
     }
     
     Interconnect(Emulator::Gpu* gpu/*, Emulator::SPU spu*/)
-        : memControl{}, _gpu(gpu), _spu(new spu::SPU())
+        : memControl{}, _gpu(gpu), _spu(new spu::SPU()), scheduler(this)
     /*, spu(spu)*/ {
         _ram = Ram();
         
@@ -111,7 +113,8 @@ public:
     }
     
     bool step(uint32_t cycles);
-    
+    void hardwareTick();
+
     inline uint32_t loadInstruction(uint32_t addr) {
         lastICacheMiss = false;
 
@@ -157,9 +160,20 @@ public:
     
     template<typename T>
     T load(uint32_t addr) {
+        if (flatMemoryMode) {
+            T value = 0;
+
+            for (size_t i = 0; i < sizeof(T); i++) {
+                auto it = flatMemory.find(addr + i);
+                value |= static_cast<T>(it != flatMemory.end() ? it->second : 0) << (8 * i);
+            }
+
+            return value;
+        }
+
         uint32_t abs_addr = map::maskRegion(addr);
         uint32_t offset = 0;
-        
+
         if (map::RAM.contains(abs_addr, offset)) {
             T value = _ram.load<T>(offset);
 
@@ -377,6 +391,13 @@ public:
 
     template<typename T>
     void store(uint32_t addr, T val) {
+        if (flatMemoryMode) {
+            for (size_t i = 0; i < sizeof(T); i++)
+                flatMemory[addr + i] = static_cast<uint8_t>(val >> (8 * i));
+
+            return;
+        }
+
         uint32_t abs_addr = map::maskRegion(addr);
         uint32_t offset = 0;
 
@@ -606,12 +627,15 @@ public:
         _cacheControl = (0);
         for(auto& i : icache)
             i = {};
-        
+
         // TODO;
-        _bios.reset("../BIOS/ps-22a.bin");
+        _bios.reset("../../BIOS/ps-22a.bin");
         _dma.reset();
         _gpu->reset();
         //spu.reset();
+
+        scheduler.reset();
+        _hardwareTickScheduled = false;
     }
     
 private:
@@ -624,6 +648,9 @@ private:
     
 public:
     bool lastICacheMiss = false;
+
+    bool flatMemoryMode = false;
+    std::unordered_map<uint32_t, uint8_t> flatMemory;
 
     Ram _ram;
     //CDROM _cdrom;
@@ -649,4 +676,10 @@ public:
     MDEC mdec;
     spu::SPU* _spu;
     Emulator::SPU spu;
+
+    Scheduler scheduler;
+
+    bool _hardwareTickScheduled = false;
+    bool _vblankPending = false;
+    uint64_t _lastHardwareTickCycle = 0;
 };

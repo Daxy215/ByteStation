@@ -1,6 +1,8 @@
 ﻿#include "Timers.h"
 
+#include <algorithm>
 #include <cstdio>
+#include <limits>
 
 Emulator::IO::Timers::Timers()
 	: timers{ new Timer(TimerType::Timer0_DotClock), new Timer(TimerType::Timer1_HBlank), new Timer(TimerType::Timer2_SystemClock8) } {
@@ -13,9 +15,9 @@ void Emulator::IO::Timers::step(uint32_t cycles, uint32_t dotTicks) {
     timers[2]->step(cycles, 0);
 }
 
-void Emulator::IO::Timers::sync(bool isInHBlank, bool isInVBlank, uint32_t dot, uint8_t dotClockDivisor) {
-	timers[0]->syncGpu(isInHBlank, isInVBlank, dot, dotClockDivisor);
-	timers[1]->syncGpu(isInHBlank, isInVBlank, dot, dotClockDivisor);
+void Emulator::IO::Timers::sync(bool isInHBlank, bool isInVBlank, uint8_t dotClockDivisor) {
+	timers[0]->syncGpu(isInHBlank, isInVBlank, dotClockDivisor);
+	timers[1]->syncGpu(isInHBlank, isInVBlank, dotClockDivisor);
 	
 	// Timer 3 only uses system clock
 }
@@ -91,6 +93,15 @@ void Emulator::IO::Timers::store(uint32_t addr, uint32_t val) {
 			break;
 		}
 	}
+}
+
+uint32_t Emulator::IO::Timers::cyclesUntilNextEvent() const {
+	uint32_t next = std::numeric_limits<uint32_t>::max();
+
+	for(auto* timer : timers)
+		next = std::min(next, timer->cyclesUntilNextEvent());
+
+	return next;
 }
 
 void Emulator::IO::Timers::reset() {

@@ -145,19 +145,19 @@ src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o: \
  /usr/include/bits/stdint-least.h /usr/include/c++/16/optional \
  /usr/include/c++/16/bits/enable_special_members.h \
  /usr/include/c++/16/sstream /usr/include/c++/16/bits/sstream.tcc \
+ /usr/include/c++/16/unordered_map \
+ /usr/include/c++/16/bits/unordered_map.h \
+ /usr/include/c++/16/bits/hashtable.h \
+ /usr/include/c++/16/bits/hashtable_policy.h \
+ /usr/include/c++/16/ext/aligned_buffer.h \
+ /usr/include/c++/16/bits/node_handle.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/../DMA/Dma.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/../DMA/Channel.h \
  /usr/include/c++/16/cstdint \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/../DMA/Attributes.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/../GPU/Gpu.h \
  /usr/include/c++/16/functional /usr/include/c++/16/bits/refwrap.h \
- /usr/include/c++/16/bits/std_function.h \
- /usr/include/c++/16/unordered_map \
- /usr/include/c++/16/bits/unordered_map.h \
- /usr/include/c++/16/bits/hashtable.h \
- /usr/include/c++/16/bits/hashtable_policy.h \
- /usr/include/c++/16/ext/aligned_buffer.h \
- /usr/include/c++/16/bits/node_handle.h /usr/include/c++/16/vector \
+ /usr/include/c++/16/bits/std_function.h /usr/include/c++/16/vector \
  /usr/include/c++/16/bits/stl_uninitialized.h \
  /usr/include/c++/16/bits/stl_vector.h \
  /usr/include/c++/16/bits/stl_bvector.h \
@@ -214,6 +214,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o: \
  /usr/include/c++/16/pstl/execution_defs.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/Memories/Ram.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/Range.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/Scheduler.h \
  /home/daxy/Documents/dev/PSXEmulator/src/SPU/SPU.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \

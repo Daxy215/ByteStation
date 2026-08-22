@@ -136,16 +136,24 @@ namespace Emulator {
         CpuToVRam,
         VRamToCpu,
     };
-    
-    // GPU structure
+
     class Gpu {
         static constexpr uint32_t NTSC_TICKS_PER_LINE = 3413;
-        static constexpr uint32_t PAL_TICKS_PER_LINE = 3406;
-
         static constexpr uint32_t NTSC_TOTAL_LINES = 263;
+        static constexpr uint32_t NTSC_HORIZONTAL_ACTIVE_START = 488;
+        static constexpr uint32_t NTSC_HORIZONTAL_ACTIVE_END = 3288;
+        static constexpr uint32_t NTSC_VERTICAL_ACTIVE_START = 16;
+        static constexpr uint32_t NTSC_VERTICAL_ACTIVE_END = 256;
+
+        static constexpr uint32_t PAL_TICKS_PER_LINE = 3406;
         static constexpr uint32_t PAL_TOTAL_LINES = 314;
-        static constexpr uint64_t NTSC_CRTC_NUM = 11;
-        static constexpr uint64_t NTSC_CRTC_DEN = 7;
+        static constexpr uint32_t PAL_HORIZONTAL_ACTIVE_START = 488;
+        static constexpr uint32_t PAL_HORIZONTAL_ACTIVE_END = 3300;
+        static constexpr uint32_t PAL_VERTICAL_ACTIVE_START = 20;
+        static constexpr uint32_t PAL_VERTICAL_ACTIVE_END = 308;
+
+        static constexpr uint64_t NTSC_CRTC_NUM = 715909; // 715909, 11
+        static constexpr uint64_t NTSC_CRTC_DEN = 451584; // 451584, 7
 
         static constexpr uint64_t PAL_CRTC_NUM = 709379;
         static constexpr uint64_t PAL_CRTC_DEN = 451584;
@@ -366,6 +374,7 @@ namespace Emulator {
             bool step(uint32_t cycles);
             bool stepCRTC(uint32_t ticks);
             uint32_t ticksUntilNextCRTCEvent() const;
+            uint32_t cpuCyclesUntilNextCRTCEvent() const;
 
             uint32_t dotClockDivider() const {
                 switch (hres.getResolution()) {
@@ -383,7 +392,6 @@ namespace Emulator {
             }
 
             void updateDotClock() {
-                dot = currentDot();
             }
 
             void advanceDotClock(uint32_t ticks) {
@@ -393,8 +401,6 @@ namespace Emulator {
                 uint32_t before = currentDot();
                 uint32_t after = (_hpos + ticks) / dotClockDivider();
 
-                dot = after;
-
                 //if (after > before)
                 //    timers.addTicks(0, after - before);
             }
@@ -402,9 +408,16 @@ namespace Emulator {
             /**
              * Duckstation uses those
              * can't find where from..
+             *
+             * PAL:  3406 video cycles per scanline (or 3406.1 or so?)
+             * NTSC: 3413 video cycles per scanline (or 3413.6 or so?)
+             *
+             * ig?
+             * NTSC: 3288 - 488 = 2800 ticks / 53.693175MHz = 52.15us
+             * PAL:  3300 - 488 = 2812 ticks / 53.203425MHz = 52.85us
              */
             uint32_t hblankStart() const {
-                return vmode == VMode::Pal ? 3300 : 3288;
+                return vmode == VMode::Pal ? PAL_HORIZONTAL_ACTIVE_END : NTSC_HORIZONTAL_ACTIVE_END;
             }
 
             /**
@@ -412,7 +425,7 @@ namespace Emulator {
              * can't find where from..
              */
             uint32_t hblankEnd() const {
-                return 488;
+                return vmode == VMode::Pal ? PAL_HORIZONTAL_ACTIVE_START : NTSC_HORIZONTAL_ACTIVE_START;
             }
 
             bool calcHBlank() const {
@@ -728,8 +741,6 @@ namespace Emulator {
             bool isInHBlank = false;
             bool isInVBlank = false;
             bool displayField = false;
-
-            uint32_t dot = 1;
             
         private:
             bool isOddLine = false;

@@ -95,7 +95,8 @@ public:
 	CDROM();
 	
 	void step(uint32_t cycles);
-	
+	uint32_t cyclesUntilNextInterrupt() const;
+
 	void handleSector();
 	bool popAudioSample(int16_t& left, int16_t& right);
 	

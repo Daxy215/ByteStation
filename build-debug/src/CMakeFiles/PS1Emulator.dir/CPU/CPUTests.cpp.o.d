@@ -225,6 +225,7 @@ src/CMakeFiles/PS1Emulator.dir/CPU/CPUTests.cpp.o: \
  /usr/include/c++/16/pstl/execution_defs.h \
  /home/daxy/Documents/dev/PSXEmulator/src/CPU/../Memory/Memories/Ram.h \
  /home/daxy/Documents/dev/PSXEmulator/src/CPU/../Memory/Range.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/CPU/../Memory/Scheduler.h \
  /home/daxy/Documents/dev/PSXEmulator/src/SPU/SPU.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \

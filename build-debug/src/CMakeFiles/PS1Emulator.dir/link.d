@@ -17,6 +17,7 @@ PS1Emulator: \
   CMakeFiles/PS1Emulator.dir/CPU/CPU.cpp.o \
   CMakeFiles/PS1Emulator.dir/CPU/CPUTests.cpp.o \
   CMakeFiles/PS1Emulator.dir/CPU/Instruction.cpp.o \
+  CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o \
   CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o \
   CMakeFiles/PS1Emulator.dir/Core/config.cpp.o \
   CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o \
@@ -38,6 +39,7 @@ PS1Emulator: \
   CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o \
   CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o \
   CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o \
+  CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o \
   CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o \
   CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o \
   CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o \
@@ -131,6 +133,8 @@ CMakeFiles/PS1Emulator.dir/CPU/CPUTests.cpp.o:
 
 CMakeFiles/PS1Emulator.dir/CPU/Instruction.cpp.o:
 
+CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o:
+
 CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o:
 
 CMakeFiles/PS1Emulator.dir/Core/config.cpp.o:
@@ -172,6 +176,8 @@ CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o:
 CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o:
 
 CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o:
+
+CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o:
 
 CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o:
 

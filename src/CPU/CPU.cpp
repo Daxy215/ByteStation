@@ -112,6 +112,15 @@ int CPU::executeNextInstruction() {
 
     recordExecution(instrPc, instruction, executedBranch, branchTaken, traceTarget);
 
+    if (disasmState.print_copied_lines_to_console && disasmState.show) {
+        DisassembledInstruction di = disassemble(instruction, instrPc);
+
+        std::stringstream copyLine;
+        copyLine << std::hex << std::uppercase << std::setw(8) << std::setfill('0') << instrPc << ": " << di.text;
+
+        std::cout << copyLine.str() << std::endl;
+    }
+
     // Shift load registers
     if(loads[0].index != 32)
         set_reg(loads[0].index, loads[0].value);
@@ -295,7 +304,7 @@ static std::string hangHex(uint32_t value) {
 }
 
 void CPU::recordExecution(uint32_t instrPc, Instruction& instruction, bool branch, bool taken, uint32_t target) {
-    if (!disasmState.show) {
+    if (!disasmState.show && !disasmState.print_copied_lines_to_console) {
         return;
     }
 
@@ -323,7 +332,7 @@ void CPU::recordExecution(uint32_t instrPc, Instruction& instruction, bool branc
 }
 
 void CPU::recordMemoryAccess(uint32_t addr, uint32_t value, uint8_t size, bool write) {
-    if (!disasmState.show) {
+    if (!disasmState.show && !disasmState.print_copied_lines_to_console) {
         return;
     }
 
@@ -498,6 +507,8 @@ void CPU::showDisassembler() {
         if (ImGui::Button("Jump To Hang")) {
             disasmState.view_center = h.hotspot;
             disasmState.follow_pc   = false;
+            disasmState.extraLinesAbove = 0;
+            disasmState.extraLinesBelow = 0;
         }
 
         ImGui::SameLine();
@@ -521,6 +532,8 @@ void CPU::showDisassembler() {
         uint32_t addr           = strtoul(disasmState.addrBuf, nullptr, 16);
         disasmState.view_center = addr;
         disasmState.follow_pc   = false;
+        disasmState.extraLinesAbove = 0;
+        disasmState.extraLinesBelow = 0;
     }
 
     ImGui::InputText("Filter (mnemonic/op)", disasmState.filterBuf, sizeof(disasmState.filterBuf));
@@ -535,12 +548,30 @@ void CPU::showDisassembler() {
     if (disasmState.follow_pc || pc != disasmState.prev_pc) {
         disasmState.view_center = pc;
         disasmState.prev_pc     = pc;
+        disasmState.extraLinesAbove = 0;
+        disasmState.extraLinesBelow = 0;
     }
 
     ImGui::BeginChild("##disasm_scroll", ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-    const int linesAbove = disasmState.contextLines;
-    const int linesBelow = disasmState.contextLines * 2;
+    if (paused) {
+        const float lineHeight = ImGui::GetTextLineHeightWithSpacing();
+        const float scrollY    = ImGui::GetScrollY();
+        const float scrollMaxY = ImGui::GetScrollMaxY();
+        const float edge       = lineHeight * 2.0f;
+
+        if (scrollMaxY > 0.0f && scrollY <= edge) {
+            disasmState.extraLinesAbove += disasmState.contextLines;
+            disasmState.follow_pc        = false;
+            ImGui::SetScrollY(scrollY + disasmState.contextLines * lineHeight);
+        } else if (scrollMaxY > 0.0f && scrollY >= scrollMaxY - edge) {
+            disasmState.extraLinesBelow += disasmState.contextLines;
+            disasmState.follow_pc        = false;
+        }
+    }
+
+    const int linesAbove = disasmState.contextLines + disasmState.extraLinesAbove;
+    const int linesBelow = disasmState.contextLines * 2 + disasmState.extraLinesBelow;
 
     const uint32_t startAddr = disasmState.view_center - linesAbove * 4;
 
@@ -631,15 +662,6 @@ void CPU::showDisassembler() {
 
             std::stringstream copyLine;
             copyLine << std::hex << std::uppercase << std::setw(8) << std::setfill('0') << addr << ": " << di.text;
-
-            if (disasmState.print_copied_lines_to_console &&
-                isPC &&
-                (!disasmState.has_printed_pc_for_cycle ||
-                 disasmState.printed_pc_cycle != disasmState.totalCycles)) {
-                std::cout << copyLine.str() << std::endl;
-                disasmState.has_printed_pc_for_cycle = true;
-                disasmState.printed_pc_cycle = disasmState.totalCycles;
-            }
 
             if (lineClicked) {
                 ImGui::SetClipboardText(copyLine.str().c_str());
@@ -982,12 +1004,12 @@ DisassembledInstruction CPU::disassemble(Instruction& inst, uint32_t address) {
         uint32_t shownAddr = mem ? mem->addr : effectiveAddr;
         std::string addrText = "addr=" + disasmAddressRegion(shownAddr) + "[" + disasmHex(shownAddr) + "]";
 
-        if (mem && currentpc != address)
+        if (mem)
             addrText += "(" + disasmHex(mem->value) + ")";
 
         appendDetail(addrText);
 
-        if (mem && currentpc != address)
+        if (mem)
             appendDetail(std::string(disasmRegName(targetReg)) + "=" + disasmHex(mem->value));
     };
 
@@ -3235,13 +3257,6 @@ int CPU::opjr(Instruction& instruction) {
 
     branchSlot = true;
 
-    if(addr % 4 != 0) {
-        _cop0.badVaddr = addr;
-        exception(LoadAddressError);
-
-        return 1;
-    }
-
     nextpc = addr;
     jumpSlot = true;
 
@@ -3261,27 +3276,14 @@ int CPU::opjalr(Instruction& instruction) {
 
     uint32_t addr = reg(s);
 
+    /**
+     * jr/jalr can be used to jump to an unaligned address,
+     * in which case an address error (AdEL) exception will be raised on the next instruction fetch.
+     */
+
     branchSlot = true;
 
     set_reg(d, nextpc);
-
-    /**
-     * FIXED
-     *
-     * jalr value error @ 0,2: got ffffffff wanted 001fc010
-     * jalr value error @ 3,2: got ffffffff wanted 801fc094
-     * jalr value error @ 6,2: got ffffffff wanted a01fc118
-     * jalr exception error @ 9: got 00000000 wanted 00000004
-     * jalr exception error @ 12: got 00000000 wanted 00000004
-     * jalr exception error @ 15: got 00000000 wanted 00000004
-     */
-
-    if(addr % 4 != 0) {
-        _cop0.badVaddr = addr;
-        exception(LoadAddressError);
-
-        return 1;
-    }
 
     nextpc = addr;
     jumpSlot = true;
@@ -3553,8 +3555,9 @@ void CPU::handleCache(uint32_t addr, uint32_t val) {
         return;
     }
 
-    uint32_t tag = (addr & 0xFFFFF000) >> 12;
-    uint16_t index = (addr & 0xFFC) >> 2;
+    // Tag = physical_address[31:12] | valid[3:0]
+    uint32_t tag = (addr & 0xFFFFF000) >> 12; // addr[31:12]
+    uint16_t index = (addr >> 4) & 0xFF;/*(addr & 0xFFC) >> 2;*/ // addr[11:4]
 
     interconnect.icache[index] = ICache(tag, val);
 }

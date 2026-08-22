@@ -43,6 +43,8 @@ class Dma {
 
         void reset();
 
+        uint32_t cyclesUntilNextEvent() const;
+
     public:
         // master IRQ enable
         bool irqEn = false;

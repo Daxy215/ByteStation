@@ -1,6 +1,7 @@
 ﻿#include "Dma.h"
 
 #include <iostream>
+#include <limits>
 
 #include "../Memory/IRQ.h"
 
@@ -31,6 +32,10 @@ void Dma::step() {
         interruptPending = false;
         IRQ::trigger(IRQ::Interrupt::Dma);
     }
+}
+
+uint32_t Dma::cyclesUntilNextEvent() const {
+    return interruptPending ? 1 : std::numeric_limits<uint32_t>::max();
 }
 
 uint32_t Dma::interrupt() {

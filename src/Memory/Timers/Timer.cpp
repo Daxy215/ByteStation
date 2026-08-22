@@ -1,5 +1,8 @@
 ﻿#include "Timer.h"
 
+#include <algorithm>
+#include <limits>
+
 #include <GLFW/glfw3native.h>
 
 #include "../../GPU/Gpu.h"
@@ -264,15 +267,13 @@ void Emulator::IO::Timer::requestIRQ() {
 	}
 }
 
-void Emulator::IO::Timer::syncGpu(bool isInHBlank, bool isInVBlank, uint32_t dot, uint8_t dotClockDivisor) {
+void Emulator::IO::Timer::syncGpu(bool isInHBlank, bool isInVBlank, uint8_t dotClockDivisor) {
 	this->wasInHBlank = this->isInHBlank;
 	this->wasInVBlank = this->isInVBlank;
 	
 	this->isInHBlank = isInHBlank;
 	this->isInVBlank = isInVBlank;
     this->dotClockDivisor = dotClockDivisor;
-	
-	this->dot = dot;
 }
 
 void Emulator::IO::Timer::setMode(uint16_t val) {
@@ -340,6 +341,48 @@ uint16_t Emulator::IO::Timer::getMode() {
 	return f;
 }
 
+uint32_t Emulator::IO::Timer::cyclesUntilNextEvent() const {
+	if (mode.sync) {
+		switch (type) {
+			case TimerType::Timer0_DotClock:
+				if (mode.syncMode == 0 && isInHBlank) return std::numeric_limits<uint32_t>::max();
+				if (mode.syncMode == 2 && !isInHBlank) return std::numeric_limits<uint32_t>::max();
+				break;
+
+			case TimerType::Timer1_HBlank:
+				if (mode.syncMode == 0 && isInVBlank) return std::numeric_limits<uint32_t>::max();
+				if (mode.syncMode == 2 && !isInVBlank) return std::numeric_limits<uint32_t>::max();
+				break;
+
+			case TimerType::Timer2_SystemClock8:
+				if (mode.syncMode == 0 || mode.syncMode == 3) return std::numeric_limits<uint32_t>::max();
+				break;
+		}
+	}
+
+	bool gpuClockedSource = (type == TimerType::Timer0_DotClock || type == TimerType::Timer1_HBlank) && (mode.source & 1);
+	if (gpuClockedSource)
+		return std::numeric_limits<uint32_t>::max();
+
+	if (!mode.interruptTarget && !mode.interruptWrap)
+		return std::numeric_limits<uint32_t>::max();
+
+	uint32_t ticksToTarget = std::numeric_limits<uint32_t>::max();
+	if (mode.interruptTarget)
+		ticksToTarget = target == 0 ? 1 : (counter < target ? target - counter : (0x10000 - counter) + target);
+
+	uint32_t ticksToWrap = std::numeric_limits<uint32_t>::max();
+	if (mode.interruptWrap)
+		ticksToWrap = 0x10000 - counter;
+
+	uint32_t ticksNeeded = std::min(ticksToTarget, ticksToWrap);
+
+	if (type == TimerType::Timer2_SystemClock8 && mode.source >= 2)
+		return (8 - _cycles) + (ticksNeeded - 1) * 8;
+
+	return ticksNeeded;
+}
+
 void Emulator::IO::Timer::reset() {
 	_cycles = 0;
 	counter = 0;
@@ -348,7 +391,6 @@ void Emulator::IO::Timer::reset() {
 
 	/*isInHBlank = false;
 	isInVBlank = false;
-	dot = 1;
 	
 	wasInHBlank = false;
 	wasInVBlank = false;*//**/

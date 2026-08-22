@@ -1,5 +1,6 @@
 ﻿#include "interconnect.h"
 
+#include <algorithm>
 #include <string>
 
 #include "Memories/Ram.h"
@@ -7,10 +8,38 @@
 #include "../CPU/CPU.h"
 
 bool Interconnect::step(uint32_t cycles) {
-    bool didVBlank = _gpu->step(cycles);
+    if (!_hardwareTickScheduled) {
+        _hardwareTickScheduled = true;
+        _lastHardwareTickCycle = scheduler.currentCycle();
+        scheduler.scheduleEvent([this] { hardwareTick(); }, 1);
+    }
 
-    for (uint32_t cycle = 0; cycle < cycles; cycle++) {
-        _cdrom.step(1);
+    _vblankPending = false;
+
+    scheduler.addCycles(cycles);
+
+    _dma.step();
+    _sio.step(cycles);
+
+    return _vblankPending;
+}
+
+void Interconnect::hardwareTick() {
+    uint64_t now = scheduler.currentCycle();
+    uint32_t elapsed = static_cast<uint32_t>(now - _lastHardwareTickCycle);
+
+    while (elapsed > 0) {
+        uint32_t chunk = std::min(elapsed, _gpu->cpuCyclesUntilNextCRTCEvent());
+
+        _cdrom.step(chunk);
+
+        if (_gpu->step(chunk)) {
+            IRQ::trigger(IRQ::VBlank);
+            _vblankPending = true;
+        }
+
+        _timers.step(chunk, _gpu->lastDotTicks);
+        _timers.sync(_gpu->isInHBlank, _gpu->isInVBlank, _gpu->dotClockDivider());
 
         int16_t cdLeft = 0;
         int16_t cdRight = 0;
@@ -19,20 +48,17 @@ bool Interconnect::step(uint32_t cycles) {
             spu.pushCdAudioSample(cdLeft, cdRight);
         }
 
-        spu.step(1);
+        spu.step(chunk);
+
+        elapsed -= chunk;
     }
 
-    _dma.step();
-    //_sio.step(cycles);
+    _lastHardwareTickCycle = now;
 
-    _timers.step(cycles, _gpu->lastDotTicks);
-    _timers.sync(_gpu->isInHBlank, _gpu->isInVBlank, _gpu->dot, _gpu->dotClockDivider());
+    uint32_t next = std::min({_cdrom.cyclesUntilNextInterrupt(), _gpu->cpuCyclesUntilNextCRTCEvent(), _timers.cyclesUntilNextEvent()});
+    next = std::max(next, 1u);
 
-    if (didVBlank) {
-        IRQ::trigger(IRQ::VBlank);
-    }
-
-    return didVBlank;
+    scheduler.scheduleEvent([this] { hardwareTick(); }, next);
 }
 
 uint32_t Interconnect::dmaReg(uint32_t offset) {

@@ -100,7 +100,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o: \
  /usr/include/bits/stdlib-float.h /usr/include/c++/16/bits/std_abs.h \
  /usr/include/c++/16/pstl/glue_algorithm_defs.h \
  /usr/include/c++/16/pstl/execution_defs.h /usr/include/c++/16/cassert \
- /usr/include/assert.h \
+ /usr/include/assert.h /usr/include/c++/16/limits \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/IO/../IRQ.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/IO/../../CPU/COP/COP0.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/IO/../../Utils/Bitwise.h \
@@ -111,7 +111,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o: \
  /usr/include/bits/mathcalls-helper-functions.h \
  /usr/include/bits/mathcalls.h /usr/include/bits/mathcalls-narrow.h \
  /usr/include/bits/iscanonical.h /usr/include/c++/16/bits/specfun.h \
- /usr/include/c++/16/limits /usr/include/c++/16/tr1/gamma.tcc \
+ /usr/include/c++/16/tr1/gamma.tcc \
  /usr/include/c++/16/tr1/special_function_util.h \
  /usr/include/c++/16/tr1/bessel_function.tcc \
  /usr/include/c++/16/tr1/beta_function.tcc \

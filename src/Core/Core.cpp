@@ -8,6 +8,7 @@
 
 #include "../CPU/CPU.h"
 #include "../CPU/CPUTests.h"
+#include "../CPU/R3000Tests.h"
 #include "../Memory/IO/SIO.h"
 
 // #include "../Memory/Bios/Bios.h"
@@ -394,26 +395,20 @@ void handleLoadExe(std::string path) {
     // data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/CPU/SHIFT/SRLV/CPUSRLV.exe"); // Passed
 
     // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/CPU/SUB/CPUSUB.exe"); // Passed
-    // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/CPU/SUBU/CPUSUBU.exe"); //
-    // Passed std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/CPU/XOR/CPUXOR.exe"); //
-    // Passed std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/CPU/XORI/CPUXORI.exe");
-    // // Passed
+    // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/CPU/SUBU/CPUSUBU.exe"); // Passed
+    // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/CPU/XOR/CPUXOR.exe"); // Passed
+    // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/CPU/XORI/CPUXORI.exe"); // Passed
 
-    // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/GTE/AVSZ/GTEAVSZ.exe"); // TODO;
-    // Failed std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/GTE/NCLIP/GTENCLIP.exe");
-    // // TODO; Failed
+    // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/GTE/AVSZ/GTEAVSZ.exe"); // TODO; Failed
+    // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/CPUTest/GTE/NCLIP/GTENCLIP.exe"); // TODO; Failed
 
     // GPU - 16 BPP
-    // std::vector<uint8_t> data =
-    // FileManager::loadFile("ROMS/Tests/PSX-master/GPU/16BPP/MemoryTransfer/MemoryTransfer16BPP.exe"); // Passed ig?
-    // std::vector<uint8_t> data =
-    // FileManager::loadFile("../ROMS/Tests/PSX-master/GPU/16BPP/RenderLine/RenderLine16BPP.exe"); // TODO; Don't have
-    // line rendering support std::vector<uint8_t> data =
-    // FileManager::loadFile("../ROMS/Tests/PSX-master/GPU/16BPP/RenderPolygon/RenderPolygon16BPP.exe"); // Passed
-    // std::vector<uint8_t> data =
-    // FileManager::loadFile("ROMS/Tests/PSX-master/GPU/16BPP/RenderPolygonDither/RenderPolygonDither16BPP.exe"); //
-    // TODO; Wrong colors(implement dither)
-    // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/GPU/16BPP/RenderRectangle/RenderRectangle16BPP.exe"); // Passed
+    // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/GPU/16BPP/MemoryTransfer/MemoryTransfer16BPP.exe"); // Passed ig?
+    // std::vector<uint8_t> data = FileManager::loadFile("../ROMS/Tests/PSX-master/GPU/16BPP/RenderLine/RenderLine16BPP.exe"); // TODO; Don't have line rendering support 
+    // std::vector<uint8_t> data = FileManager::loadFile("../ROMS/Tests/PSX-master/GPU/16BPP/RenderPolygon/RenderPolygon16BPP.exe"); // Passed
+    // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/GPU/16BPP/RenderPolygonDither/RenderPolygonDither16BPP.exe"); // TODO; Wrong colors(implement dither)
+    // std::vector<uint8_t> data = Fil
+    //eManager::loadFile("ROMS/Tests/PSX-master/GPU/16BPP/RenderRectangle/RenderRectangle16BPP.exe"); // Passed
     // std::vector<uint8_t> data = FileManager::loadFile("ROMS/Tests/PSX-master/GPU/16BPP/RenderTexturePolygon/15BPP/RenderTexturePolygon15BPP.exe"); // Passed
 
     // Other stuff
@@ -481,7 +476,7 @@ void handleLoadExe(std::string path) {
      * Okay so I found out that the issue IS actually caused by,
      * the timers being wrong or the VBlank interrupt.
      */
-    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/ps1-tests/timers/timers.exe");
+    std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/ps1-tests/timers/timers.exe");
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/ps1-tests-master/timers/timers.exe");
 
     /**
@@ -529,7 +524,7 @@ void handleLoadExe(std::string path) {
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase7/gpu-raster-phase7.ps-exe"); // TODO;
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase8/gpu-raster-phase8.ps-exe"); // TODO;
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase9/gpu-raster-phase9.ps-exe"); // TODO;
-    std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase10/gpu-raster-phase10.ps-exe"); // TODO;
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase10/gpu-raster-phase10.ps-exe"); // TODO;
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase11/gpu-raster-phase11.ps-exe"); // TODO;
 
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/psx-hardware-tests-master/_ps-exe/irq_reg.psexe");
@@ -578,7 +573,7 @@ static uint64_t  cyclesExecuted       = 0;
 
 const uint32_t PSX_CPU_CLOCK = 33868800;
 
-const uint32_t GPU_CLOCK_NTSC = 53222400;
+const uint32_t GPU_CLOCK_NTSC = 53693175; // 53693175, 53222400
 const uint32_t GPU_CLOCK_PAL = 53203425;
 
 const uint32_t SCANLINES_NTSC = 263;
@@ -597,22 +592,71 @@ void runFrame() {
     bool vblanked       = false;
 
     while(frameCycles < cyclesPerFrame) {
-        int cycles = cpu->executeNextInstruction();
+        //int cycles = cpu->executeNextInstruction();
 
+        int cycles = 0;
 
-        //for (uint32_t i = 0; i < cycles; i++) {
-            if (cpu->interconnect.step(cycles)) {
-                //didVBlank = true;
+        bool stepped = false;
+
+        if (!cpu->paused) {
+            cycles = cpu->executeNextInstruction();
+            stepped = true;
+        } else if (cpu->stepRequested) {
+            cycles  = cpu->executeNextInstruction();
+            stepped = true;
+
+            cpu->stepRequested = false;
+            //printf("X; %d\n", x);
+        } else if (cpu->stepUntilBranchTakenRequested) {
+            auto pc = cpu->pc;
+            stepped = true;
+
+            cycles = cpu->executeNextInstruction();
+
+            if (pc + 4 != cpu->pc) {
+                cpu->stepUntilBranchTakenRequested = false;
+                printf("X; %d\n", x);
             }
-        //}
+        } else if (cpu->stepUntilBranchNotTakenRequested) {
+            auto pc = cpu->pc;
+            stepped = true;
 
+            cycles = cpu->executeNextInstruction();
+
+            if (pc + 4 == cpu->pc) {
+                cpu->stepUntilBranchNotTakenRequested = false;
+                printf("X; %d\n", x);
+            }
+        }
+
+        if (stepped) {
+            x++;
+
+            cpu->interconnect.scheduler.addCycles(cycles);
+            cpu->interconnect.step(cycles);
+        }
+
+        /*if (cpu->pc == 0x80030000) {
+            if (true) {
+                printf("Skipping bootrom\n");
+                cpu->pc     = cpu->reg(31);
+                cpu->nextpc = cpu->pc + 4;
+            } else {
+                //handleLoadExe("");
+            }
+        }*/
+        
         //static uint64_t cyclesThisSecond = 0;
         //static uint64_t framesThisSecond = 0;
         //static auto lastReport = std::chrono::steady_clock::now();
-
+        
+        if(cycles == 0) {
+            cycles++;
+        }
+        
         //cyclesThisSecond += cycles;
         frameCycles += cycles;
-
+        
         /*auto now = std::chrono::steady_clock::now();
         double elapsed = std::chrono::duration<double>(now - lastReport).count();
 
@@ -994,9 +1038,14 @@ static void ShowFileBrowser(bool *p_open, CPU *cpu) {
 
 static bool show_file_browser = false;
 
+constexpr bool RunR3000SingleStepTests = false;
+
 int main(int argc, char *argv[]) {
     //if (!CpuInstructionTests::runAll())
     //    return 1;
+
+    if (RunR3000SingleStepTests && !R3000SingleStepTests::runAll())
+        return 1;
 
     //if (!GpuTimingTests::runAll())
     //    return 1;
@@ -1026,11 +1075,11 @@ int main(int argc, char *argv[]) {
     // TODO; For now, manually load in disc
     //cpu->interconnect._cdrom.swapDisk("../ROMS/Run Crash/Desire_-_Run_Crash_(PSX).cue");
 
-    // cpu->interconnect._cdrom.swapDisk("../ROMS/Crash Bandicoot (Europe, Australia)/Crash Bandicoot (Europe,
-    // Australia).cue"); cpu->interconnect._cdrom.swapDisk("../ROMS/Battle Arena Toshinden (Europe)/Battle Arena
-    // Toshinden (Europe).cue"); cpu->interconnect._cdrom.swapDisk("ROMS/Sonic Wings Special (Europe)/Sonic Wings
-    // Special (Europe)/Sonic Wings Special (Europe).cue"); cpu->interconnect._cdrom.swapDisk("../ROMS/Tetris X/Tetris X
-    // (Japan).cue"); cpu->interconnect._cdrom.swapDisk("../ROMS/Ridge Racer (Europe)/Ridge Racer (Europe).cue");
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Crash Bandicoot (Europe, Australia)/Crash Bandicoot (Europe, Australia).cue");
+    //cpu->interconnect._cdrom.swapDisk("../ROMS/Battle Arena Toshinden (Europe)/Battle Arena Toshinden (Europe).cue");
+    //cpu->interconnect._cdrom.swapDisk("ROMS/Sonic Wings Special (Europe)/Sonic Wings Special (Europe)/Sonic Wings Special (Europe).cue");
+    //cpu->interconnect._cdrom.swapDisk("../ROMS/Tetris X/Tetris X (Japan).cue");
+    //cpu->interconnect._cdrom.swapDisk("../ROMS/Ridge Racer (Europe)/Ridge Racer (Europe).cue");
 
     // Uhh works somehow idek how BUT obviously GPU bug but I think it's actually GTE
     // It works until it calls 0x0D CDROM command then everything goes red and freezes
@@ -1045,12 +1094,12 @@ int main(int argc, char *argv[]) {
      * Had an issue with the controller but now it's fixed,
      * FIXED; Missing; GP0(48h) - Monochrome Poly-line, opaque
      */
-    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It)/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It).cue");
+    cpu->interconnect._cdrom.swapDisk("../../ROMS/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It)/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It).cue");
 
     /**
      * Also had controller issues.
      */
-    cpu->interconnect._cdrom.swapDisk("../../ROMS/Crash Bandicoot - Warped (USA)/Crash Bandicoot - Warped (USA).cue");
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Crash Bandicoot - Warped (USA)/Crash Bandicoot - Warped (USA).cue");
 
     // Works but need to skip all cut scenes to see anything(dont have MDEC)
     // TODO; Uses line rendering but doesn't crash
@@ -1105,7 +1154,6 @@ int main(int argc, char *argv[]) {
     bool showVramViewer = false;
 
     glfwSwapInterval(0);
-    printf("ok?\n");
 
     while (!glfwWindowShouldClose(gpu->renderer->window)) {
         render = false;
@@ -1200,7 +1248,7 @@ int main(int argc, char *argv[]) {
             }*/
         }
 
-        //cpu->showDisassembler();
+        cpu->showDisassembler();
 
         /*static bool show = true;
         if (ImGui::Begin("VRAM", &show)) {
@@ -1238,6 +1286,12 @@ int main(int argc, char *argv[]) {
                 ImGui::MenuItem("Show VRAM", nullptr, &showVramViewer);
                 ImGui::MenuItem("Main Window: Display Area Only", nullptr, &gpu->renderer->cropToDisplayArea);
                 ImGui::MenuItem("Main Window: Full VRAM Debug", "N", &gpu->renderer->renderVRAM);
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Debug")) {
+                ImGui::MenuItem("Show Disassembler", nullptr, &cpu->disasmState.show);
 
                 ImGui::EndMenu();
             }
@@ -1355,8 +1409,8 @@ int main(int argc, char *argv[]) {
         if (render) {
             runFrame();
 
-            //gpu->vram->endTransfer();
-            //gpu->renderer->renderFrame();
+            gpu->vram->endTransfer();
+            gpu->renderer->renderFrame();
             ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
             glfwSwapBuffers(gpu->renderer->window);

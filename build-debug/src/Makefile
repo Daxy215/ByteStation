@@ -322,6 +322,30 @@ CPU/Instruction.cpp.s:
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/CPU/Instruction.cpp.s
 .PHONY : CPU/Instruction.cpp.s
 
+CPU/R3000Tests.o: CPU/R3000Tests.cpp.o
+.PHONY : CPU/R3000Tests.o
+
+# target to build an object file
+CPU/R3000Tests.cpp.o:
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o
+.PHONY : CPU/R3000Tests.cpp.o
+
+CPU/R3000Tests.i: CPU/R3000Tests.cpp.i
+.PHONY : CPU/R3000Tests.i
+
+# target to preprocess a source file
+CPU/R3000Tests.cpp.i:
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.i
+.PHONY : CPU/R3000Tests.cpp.i
+
+CPU/R3000Tests.s: CPU/R3000Tests.cpp.s
+.PHONY : CPU/R3000Tests.s
+
+# target to generate assembly for a file
+CPU/R3000Tests.cpp.s:
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.s
+.PHONY : CPU/R3000Tests.cpp.s
+
 Core/Core.o: Core/Core.cpp.o
 .PHONY : Core/Core.o
 
@@ -826,6 +850,30 @@ Memory/Memories/ScratchPad.cpp.s:
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.s
 .PHONY : Memory/Memories/ScratchPad.cpp.s
 
+Memory/Scheduler.o: Memory/Scheduler.cpp.o
+.PHONY : Memory/Scheduler.o
+
+# target to build an object file
+Memory/Scheduler.cpp.o:
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o
+.PHONY : Memory/Scheduler.cpp.o
+
+Memory/Scheduler.i: Memory/Scheduler.cpp.i
+.PHONY : Memory/Scheduler.i
+
+# target to preprocess a source file
+Memory/Scheduler.cpp.i:
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.i
+.PHONY : Memory/Scheduler.cpp.i
+
+Memory/Scheduler.s: Memory/Scheduler.cpp.s
+.PHONY : Memory/Scheduler.s
+
+# target to generate assembly for a file
+Memory/Scheduler.cpp.s:
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.s
+.PHONY : Memory/Scheduler.cpp.s
+
 Memory/Timers/Timer.o: Memory/Timers/Timer.cpp.o
 .PHONY : Memory/Timers/Timer.o
 
@@ -1267,6 +1315,9 @@ help:
 	@echo "... CPU/Instruction.o"
 	@echo "... CPU/Instruction.i"
 	@echo "... CPU/Instruction.s"
+	@echo "... CPU/R3000Tests.o"
+	@echo "... CPU/R3000Tests.i"
+	@echo "... CPU/R3000Tests.s"
 	@echo "... Core/Core.o"
 	@echo "... Core/Core.i"
 	@echo "... Core/Core.s"
@@ -1330,6 +1381,9 @@ help:
 	@echo "... Memory/Memories/ScratchPad.o"
 	@echo "... Memory/Memories/ScratchPad.i"
 	@echo "... Memory/Memories/ScratchPad.s"
+	@echo "... Memory/Scheduler.o"
+	@echo "... Memory/Scheduler.i"
+	@echo "... Memory/Scheduler.s"
 	@echo "... Memory/Timers/Timer.o"
 	@echo "... Memory/Timers/Timer.i"
 	@echo "... Memory/Timers/Timer.s"

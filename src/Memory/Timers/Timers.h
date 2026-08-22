@@ -10,12 +10,14 @@ namespace Emulator {
 			Timers();
 			
 			void step(uint32_t cycles, uint32_t dotTicks);
-			void sync(bool isInHBlank, bool isInVBlank, uint32_t dot, uint8_t dotClockDivisor);
+			void sync(bool isInHBlank, bool isInVBlank, uint8_t dotClockDivisor);
 			
 			uint32_t load(uint32_t addr);
 			void store(uint32_t addr, uint32_t val);
 			
 			void reset();
+			
+			uint32_t cyclesUntilNextEvent() const;
 			
 		public:
 			/**

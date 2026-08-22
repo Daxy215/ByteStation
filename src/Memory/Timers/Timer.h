@@ -56,12 +56,14 @@ namespace Emulator {
 				Timer(TimerType type);
 				
 				void step(uint32_t cycles,uint32_t dotTicks);
-				void syncGpu(bool isInHBlank, bool isInVBlank, uint32_t dot, uint8_t dotClockDivisor);
+				void syncGpu(bool isInHBlank, bool isInVBlank, uint8_t dotClockDivisor);
 				
 				void setMode(uint16_t val);
 				uint16_t getMode();
 				
 				void reset();
+
+				uint32_t cyclesUntilNextEvent() const;
 				
 			private:
 				void finishTick(uint32_t cycles);
@@ -156,7 +158,6 @@ namespace Emulator {
 			public:
 				bool isInHBlank = false;
 				bool isInVBlank = false;
-				uint32_t dot = 1;
 				
 				bool wasInHBlank = false;
 				bool wasInVBlank = false;

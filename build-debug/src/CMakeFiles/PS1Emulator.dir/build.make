@@ -282,10 +282,24 @@ src/CMakeFiles/PS1Emulator.dir/CPU/Instruction.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PS1Emulator.dir/CPU/Instruction.cpp.s"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/daxy/Documents/dev/PSXEmulator/src/CPU/Instruction.cpp -o CMakeFiles/PS1Emulator.dir/CPU/Instruction.cpp.s
 
+src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
+src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/CPU/R3000Tests.cpp
+src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o"
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o -MF CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o.d -o CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/CPU/R3000Tests.cpp
+
+src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.i"
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/daxy/Documents/dev/PSXEmulator/src/CPU/R3000Tests.cpp > CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.i
+
+src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.s"
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/daxy/Documents/dev/PSXEmulator/src/CPU/R3000Tests.cpp -o CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.s
+
 src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Core/Core.cpp
 src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o -MF CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Core/Core.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.i: cmake_force
@@ -299,7 +313,7 @@ src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Core/config.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Core/config.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Core/config.cpp
 src/CMakeFiles/PS1Emulator.dir/Core/config.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Core/config.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Core/config.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Core/config.cpp.o -MF CMakeFiles/PS1Emulator.dir/Core/config.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Core/config.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Core/config.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Core/config.cpp.i: cmake_force
@@ -313,7 +327,7 @@ src/CMakeFiles/PS1Emulator.dir/Core/config.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/DMA/Channel.cpp
 src/CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object src/CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object src/CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o -MF CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o.d -o CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/DMA/Channel.cpp
 
 src/CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.i: cmake_force
@@ -327,7 +341,7 @@ src/CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/DMA/Dma.cpp
 src/CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object src/CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object src/CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.o -MF CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.o.d -o CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/DMA/Dma.cpp
 
 src/CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.i: cmake_force
@@ -341,7 +355,7 @@ src/CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/GPU/GPUTests.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/GPU/GPUTests.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/GPU/GPUTests.cpp
 src/CMakeFiles/PS1Emulator.dir/GPU/GPUTests.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/GPUTests.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/GPUTests.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/GPU/GPUTests.cpp.o -MF CMakeFiles/PS1Emulator.dir/GPU/GPUTests.cpp.o.d -o CMakeFiles/PS1Emulator.dir/GPU/GPUTests.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/GPU/GPUTests.cpp
 
 src/CMakeFiles/PS1Emulator.dir/GPU/GPUTests.cpp.i: cmake_force
@@ -355,7 +369,7 @@ src/CMakeFiles/PS1Emulator.dir/GPU/GPUTests.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/GPU/Gpu.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/GPU/Gpu.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/GPU/Gpu.cpp
 src/CMakeFiles/PS1Emulator.dir/GPU/Gpu.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/Gpu.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/Gpu.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/GPU/Gpu.cpp.o -MF CMakeFiles/PS1Emulator.dir/GPU/Gpu.cpp.o.d -o CMakeFiles/PS1Emulator.dir/GPU/Gpu.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/GPU/Gpu.cpp
 
 src/CMakeFiles/PS1Emulator.dir/GPU/Gpu.cpp.i: cmake_force
@@ -369,7 +383,7 @@ src/CMakeFiles/PS1Emulator.dir/GPU/Gpu.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Buffer.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Buffer.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/GPU/Rendering/Buffer.cpp
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Buffer.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Buffer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Buffer.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Buffer.cpp.o -MF CMakeFiles/PS1Emulator.dir/GPU/Rendering/Buffer.cpp.o.d -o CMakeFiles/PS1Emulator.dir/GPU/Rendering/Buffer.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/GPU/Rendering/Buffer.cpp
 
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Buffer.cpp.i: cmake_force
@@ -383,7 +397,7 @@ src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Buffer.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Rasterizer.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Rasterizer.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/GPU/Rendering/Rasterizer.cpp
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Rasterizer.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Rasterizer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Rasterizer.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Rasterizer.cpp.o -MF CMakeFiles/PS1Emulator.dir/GPU/Rendering/Rasterizer.cpp.o.d -o CMakeFiles/PS1Emulator.dir/GPU/Rendering/Rasterizer.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/GPU/Rendering/Rasterizer.cpp
 
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Rasterizer.cpp.i: cmake_force
@@ -397,7 +411,7 @@ src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Rasterizer.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Renderer.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Renderer.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/GPU/Rendering/Renderer.cpp
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Renderer.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Renderer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Renderer.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Renderer.cpp.o -MF CMakeFiles/PS1Emulator.dir/GPU/Rendering/Renderer.cpp.o.d -o CMakeFiles/PS1Emulator.dir/GPU/Rendering/Renderer.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/GPU/Rendering/Renderer.cpp
 
 src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Renderer.cpp.i: cmake_force
@@ -411,7 +425,7 @@ src/CMakeFiles/PS1Emulator.dir/GPU/Rendering/Renderer.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/GPU/VRAM.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/GPU/VRAM.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/GPU/VRAM.cpp
 src/CMakeFiles/PS1Emulator.dir/GPU/VRAM.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/VRAM.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object src/CMakeFiles/PS1Emulator.dir/GPU/VRAM.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/GPU/VRAM.cpp.o -MF CMakeFiles/PS1Emulator.dir/GPU/VRAM.cpp.o.d -o CMakeFiles/PS1Emulator.dir/GPU/VRAM.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/GPU/VRAM.cpp
 
 src/CMakeFiles/PS1Emulator.dir/GPU/VRAM.cpp.i: cmake_force
@@ -425,7 +439,7 @@ src/CMakeFiles/PS1Emulator.dir/GPU/VRAM.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/Bios/Bios.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/Bios/Bios.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/Bios/Bios.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/Bios/Bios.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Bios/Bios.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Bios/Bios.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/Bios/Bios.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/Bios/Bios.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/Bios/Bios.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/Bios/Bios.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/Bios/Bios.cpp.i: cmake_force
@@ -439,7 +453,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/Bios/Bios.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/CDROM.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/CDROM.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.i: cmake_force
@@ -453,7 +467,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Disk.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Disk.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.i: cmake_force
@@ -467,7 +481,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Sector.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Sector.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Sector.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Sector.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Sector.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Sector.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Sector.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/CDROM/Sector.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/CDROM/Sector.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Sector.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Sector.cpp.i: cmake_force
@@ -481,7 +495,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Sector.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/TrackBuilder.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/TrackBuilder.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.i: cmake_force
@@ -495,7 +509,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/DigitalController.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/DigitalController.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/IO/Peripherals/DigitalController.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/DigitalController.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/DigitalController.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/DigitalController.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/DigitalController.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/DigitalController.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/DigitalController.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/IO/Peripherals/DigitalController.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/DigitalController.cpp.i: cmake_force
@@ -509,7 +523,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/DigitalController.cpp.s: cm
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/MemoryCard.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/MemoryCard.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/IO/Peripherals/MemoryCard.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/MemoryCard.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/MemoryCard.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/MemoryCard.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/MemoryCard.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/MemoryCard.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/MemoryCard.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/IO/Peripherals/MemoryCard.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/MemoryCard.cpp.i: cmake_force
@@ -523,7 +537,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/IO/Peripherals/MemoryCard.cpp.s: cmake_for
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/IO/SIO.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/IO/SIO.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.i: cmake_force
@@ -537,7 +551,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/MDEC/MDEC.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/MDEC/MDEC.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.i: cmake_force
@@ -551,7 +565,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/Memories/Ram.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/Memories/Ram.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.i: cmake_force
@@ -565,7 +579,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/Memories/ScratchPad.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/Memories/ScratchPad.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.i: cmake_force
@@ -576,10 +590,24 @@ src/CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.s"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/daxy/Documents/dev/PSXEmulator/src/Memory/Memories/ScratchPad.cpp -o CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.s
 
+src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
+src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/Scheduler.cpp
+src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o"
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/Scheduler.cpp
+
+src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.i"
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/daxy/Documents/dev/PSXEmulator/src/Memory/Scheduler.cpp > CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.i
+
+src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.s"
+	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/daxy/Documents/dev/PSXEmulator/src/Memory/Scheduler.cpp -o CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.s
+
 src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/Timers/Timer.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/Timers/Timer.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.i: cmake_force
@@ -593,7 +621,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/Timers/Timers.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/Timers/Timers.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.i: cmake_force
@@ -607,7 +635,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/Memory/interconnect.cpp
 src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building CXX object src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o -MF CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o.d -o CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/Memory/interconnect.cpp
 
 src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.i: cmake_force
@@ -621,7 +649,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/SPU/SPU.cpp
 src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o -MF CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o.d -o CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/SPU/SPU.cpp
 
 src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.i: cmake_force
@@ -635,7 +663,7 @@ src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/adsr.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/adsr.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/adsr.cpp
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/adsr.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/adsr.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/adsr.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/adsr.cpp.o -MF CMakeFiles/PS1Emulator.dir/SPU/Stolen/adsr.cpp.o.d -o CMakeFiles/PS1Emulator.dir/SPU/Stolen/adsr.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/adsr.cpp
 
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/adsr.cpp.i: cmake_force
@@ -649,7 +677,7 @@ src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/adsr.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/interpolation.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/interpolation.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/interpolation.cpp
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/interpolation.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/interpolation.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/interpolation.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/interpolation.cpp.o -MF CMakeFiles/PS1Emulator.dir/SPU/Stolen/interpolation.cpp.o.d -o CMakeFiles/PS1Emulator.dir/SPU/Stolen/interpolation.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/interpolation.cpp
 
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/interpolation.cpp.i: cmake_force
@@ -663,7 +691,7 @@ src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/interpolation.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/noise.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/noise.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/noise.cpp
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/noise.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/noise.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/noise.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/noise.cpp.o -MF CMakeFiles/PS1Emulator.dir/SPU/Stolen/noise.cpp.o.d -o CMakeFiles/PS1Emulator.dir/SPU/Stolen/noise.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/noise.cpp
 
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/noise.cpp.i: cmake_force
@@ -677,7 +705,7 @@ src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/noise.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/reverb.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/reverb.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/reverb.cpp
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/reverb.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/reverb.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/reverb.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/reverb.cpp.o -MF CMakeFiles/PS1Emulator.dir/SPU/Stolen/reverb.cpp.o.d -o CMakeFiles/PS1Emulator.dir/SPU/Stolen/reverb.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/reverb.cpp
 
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/reverb.cpp.i: cmake_force
@@ -691,7 +719,7 @@ src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/reverb.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/spu.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/spu.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/spu.cpp
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/spu.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/spu.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/spu.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/spu.cpp.o -MF CMakeFiles/PS1Emulator.dir/SPU/Stolen/spu.cpp.o.d -o CMakeFiles/PS1Emulator.dir/SPU/Stolen/spu.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/spu.cpp
 
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/spu.cpp.i: cmake_force
@@ -705,7 +733,7 @@ src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/spu.cpp.s: cmake_force
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/voice.cpp.o: src/CMakeFiles/PS1Emulator.dir/flags.make
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/voice.cpp.o: /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/voice.cpp
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/voice.cpp.o: src/CMakeFiles/PS1Emulator.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/voice.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building CXX object src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/voice.cpp.o"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/voice.cpp.o -MF CMakeFiles/PS1Emulator.dir/SPU/Stolen/voice.cpp.o.d -o CMakeFiles/PS1Emulator.dir/SPU/Stolen/voice.cpp.o -c /home/daxy/Documents/dev/PSXEmulator/src/SPU/Stolen/voice.cpp
 
 src/CMakeFiles/PS1Emulator.dir/SPU/Stolen/voice.cpp.i: cmake_force
@@ -733,6 +761,7 @@ PS1Emulator_OBJECTS = \
 "CMakeFiles/PS1Emulator.dir/CPU/CPU.cpp.o" \
 "CMakeFiles/PS1Emulator.dir/CPU/CPUTests.cpp.o" \
 "CMakeFiles/PS1Emulator.dir/CPU/Instruction.cpp.o" \
+"CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o" \
 "CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o" \
 "CMakeFiles/PS1Emulator.dir/Core/config.cpp.o" \
 "CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o" \
@@ -754,6 +783,7 @@ PS1Emulator_OBJECTS = \
 "CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o" \
 "CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o" \
 "CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o" \
+"CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o" \
 "CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o" \
 "CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o" \
 "CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o" \
@@ -783,6 +813,7 @@ src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/CPU/COP/Stolen/gte/opcodes.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/CPU/CPU.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/CPU/CPUTests.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/CPU/Instruction.cpp.o
+src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/Core/config.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o
@@ -804,6 +835,7 @@ src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/Memory/IO/SIO.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/Memory/MDEC/MDEC.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/Memory/Memories/Ram.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/Memory/Memories/ScratchPad.cpp.o
+src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/Memory/Scheduler.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timer.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/Memory/Timers/Timers.cpp.o
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/Memory/interconnect.cpp.o
@@ -823,7 +855,7 @@ src/PS1Emulator: /usr/lib64/libglfw.so.3.4
 src/PS1Emulator: /usr/lib64/libSDL2-2.0.so.0.3200.70
 src/PS1Emulator: /usr/lib64/libGLEW.so
 src/PS1Emulator: src/CMakeFiles/PS1Emulator.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Linking CXX executable PS1Emulator"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/daxy/Documents/dev/PSXEmulator/build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Linking CXX executable PS1Emulator"
 	cd /home/daxy/Documents/dev/PSXEmulator/build-debug/src && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/PS1Emulator.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

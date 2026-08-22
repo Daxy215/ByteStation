@@ -62,6 +62,8 @@ namespace Emulator {
 				void store(uint32_t addr, uint32_t val, uint32_t size);
 				
 				void setCtrl(uint32_t port, uint32_t val);
+
+				uint32_t cyclesUntilNextEvent() const;
 				
 				static void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 					if (action == GLFW_PRESS || action == GLFW_RELEASE) {

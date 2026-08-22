@@ -82,13 +82,14 @@ Emulator::Gpu::Gpu(bool enableRendering)
 }
 
 bool Emulator::Gpu::step(uint32_t cpuCycles) {
-    lastDotTicks = 0;
+    //lastDotTicks = 0;
 
     uint64_t num = vmode == VMode::Pal ? PAL_CRTC_NUM : NTSC_CRTC_NUM;
     uint64_t den = vmode == VMode::Pal ? PAL_CRTC_DEN : NTSC_CRTC_DEN;
 
     uint64_t n     = uint64_t(cpuCycles) * num + _gpuFrac;
     uint32_t ticks = uint32_t(n / den);
+    _gpuFrac       = n % den;
 
     lastGpuCycles = ticks;
 
@@ -106,7 +107,7 @@ bool Emulator::Gpu::stepCRTC(uint32_t ticks) {
         const uint32_t run = std::min(ticks, ticksUntilNextCRTCEvent());
 
         dotFrac += run;
-        lastDotTicks += dotFrac / divider;
+        //lastDotTicks += dotFrac / divider;
         dotFrac %= divider;
 
         _hpos += run;
@@ -159,13 +160,22 @@ uint32_t Emulator::Gpu::ticksUntilNextCRTCEvent() const {
     uint32_t hblankS = hblankStart();
     uint32_t hblankE = hblankEnd();
 
-    uint32_t next = total - _hpos;
+    uint32_t next;// = total - _hpos;
 
-    if (_hpos < hblankE)
+    /*if (_hpos < hblankE)
         next = std::min(next, hblankE - _hpos);
 
     if (_hpos < hblankS)
-        next = std::min(next, hblankS - _hpos);
+        next = std::min(next, hblankS - _hpos);*/
+
+    if (_hpos >= hblankS)
+        next = total - _hpos + hblankE;
+    else if (_hpos < hblankE)
+        next = hblankE - _hpos;
+    else
+        next = hblankS - _hpos;
+
+    next = std::min(next, total - _hpos);
 
     uint32_t vstart = std::min<uint32_t>(displayLineStart, vtotal());
     uint32_t vend   = std::min<uint32_t>(displayLineEnd, vtotal());
@@ -179,6 +189,16 @@ uint32_t Emulator::Gpu::ticksUntilNextCRTCEvent() const {
     }
 
     return std::max(next, 1u);
+}
+
+uint32_t Emulator::Gpu::cpuCyclesUntilNextCRTCEvent() const {
+    uint64_t num = vmode == VMode::Pal ? PAL_CRTC_NUM : NTSC_CRTC_NUM;
+    uint64_t den = vmode == VMode::Pal ? PAL_CRTC_DEN : NTSC_CRTC_DEN;
+
+    uint64_t needed = uint64_t(ticksUntilNextCRTCEvent()) * den;
+    uint64_t remaining = needed > _gpuFrac ? needed - _gpuFrac : 0;
+
+    return static_cast<uint32_t>(std::max<uint64_t>((remaining + num - 1) / num, 1));
 }
 
 /*bool Emulator::Gpu::step(uint32_t cycles) {

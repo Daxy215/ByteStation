@@ -229,6 +229,7 @@ src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o: \
  /usr/include/c++/16/pstl/execution_defs.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Core/../CPU/../Memory/Memories/Ram.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Core/../CPU/../Memory/Range.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Core/../CPU/../Memory/Scheduler.h \
  /home/daxy/Documents/dev/PSXEmulator/src/SPU/SPU.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \
@@ -381,6 +382,7 @@ src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o: \
  /home/daxy/Documents/dev/PSXEmulator/src/Core/../CPU/COP/Stolen/gte/gte.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Core/../CPU/COP/Stolen/gte/command.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Core/../CPU/CPUTests.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Core/../CPU/R3000Tests.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Core/../GPU/Rendering/Renderer.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Core/../GPU/Rendering/Buffer.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Core/../GPU/Rendering/Rasterizer.h \

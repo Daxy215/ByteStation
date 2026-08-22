@@ -8,9 +8,27 @@ ROMS/
 *.chd
 *.mp4
 *.db
+
+# build output
 /build
-/src/CMakeFiles
+/build-debug
+/CMakeCache.txt
 /CMakeFiles
+/cmake_install.cmake
+/Makefile
 /src/CMakeFiles
-src/Makefile
-src/PS1Emulator
+/src/Makefile
+/src/cmake_install.cmake
+/src/PS1Emulator
+
+# vendored deps (fetch separately, not tracked)
+/libs/
+
+# IDE / editor state
+.idea/
+**/.idea/
+CCompile.props
+Folder.DotSettings.user
+
+# imgui runtime state
+imgui.ini

@@ -148,6 +148,6 @@ src/CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.o: \
  /usr/include/c++/16/bits/basic_ios.tcc \
  /usr/include/c++/16/bits/ostream_print.h \
  /usr/include/c++/16/bits/ostream.tcc /usr/include/c++/16/istream \
- /usr/include/c++/16/bits/istream.tcc \
+ /usr/include/c++/16/bits/istream.tcc /usr/include/c++/16/limits \
  /home/daxy/Documents/dev/PSXEmulator/src/DMA/../Memory/IRQ.h \
  /home/daxy/Documents/dev/PSXEmulator/src/DMA/../Memory/../CPU/COP/COP0.h

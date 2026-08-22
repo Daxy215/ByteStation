@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <limits>
 
 #include "../IRQ.h"
 #include "../../Utils/Bitwise.h"
@@ -73,6 +74,20 @@ void Emulator::IO::SIO::store(uint32_t addr, uint32_t val, uint32_t size) {
 	}
 
 	assert(false);
+}
+
+uint32_t Emulator::IO::SIO::cyclesUntilNextEvent() const {
+	uint32_t next = std::numeric_limits<uint32_t>::max();
+
+	for(const auto& channel : channels) {
+		if(channel.txActive)
+			next = std::min<uint32_t>(next, static_cast<uint32_t>(channel.txCycles));
+
+		if(channel.dsrTimer > 0)
+			next = std::min(next, channel.dsrTimer);
+	}
+
+	return next;
 }
 
 void Emulator::IO::SIO::setCtrl(uint32_t port, uint32_t val) {

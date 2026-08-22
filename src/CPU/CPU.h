@@ -72,10 +72,12 @@ struct DisassembledInstruction {
 };
 
 struct DisassemblerState {
-    bool show = true;
+    bool show = false;
     bool follow_pc = true;
     uint32_t view_center = 0;
     uint32_t prev_pc = 0;
+    int extraLinesAbove = 0;
+    int extraLinesBelow = 0;
     std::unordered_map<uint32_t, DisassembledInstruction> cache;
     char addrBuf[13] = {0};
     char filterBuf[64] = {0};
@@ -89,8 +91,6 @@ struct DisassemblerState {
     bool config_loaded = false;
     bool suppress_breakpoint_once = false;
     uint32_t suppressed_breakpoint_addr = 0;
-    bool has_printed_pc_for_cycle = false;
-    uint64_t printed_pc_cycle = 0;
 
     std::deque<ExecutionTraceEntry> executionTrace;
     std::unordered_map<uint32_t, uint64_t> executionHits;
