@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/daxy/Documents/dev/PSXEmulator/build-debug/cmake_install.cmake",
-		"/home/daxy/Documents/dev/PSXEmulator/build-debug/src/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
