@@ -28,6 +28,7 @@ namespace Emulator {
             
         private:
             void draw();
+            uint32_t vidx(uint32_t i) const;
             
         public:
             void pushLine(Emulator::Gpu::Position positions[], Emulator::Gpu::Color colors[], Emulator::Gpu::UV uvs[], Emulator::Gpu::Attributes attributes);
@@ -102,6 +103,7 @@ namespace Emulator {
             GLint semiTransparencyModeUni;
             GLint ditheringUni;
             GLint maskBitUni;
+            GLint checkMaskUni;
 
             // Buffer contains the vertices positions
             Buffer<Gpu::Position> positions;
@@ -122,7 +124,8 @@ namespace Emulator {
             uint32_t nVertices;
             uint32_t drawCalls = 0;
 
-            GLsync drawFence = nullptr;
+            GLsync regionFences[BUFFER_REGIONS] = {};
+            uint32_t bufferRegion = 0;
 
             GLFWwindow* window;
         public:

@@ -362,6 +362,9 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
         maskBitUni = glGetUniformLocation(program, "setMaskBit");
         glUniform1i(maskBitUni, 0);
 
+        checkMaskUni = glGetUniformLocation(program, "checkMaskBit");
+        glUniform1i(checkMaskUni, 0);
+
         pixelCenterModeUni = glGetUniformLocation(program, "pixelCenterMode");
         glUniform1i(pixelCenterModeUni, 0);
     }
@@ -774,6 +777,10 @@ void Emulator::Renderer::readbackToVram(uint32_t x, uint32_t y, uint32_t width, 
     }
 }
 
+uint32_t Emulator::Renderer::vidx(uint32_t i) const {
+    return bufferRegion * VERTEX_BUFFER_LEN + i;
+}
+
 void Emulator::Renderer::draw() {
     if (nVertices == 0)
         return;
@@ -782,12 +789,6 @@ void Emulator::Renderer::draw() {
         std::cerr << "Persistent buffer unmapped or invalid!" << std::endl;
         nVertices = 0;
         return;
-    }
-
-    if (drawFence) {
-        glClientWaitSync(drawFence, GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
-        glDeleteSync(drawFence);
-        drawFence = nullptr;
     }
 
     drawCalls++;
@@ -818,6 +819,7 @@ void Emulator::Renderer::draw() {
 
     glUniform1i(ditheringUni, gpu.dithering ? 1 : 0);
     glUniform1i(maskBitUni, gpu.forceSetMaskBit ? 1 : 0);
+    glUniform1i(checkMaskUni, gpu.preserveMaskedPixels ? 1 : 0);
     glUniform1i(pixelCenterModeUni, primitiveMode == GL_TRIANGLES ? 0 : 1);
 
     glBindVertexArray(VAO);
@@ -828,7 +830,8 @@ void Emulator::Renderer::draw() {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, sceneTex[curTex]);
 
-    glDrawArrays(primitiveMode, 0, static_cast<GLsizei>(nVertices));
+    glTextureBarrier();
+    glDrawArrays(primitiveMode, static_cast<GLint>(bufferRegion * VERTEX_BUFFER_LEN), static_cast<GLsizei>(nVertices));
     /*if (primitiveMode == GL_TRIANGLES && gpu.semiTransparencyEnabled) {
         for (uint32_t i = 0; i + 2 < nVertices; i += 3) {
             glTextureBarrier();
@@ -841,7 +844,14 @@ void Emulator::Renderer::draw() {
     glBindVertexArray(0);
     glUseProgram(0);
 
-    drawFence = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    regionFences[bufferRegion] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    bufferRegion = (bufferRegion + 1) % BUFFER_REGIONS;
+
+    if (regionFences[bufferRegion]) {
+        glClientWaitSync(regionFences[bufferRegion], GL_SYNC_FLUSH_COMMANDS_BIT, GL_TIMEOUT_IGNORED);
+        glDeleteSync(regionFences[bufferRegion]);
+        regionFences[bufferRegion] = nullptr;
+    }
 
     /*glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO[curTex]);
     glViewport(0, 0, WIDTH, HEIGHT);
@@ -937,169 +947,141 @@ static void biasTriangleForGL(const Emulator::Gpu::Position in[3], Emulator::Gpu
     out[2] = biasedVertex(in[2], cx, cy);
 }
 
+static Emulator::Gpu::Color lerpColor(const Emulator::Gpu::Color& a, const Emulator::Gpu::Color& b, float t) {
+    return Emulator::Gpu::Color(
+        static_cast<GLubyte>(a.r + (b.r - a.r) * t),
+        static_cast<GLubyte>(a.g + (b.g - a.g) * t),
+        static_cast<GLubyte>(a.b + (b.b - a.b) * t)
+    );
+}
+
+static bool exceedsCullThreshold(const Emulator::Gpu::Position positions[], int count);
+
 void Emulator::Renderer::pushLine(Emulator::Gpu::Position positions[], Emulator::Gpu::Color colors[],
                                   Emulator::Gpu::UV uvs[], Gpu::Attributes attributes) {
+    if (exceedsCullThreshold(positions, 2)) {
+        return;
+    }
+
     if (nVertices + 2 > VERTEX_BUFFER_LEN) {
         nVertices = 0;
     }
 
-    if (positions[0].x == positions[1].x && positions[0].y == positions[1].y) {
-        setPrimitiveMode(GL_POINTS);
+    setPrimitiveMode(GL_POINTS);
 
+    if (attributes.isSemiTransparent()) {
+        flushDrawCommands();
+    }
+
+    int x0 = static_cast<int>(positions[0].x);
+    int y0 = static_cast<int>(positions[0].y);
+    int x1 = static_cast<int>(positions[1].x);
+    int y1 = static_cast<int>(positions[1].y);
+
+    int dx = x1 - x0 >= 0 ? x1 - x0 : x0 - x1;
+    int dy = y1 - y0 >= 0 ? y0 - y1 : y1 - y0;
+    int sx = x0 < x1 ? 1 : -1;
+    int sy = y0 < y1 ? 1 : -1;
+    int err = dx + dy;
+
+    int steps = (dx > -dy ? dx : -dy);
+    int step  = 0;
+
+    int x = x0;
+    int y = y0;
+
+    while (true) {
         if (nVertices + 1 > VERTEX_BUFFER_LEN) {
             flushDrawCommands();
         }
 
-        this->positions.set(nVertices, positions[0]);
+        float t = steps == 0 ? 0.0f : static_cast<float>(step) / static_cast<float>(steps);
+
+        this->positions.set(vidx(nVertices), Emulator::Gpu::Position(static_cast<float>(x), static_cast<float>(y)));
 
         if (attributes.usesColor()) {
-            this->colors.set(nVertices, colors[0]);
+            this->colors.set(vidx(nVertices), lerpColor(colors[0], colors[1], t));
         }
 
         if (attributes.useTextures()) {
-            this->uvs.set(nVertices, uvs[0]);
+            this->uvs.set(vidx(nVertices), uvs[0]);
         }
 
-        this->attributes.set(nVertices, attributes);
+        this->attributes.set(vidx(nVertices), attributes);
         nVertices++;
 
-        return;
-    }
-
-    setPrimitiveMode(GL_LINES);
-
-    if (nVertices + 2 > VERTEX_BUFFER_LEN) {
-        flushDrawCommands();
-    }
-
-    for (int i = 0; i < 2; i++) {
-        this->positions.set(nVertices, positions[i]);
-
-        if (attributes.usesColor()) {
-            this->colors.set(nVertices, colors[i]);
+        if (x == x1 && y == y1) {
+            break;
         }
 
-        if (attributes.useTextures()) {
-            this->uvs.set(nVertices, uvs[i]);
+        int e2 = 2 * err;
+
+        if (e2 >= dy) {
+            err += dy;
+            x   += sx;
         }
 
-        this->attributes.set(nVertices, attributes);
-        nVertices++;
-    }
-
-    flushDrawCommands();
-
-    setPrimitiveMode(GL_POINTS);
-
-    if (nVertices + 1 > VERTEX_BUFFER_LEN) {
-        flushDrawCommands();
-    }
-
-    this->positions.set(nVertices, positions[1]);
-
-    if (attributes.usesColor()) {
-        this->colors.set(nVertices, colors[1]);
-    }
-
-    if (attributes.useTextures()) {
-        this->uvs.set(nVertices, uvs[1]);
-    }
-
-    this->attributes.set(nVertices, attributes);
-    nVertices++;
-
-    return;
-
-    /*drawDirectLine(gpu, positions, colors[0]);
-
-    return;*/
-
-    for (int i = 0; i < 2; i++) {
-        this->positions.set(nVertices, positions[i]);
-
-        if (attributes.usesColor()) {
-            this->colors.set(nVertices, colors[i]);
+        if (e2 <= dx) {
+            err += dx;
+            y   += sy;
         }
 
-        if (attributes.useTextures()) {
-            this->uvs.set(nVertices, uvs[i]);
+        step++;
+    }
+}
+
+static bool exceedsCullThreshold(const Emulator::Gpu::Position positions[], int count) {
+    for (int i = 0; i < count; i++) {
+        for (int j = i + 1; j < count; j++) {
+            float dx = positions[i].x - positions[j].x;
+            float dy = positions[i].y - positions[j].y;
+
+            if (dx < 0) dx = -dx;
+            if (dy < 0) dy = -dy;
+
+            if (dx > 1023.0f || dy > 511.0f) {
+                return true;
+            }
         }
-
-        this->attributes.set(nVertices, attributes);
-        nVertices++;
     }
 
-    return;
-
-    //_rasterizer.drawLine(positions, colors, uvs, attributes);
-
-    float dx = positions[1].x - positions[0].x;
-    float dy = positions[1].y - positions[0].y;
-
-    float len = sqrtf(dx * dx + dy * dy);
-    if (len == 0) {
-        // assert(false && "Uhhh len is 0?? (pushLine)");
-        // return;
-    }
-
-    dx /= len;
-    dy /= len;
-
-    float px = -dy;
-    float py = dx;
-
-    float thickness = 1;
-    float ox        = px * (thickness * 0.5f);
-    float oy        = py * (thickness * 0.5f);
-
-    Emulator::Gpu::Position v0{positions[0].x + ox, positions[0].y + oy};
-    Emulator::Gpu::Position v1{positions[1].x + ox, positions[1].y + oy};
-    Emulator::Gpu::Position v2{positions[1].x - ox, positions[1].y - oy};
-    Emulator::Gpu::Position v3{positions[0].x - ox, positions[0].y - oy};
-
-    Emulator::Gpu::Color c0 = colors[0];
-    Emulator::Gpu::Color c1 = colors[0];
-    Emulator::Gpu::Color c2 = colors[1];
-    Emulator::Gpu::Color c3 = colors[1];
-
-    {
-        Gpu::Position pos[3] = {v0, v1, v2};
-        Gpu::Color    col[3] = {c0, c1, c2};
-        pushTriangle(pos, col, {}, attributes);
-    }
-
-    {
-        Gpu::Position pos[3] = {v2, v3, v0};
-        Gpu::Color    col[3] = {c2, c3, c0};
-        pushTriangle(pos, col, {}, attributes);
-    }
+    return false;
 }
 
 void Emulator::Renderer::pushTriangle(Emulator::Gpu::Position positions[], Emulator::Gpu::Color colors[],
                                       Emulator::Gpu::UV uvs[], Gpu::Attributes attributes) {
+    if (exceedsCullThreshold(positions, 3)) {
+        return;
+    }
+
     if (nVertices + 3 > VERTEX_BUFFER_LEN) {
         // Reset the buffer size
         nVertices = 0;
 
         // display();
     }
+
+    if (attributes.isSemiTransparent()) {
+        flushDrawCommands();
+    }
+
     setPrimitiveMode(GL_TRIANGLES);
 
     Emulator::Gpu::Position biased[3];
     biasTriangleForGL(positions, biased);
 
     for (int i = 0; i < 3; i++) {
-        this->positions.set(nVertices, biased[i]);
+        this->positions.set(vidx(nVertices), biased[i]);
 
         if (attributes.usesColor()) {
-            this->colors.set(nVertices, colors[i]);
+            this->colors.set(vidx(nVertices), colors[i]);
         }
 
         if (attributes.useTextures()) {
-            this->uvs.set(nVertices, uvs[i]);
+            this->uvs.set(vidx(nVertices), uvs[i]);
         }
 
-        this->attributes.set(nVertices, attributes);
+        this->attributes.set(vidx(nVertices), attributes);
         nVertices++;
     }
 
@@ -1110,15 +1092,15 @@ void Emulator::Renderer::pushTriangle(Emulator::Gpu::Position positions[], Emula
     return;*/
 
     for (int i = 0; i < 3; i++) {
-        this->positions.set(nVertices, positions[i]);
+        this->positions.set(vidx(nVertices), positions[i]);
 
         if (attributes.usesColor())
-            this->colors.set(nVertices, colors[i]);
+            this->colors.set(vidx(nVertices), colors[i]);
 
         if (attributes.useTextures())
-            this->uvs.set(nVertices, uvs[i]);
+            this->uvs.set(vidx(nVertices), uvs[i]);
 
-        this->attributes.set(nVertices, attributes);
+        this->attributes.set(vidx(nVertices), attributes);
 
         nVertices++;
     }
@@ -1126,12 +1108,21 @@ void Emulator::Renderer::pushTriangle(Emulator::Gpu::Position positions[], Emula
 
 void Emulator::Renderer::pushQuad(Emulator::Gpu::Position positions[], Emulator::Gpu::Color colors[],
                                   Emulator::Gpu::UV uvs[], Gpu::Attributes attributes) {
+    if (exceedsCullThreshold(positions, 4)) {
+        return;
+    }
+
     if (nVertices + 6 > VERTEX_BUFFER_LEN) {
         // Reset the buffer size
         nVertices = 0;
 
         // display();
     }
+
+    if (attributes.isSemiTransparent()) {
+        flushDrawCommands();
+    }
+
     setPrimitiveMode(GL_TRIANGLES);
 
     /*Emulator::Gpu::Position p0[3] = {positions[1], positions[3], positions[2]};
@@ -1150,17 +1141,17 @@ void Emulator::Renderer::pushQuad(Emulator::Gpu::Position positions[], Emulator:
     constexpr int order[6] = {1, 3, 2, 0, 1, 2};
 
     for (int i: order) {
-        this->positions.set(nVertices, positions[i]);
+        this->positions.set(vidx(nVertices), positions[i]);
 
         if (attributes.usesColor()) {
-            this->colors.set(nVertices, colors[i]);
+            this->colors.set(vidx(nVertices), colors[i]);
         }
 
         if (attributes.useTextures()) {
-            this->uvs.set(nVertices, uvs[i]);
+            this->uvs.set(vidx(nVertices), uvs[i]);
         }
 
-        this->attributes.set(nVertices, attributes);
+        this->attributes.set(vidx(nVertices), attributes);
         nVertices++;
     }
 
@@ -1172,52 +1163,52 @@ void Emulator::Renderer::pushQuad(Emulator::Gpu::Position positions[], Emulator:
     // First triangle
     // [2, 3, 0]
 
-    this->positions.set(nVertices, positions[2]);
+    this->positions.set(vidx(nVertices), positions[2]);
     if (attributes.usesColor())
-        this->colors.set(nVertices, colors[2]);
+        this->colors.set(vidx(nVertices), colors[2]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[2]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[2]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
-    this->positions.set(nVertices, positions[3]);
+    this->positions.set(vidx(nVertices), positions[3]);
     if (attributes.usesColor())
-        this->colors.set(nVertices, colors[3]);
+        this->colors.set(vidx(nVertices), colors[3]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[3]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[3]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
-    this->positions.set(nVertices, positions[0]);
+    this->positions.set(vidx(nVertices), positions[0]);
     if (attributes.usesColor())
-        this->colors.set(nVertices, colors[0]);
+        this->colors.set(vidx(nVertices), colors[0]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[0]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[0]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
-    this->positions.set(nVertices, positions[3]);
+    this->positions.set(vidx(nVertices), positions[3]);
     if (attributes.usesColor())
-        this->colors.set(nVertices, colors[3]);
+        this->colors.set(vidx(nVertices), colors[3]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[3]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[3]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
-    this->positions.set(nVertices, positions[0]);
+    this->positions.set(vidx(nVertices), positions[0]);
     if (attributes.usesColor())
-        this->colors.set(nVertices, colors[0]);
+        this->colors.set(vidx(nVertices), colors[0]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[0]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[0]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
-    this->positions.set(nVertices, positions[1]);
+    this->positions.set(vidx(nVertices), positions[1]);
     if (attributes.usesColor())
-        this->colors.set(nVertices, colors[1]);
+        this->colors.set(vidx(nVertices), colors[1]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[1]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[1]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 }
 
@@ -1241,6 +1232,10 @@ void Emulator::Renderer::pushRectangle(Emulator::Gpu::Position positions[], Emul
         nVertices = 0;
 
         // display();
+    }
+
+    if (attributes.isSemiTransparent()) {
+        flushDrawCommands();
     }
 
     setPrimitiveMode(GL_TRIANGLES);
@@ -1294,48 +1289,48 @@ void Emulator::Renderer::pushRectangle(Emulator::Gpu::Position positions[], Emul
 
     // First triangle
     // [0, 1, 2]
-    this->positions.set(nVertices, positions[0]);
-    this->colors.set(nVertices, colors[0]);
+    this->positions.set(vidx(nVertices), positions[0]);
+    this->colors.set(vidx(nVertices), colors[0]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[0]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[0]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
-    this->positions.set(nVertices, positions[1]);
-    this->colors.set(nVertices, colors[1]);
+    this->positions.set(vidx(nVertices), positions[1]);
+    this->colors.set(vidx(nVertices), colors[1]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[1]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[1]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
-    this->positions.set(nVertices, positions[2]);
-    this->colors.set(nVertices, colors[2]);
+    this->positions.set(vidx(nVertices), positions[2]);
+    this->colors.set(vidx(nVertices), colors[2]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[2]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[2]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
     // First triangle
     // [1, 2, 3]
-    this->positions.set(nVertices, positions[1]);
-    this->colors.set(nVertices, colors[1]);
+    this->positions.set(vidx(nVertices), positions[1]);
+    this->colors.set(vidx(nVertices), colors[1]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[1]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[1]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
-    this->positions.set(nVertices, positions[2]);
-    this->colors.set(nVertices, colors[2]);
+    this->positions.set(vidx(nVertices), positions[2]);
+    this->colors.set(vidx(nVertices), colors[2]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[2]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[2]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
-    this->positions.set(nVertices, positions[3]);
-    this->colors.set(nVertices, colors[3]);
+    this->positions.set(vidx(nVertices), positions[3]);
+    this->colors.set(vidx(nVertices), colors[3]);
     if (attributes.useTextures())
-        this->uvs.set(nVertices, uvs[3]);
-    this->attributes.set(nVertices, attributes);
+        this->uvs.set(vidx(nVertices), uvs[3]);
+    this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 }
 

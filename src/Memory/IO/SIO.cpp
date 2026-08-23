@@ -183,6 +183,7 @@ uint16_t Emulator::IO::SIO::ctrlValue(uint32_t port) const {
 	ctrl |= channel.rxInterruptEnabled << 11;
 	ctrl |= channel.dsrInterruptEnabled << 12;
 	ctrl |= channel.sio0Selected << 13;
+
 	return ctrl;
 }
 
@@ -220,6 +221,7 @@ uint32_t Emulator::IO::SIO::readRx(uint32_t port, uint32_t size) {
 	}
 
 	channel.stat.RX_FIFO_NOT_EMPTY = channel.rxCount != 0;
+
 	return value;
 }
 
@@ -294,6 +296,7 @@ void Emulator::IO::SIO::stepBaud(uint32_t port, uint32_t cycles) {
 
 	const uint64_t remaining = static_cast<uint64_t>(cycles) - channel.baudTimer;
 	const uint32_t remainder = remaining % reload;
+
 	channel.baudTimer = remainder == 0 ? reload : reload - remainder;
 }
 
@@ -355,9 +358,7 @@ void Emulator::IO::SIO::completeTransfer(uint32_t port) {
 	channel.txActive = false;
 	channel.txCycles = 0;
 
-	if(channel.txHoldingFull
-		&& (channel.txEnabled || channel.txArmed)
-		&& (port != 0 || channel.dtrOutput)) {
+	if(channel.txHoldingFull && (channel.txEnabled || channel.txArmed) && (port != 0 || channel.dtrOutput)) {
 		startTransfer(port);
 	} else if(!channel.txHoldingFull) {
 		channel.stat.TX_IDLE = true;
@@ -389,9 +390,11 @@ void Emulator::IO::SIO::pushRx(uint32_t port, uint8_t value) {
 
 void Emulator::IO::SIO::evaluateIrq(uint32_t port) {
 	auto& channel = channels[port];
+
 	const uint32_t rxThreshold = 1u << channel.rxInterruptMode;
-	const bool txIrq = channel.txInterruptEnabled
-		&& (channel.stat.TX_FIFO_NOT_FULL || channel.stat.TX_IDLE);
+
+	const bool txIrq = channel.txInterruptEnabled && (channel.stat.TX_FIFO_NOT_FULL || channel.stat.TX_IDLE);
+
 	const bool rxIrq = channel.rxInterruptEnabled && channel.rxCount >= rxThreshold;
 	const bool dsrIrq = channel.dsrInterruptEnabled && channel.dsrIrqPending;
 

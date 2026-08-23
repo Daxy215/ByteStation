@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <bitset>
 #include <cctype>
+#include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <ostream>
@@ -378,7 +379,7 @@ static void loadDisassemblerConfig(DisassemblerState& state) {
 
     state.breakpoints.insert(config.breakpoints.begin(), config.breakpoints.end());
     state.bookmarks.insert(config.bookmarks.begin(), config.bookmarks.end());
-    state.print_copied_lines_to_console = config.printDisassemblyCopiesToConsole;
+    //state.print_copied_lines_to_console = config.printDisassemblyCopiesToConsole;
     state.config_loaded = true;
 }
 
@@ -3199,10 +3200,23 @@ static const char* g_psx_cpu_c_kcall_symtable[] = {
     "get_card_find_mode()"
 };
 
-void CPU::checkForTTY() {
-    uint32_t r9 = regs[9];
+static std::string readCString(Interconnect& interconnect, uint32_t addr) {
+    std::string result;
 
-    if ((pc == 0x000000A0 || pc == 0x000000B0 || pc == 0x000000C0)) {
+    while (true) {
+        uint8_t ch = interconnect.load<uint8_t>(addr++);
+
+        if (ch == 0)
+            break;
+
+        result += static_cast<char>(ch);
+    }
+
+    return result;
+}
+
+void CPU::checkForTTY() {
+    if (pc == 0x000000A0 || pc == 0x000000B0 || pc == 0x000000C0) {
         if (reg(9) == 0x3c) {
             char ch = static_cast<char>(reg(4) & 0xFF);
 
@@ -3210,6 +3224,80 @@ void CPU::checkForTTY() {
                 std::cerr << ch;
             }
         }
+    }
+
+    if (pc != 0x000000A0)
+        return;
+
+    uint32_t func = reg(9);
+
+    if (func == 0x3e) {
+        std::cerr << readCString(interconnect, reg(4)) << "\n";
+
+        pc     = reg(31);
+        nextpc = pc + 4;
+    } else if (func == 0x3f) {
+        uint32_t fmtAddr  = reg(4);
+        uint32_t argRegs[3] = { reg(5), reg(6), reg(7) };
+        uint32_t sp       = reg(29);
+        int      argIndex = 0;
+
+        auto nextArg = [&]() -> uint32_t {
+            uint32_t value = argIndex < 3 ? argRegs[argIndex] : interconnect.load<uint32_t>(sp + 0x10 + (argIndex - 3) * 4);
+            argIndex++;
+            return value;
+        };
+
+        uint8_t ch;
+        while ((ch = interconnect.load<uint8_t>(fmtAddr++)) != 0) {
+            if (ch != '%') {
+                std::cerr << static_cast<char>(ch);
+                continue;
+            }
+
+            std::string spec = "%";
+            char        conv = 0;
+
+            for (int i = 0; i < 8; i++) {
+                conv = static_cast<char>(interconnect.load<uint8_t>(fmtAddr++));
+                spec += conv;
+
+                if (std::string("diouxXcs%").find(conv) != std::string::npos)
+                    break;
+            }
+
+            char buf[64];
+
+            switch (conv) {
+                case '%':
+                    std::cerr << '%';
+                    break;
+                case 'c':
+                    std::cerr << static_cast<char>(nextArg());
+                    break;
+                case 's':
+                    std::cerr << readCString(interconnect, nextArg());
+                    break;
+                case 'd':
+                case 'i':
+                    std::snprintf(buf, sizeof(buf), spec.c_str(), static_cast<int32_t>(nextArg()));
+                    std::cerr << buf;
+                    break;
+                default:
+                    std::snprintf(buf, sizeof(buf), spec.c_str(), nextArg());
+                    std::cerr << buf;
+                    break;
+            }
+        }
+
+        pc     = reg(31);
+        nextpc = pc + 4;
+    } else if (func == 0x3a) {
+        std::cerr << "\n=== guest exit(" << static_cast<int32_t>(reg(4)) << ") ===\n";
+
+        paused = true;
+        pc     = reg(31);
+        nextpc = pc + 4;
     }
 }
 
@@ -3520,8 +3608,6 @@ void CPU::store32(uint32_t addr, uint32_t val) {
 
 void CPU::store16(uint32_t addr, uint16_t val) {
     // Check if cache is isolated
-    //assert((sr & 0x10000) == 0x10000);
-
     if((_cop0.sr & 0x10000) != 0) {
         handleCache(addr, val);
     } else {
@@ -3534,8 +3620,6 @@ void CPU::store16(uint32_t addr, uint16_t val) {
 
 void CPU::store8(uint32_t addr, uint8_t val) {
     // Check if cache is isolated
-    //assert((sr & 0x10000) == 0);
-
     if((_cop0.sr & 0x10000) != 0) {
         handleCache(addr, val);
     } else {
@@ -3555,11 +3639,18 @@ void CPU::handleCache(uint32_t addr, uint32_t val) {
         return;
     }
 
-    // Tag = physical_address[31:12] | valid[3:0]
-    uint32_t tag = (addr & 0xFFFFF000) >> 12; // addr[31:12]
-    uint16_t index = (addr >> 4) & 0xFF;/*(addr & 0xFFC) >> 2;*/ // addr[11:4]
+    if (addr >= 0xA0000000) {
+        printf("uhh???\n");
+        return;
+    }
 
-    interconnect.icache[index] = ICache(tag, val);
+    // Tag = physical_address[31:12] | valid[3:0]
+    uint32_t physical = addr & 0x1FFFFFFF;
+    uint32_t tag = physical >> 12;           // addr[31:12]
+    uint16_t index = (physical >> 4) & 0xFF; // addr[11:4 ]
+    uint8_t word = (physical >> 2) & 3;
+
+    interconnect.icache[index].valid &= ~(1 << word);
 }
 
 //https://stackoverflow.com/questions/3944505/detecting-signed-overflow-in-c-c

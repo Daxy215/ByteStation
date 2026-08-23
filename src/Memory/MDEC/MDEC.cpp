@@ -483,7 +483,12 @@ bool MDEC::rl_decode_block(std::array<int16_t, 64> &blk, std::vector<uint16_t>::
         if (src == input.end()) break;
         const RLE rle = *src++;
         cur = extend_sign<10>(rle.AC);
+
+        // TODO: Some how k is reaching > 64
         k += rle.LEN + 1;
+
+        if (k > 63)
+            k = 63;
         
         val = (cur * qt[k] * dct.Q + 4) / 8;
     }

@@ -9,6 +9,7 @@
 #include <GL/glew.h>
 
 constexpr unsigned int VERTEX_BUFFER_LEN = (640 * 240) * 2;
+constexpr unsigned int BUFFER_REGIONS = 4;
 
 template<typename T>
 struct Buffer {
@@ -36,7 +37,7 @@ struct Buffer {
         glGenBuffers(1, &object);
         glBindBuffer(GL_ARRAY_BUFFER, object);
 
-        bufferSize = GLsizeiptr(sizeof(T) * VERTEX_BUFFER_LEN);
+        bufferSize = GLsizeiptr(sizeof(T) * VERTEX_BUFFER_LEN * BUFFER_REGIONS);
 
         const GLbitfield storageFlags =
             GL_MAP_WRITE_BIT |
@@ -65,12 +66,12 @@ struct Buffer {
         std::memset(map, 0, size_t(bufferSize));
 
         dirtyStart = 0;
-        dirtyEnd = VERTEX_BUFFER_LEN;
+        dirtyEnd = VERTEX_BUFFER_LEN * BUFFER_REGIONS;
         flush();
     }
 
     void set(uint32_t index, const T& value) {
-        if (index >= VERTEX_BUFFER_LEN) {
+        if (index >= VERTEX_BUFFER_LEN * BUFFER_REGIONS) {
             throw std::runtime_error("buffer overflow");
         }
 

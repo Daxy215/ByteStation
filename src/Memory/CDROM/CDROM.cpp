@@ -154,7 +154,7 @@ void CDROM::handleSector() {
 	 */
 	auto codinginfo = (_readSector.loadAt(19));
 
-	assert((submode >> 5 & 1) == 0); // Form1
+	//assert((submode >> 5 & 1) == 0); // Form1
 	assert(mode == 2);
 	
 	// TODO;
@@ -513,7 +513,7 @@ void CDROM::decodeAndExecute(uint8_t command) {
 	
 	interrupts.clear();
 	
-	printf("CMD: %x\n", command);
+	//printf("CMD: %x\n", command);
 	//std::cerr << "\n";
 	
 	if(command == 0x01) {

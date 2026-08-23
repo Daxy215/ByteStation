@@ -34,13 +34,13 @@ class Bios;
 
 struct CacheControl {
     uint32_t val = 0;
-    
+
     CacheControl(uint32_t val) : val(val) {}
-    
+
     bool isCacheEnabled() {
         return (val & 0x800) != 0;
     }
-    
+
     bool isInTagMode() {
         return (val & 0x4) != 0;
     }
@@ -48,11 +48,10 @@ struct CacheControl {
 
 struct ICache {
     uint32_t tag;
-    uint32_t data;
-    bool valid = false;
+    uint32_t data[4];
+    uint8_t valid;
 
-    ICache() : tag(0), data(0) {}
-    ICache(uint32_t tag, uint32_t data) : tag(tag), data(data) {}
+    ICache() : tag(0), data{0, 0, 0, 0}, valid(0) {}
 };
 
 class Interconnect {
@@ -65,10 +64,10 @@ public:
         : memControl{}, _gpu(gpu), _spu(new spu::SPU()), scheduler(this)
     /*, spu(spu)*/ {
         _ram = Ram();
-        
+
         // TODO;
-        //_bios = Bios("../../BIOS/ps-22a.bin");
-        _bios = Bios("../../BIOS/openbios.bin");
+        _bios = Bios("../../BIOS/ps-22a.bin");
+        //_bios = Bios("../../BIOS/openbios.bin");
         //_bios = Bios("../BIOS/openbios2.bin");
         //_bios = Bios("../BIOS/openbios-fastboot.bin");
         //_bios = Bios("../BIOS/openbios-unirom.bin");
@@ -139,23 +138,33 @@ public:
         // I-Cache
         
         // Cache is only active in the cached regions (KUSEG and KSEG0).
-        uint32_t tag = (addr & 0xFFFFF000) >> 12;
-        uint16_t index = (addr & 0xFFC) >> 2;
-        
+        // Tag = physical_address[31:12] | valid[3:0]
+        uint32_t physical = map::maskRegion(addr);
+        uint32_t tag   = physical >> 12;         // addr[31:12]
+        uint16_t index = (physical >> 4) & 0xFF; // addr[11:04]
+        uint8_t word   = (physical >> 2) & 3;    // addr[03:02] -> which word in line
+
         ICache& line = icache[index];
-        
-        if (line.valid && line.tag == tag)
-            return line.data;
+
+        if (line.tag == tag && (line.valid & (1 << word))) {
+            return line.data[word];
+        }
 
         lastICacheMiss = true;
-        
-        auto data = load<uint32_t>(addr);
 
-        line.valid = true;
-        line.tag = tag;
-        line.data = data;
-        
-        return data;
+        if (line.tag != tag) {
+            line.tag = tag;
+            line.valid = 0;
+        }
+
+        uint32_t lineBase = addr & ~0xFu;
+
+        for (uint8_t i = word; i < 4; i++) {
+            line.data[i] = load<uint32_t>(lineBase + i * 4);
+            line.valid |= (1 << i);
+        }
+
+        return line.data[word];
     }
     
     template<typename T>
@@ -666,10 +675,10 @@ public:
     Emulator::IO::Timers _timers;
     
     CacheControl _cacheControl = (0);
-    
+
     // The i-Cache can hold 4096 bytes, or 1024 instructions.
-    ICache icache[1024];
-    
+    ICache icache[256];
+
     Bios _bios;
     Dma _dma;
     Emulator::Gpu* _gpu;

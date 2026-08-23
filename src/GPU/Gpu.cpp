@@ -490,6 +490,8 @@ void Emulator::Gpu::gp0(uint32_t val) {
                         idx++;
                     }
 
+                    curAttribute.setSemiTransparencyMode(semiTransparency);
+
                     if (fourVerts)
                         renderer->pushQuad(positions, colors, uvs, curAttribute);
                     else
@@ -571,21 +573,13 @@ void Emulator::Gpu::gp0(uint32_t val) {
                      */
                     if (rectangleSize == 0) {
                         uint32_t sizeData = gp0Command.index(isTextured ? 3 : 2);
-                        
+
                         width = sizeData & 0xFFFF;
                         height = sizeData >> 16;
-                        
-                        // Max size of 1023x511
-                        // but textured max; 256,256
-                        // TODO; It doesn't say (im probably just blind),
-                        // TODO; that it should clamp it or just ignore,
-                        // TODO; any rectangles outside of those areas?
-                        if (isTextured) {
-                            width = std::clamp<uint16_t>(width, 0, 256);
-                            height = std::clamp<uint16_t>(height, 0, 256);
-                        } else {
-                            width = std::clamp<uint16_t>(width, 0, 1023);
-                            height = std::clamp<uint16_t>(height, 0, 511);
+
+                        // Max size of 1023x511; oversized rectangles are silently dropped.
+                        if (width > 1023 || height > 511) {
+                            break;
                         }
                     } else if (rectangleSize == 1) {
                         width = height = 1;
@@ -594,10 +588,11 @@ void Emulator::Gpu::gp0(uint32_t val) {
                     } else if (rectangleSize == 3) {
                         width = height = 16;
                     }
-                    
+
                     //uint8_t opcode = (in >> 24) & 0xFF;
+                    curAttribute.setSemiTransparencyMode(semiTransparency);
                     renderRectangle(p0, c0, uv0, width, height);
-                    
+
                     break;
                 }
             }
@@ -1529,6 +1524,8 @@ void Emulator::Gpu::gp0(uint32_t val) {
 }
 
 void Emulator::Gpu::gp0DrawMode(uint32_t val) {
+    renderer->flushDrawCommands();
+
     // https://psx-spx.consoledev.net/graphicsprocessingunitgpu/#clut-attribute-color-lookup-table-aka-palette
     pageBaseX = static_cast<uint8_t>((val & 0xF));
     pageBaseY = static_cast<uint8_t>((val >> 4) & 1);
@@ -1565,6 +1562,8 @@ void Emulator::Gpu::gp0DrawMode(uint32_t val) {
 }
 
 void Emulator::Gpu::gp0DrawingAreaTopLeft(uint32_t val) {
+    renderer->flushDrawCommands();
+
     drawingAreaTop = static_cast<int16_t>((val >> 10) & 0x3FF); // Y: bits 10-19
     drawingAreaLeft = static_cast<int16_t>(val & 0x3FF);         // X: bits 0-9
 
@@ -1572,6 +1571,8 @@ void Emulator::Gpu::gp0DrawingAreaTopLeft(uint32_t val) {
 }
 
 void Emulator::Gpu::gp0DrawingAreaBottomRight(uint32_t val) {
+    renderer->flushDrawCommands();
+
     drawingAreaBottom = static_cast<uint16_t>((val >> 10) & 0x3FF); // Y: bits 10-19
     drawingAreaRight  = static_cast<uint16_t>(val & 0x3FF);         // X: bits 0-9
 
@@ -1624,6 +1625,8 @@ void Emulator::Gpu::gp0DrawingOffset(const uint32_t val) const {
 }
 
 void Emulator::Gpu::gp0TextureWindow(uint32_t val) {
+    renderer->flushDrawCommands();
+
     textureWindowXMask   = static_cast<uint8_t>(val & 0x1F);
     textureWindowYMask   = static_cast<uint8_t>((val >> 5) & 0x1F);
     textureWindowXOffset = static_cast<uint8_t>((val >> 10) & 0x1F);

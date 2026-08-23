@@ -25,7 +25,7 @@ Emulator::SPU::SPU () {
     want.samples = 512;
     want.callback = nullptr;
 
-    //device = SDL_OpenAudioDevice(nullptr, 0, &want, &have, SDL_AUDIO_ALLOW_SAMPLES_CHANGE);
+    device = SDL_OpenAudioDevice(nullptr, 0, &want, &have, SDL_AUDIO_ALLOW_SAMPLES_CHANGE);
 
     if (device == 0) {
         printf("Failed to open audio: %s\n", SDL_GetError());

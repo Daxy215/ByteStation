@@ -39,6 +39,7 @@ uniform vec4 textureWindow;
 uniform int semiTransparencyMode;
 uniform int dithering;
 uniform int setMaskBit;
+uniform int checkMaskBit;
 
 const int IS_SEMITRANSPARENT_MASK = 0x1;
 const int BLEND_TEXTURE_MASK = 0x2;
@@ -71,7 +72,7 @@ uint internalToPsxColor(vec4 c) {
 }
 
 vec3 psxColor5(vec3 c) {
-    return floor(clamp(c, 0.0, 1.0) * 31.0 + 0.5);
+    return floor(floor(clamp(c, 0.0, 1.0) * 255.0 + 0.5) / 8.0);
 }
 
 int psxDitherOffset(ivec2 p) {
@@ -206,7 +207,16 @@ void main() {
         any(greaterThanEqual(VRAMPos, drawingAreaMaxIn))) {
         discard;
     }
-    
+
+    if (checkMaskBit != 0) {
+        int existingY = 511 - int(VRAMPos.y);
+        vec4 existing = texelFetch(sceneTex, ivec2(int(VRAMPos.x), existingY), 0);
+
+        if (existing.a >= 0.5) {
+            discard;
+        }
+    }
+
     /**
      * 0 = isSemiTransparent
      * 1 = blendTexture
@@ -228,7 +238,7 @@ void main() {
         uint psxTexel = internalToPsxColor(samp);
         
         // If black just ignore
-        if((psxTexel & 0x7FFFu) == 0u) {
+        if(psxTexel == 0u) {
             discard;
         }
         
@@ -287,5 +297,5 @@ void main() {
         outColor = vec4(psxDither24To15(F.rgb, ivec2(VRAMPos)), F.a);
     }
     
-    fragColor = vec4(outColor.rgb, setMaskBit != 0 ? 1.0 : 0.0);
+    fragColor = vec4(outColor.rgb, (setMaskBit != 0 || texelSemiTransparent) ? 1.0 : 0.0);
 }

@@ -476,7 +476,7 @@ void handleLoadExe(std::string path) {
      * Okay so I found out that the issue IS actually caused by,
      * the timers being wrong or the VBlank interrupt.
      */
-    std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/ps1-tests/timers/timers.exe");
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/ps1-tests/timers/timers.exe");
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/ps1-tests-master/timers/timers.exe");
 
     /**
@@ -526,6 +526,15 @@ void handleLoadExe(std::string path) {
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase9/gpu-raster-phase9.ps-exe"); // TODO;
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase10/gpu-raster-phase10.ps-exe"); // TODO;
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase11/gpu-raster-phase11.ps-exe"); // TODO;
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase12/gpu-raster-phase12.ps-exe"); // TODO;
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase13/gpu-raster-phase13.ps-exe"); // TODO;
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase14/gpu-raster-phase14.ps-exe"); // TODO;
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase15/gpu-raster-phase15.ps-exe"); // TODO;
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase16/gpu-raster-phase16.ps-exe"); // TODO;
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase17/gpu-raster-phase17.ps-exe"); // TODO;
+    std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase18/gpu-raster-phase18.ps-exe"); // TODO;
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase19/gpu-raster-phase19.ps-exe"); // TODO;
+    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase20/gpu-raster-phase20.ps-exe"); // TODO;
 
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/psx-hardware-tests-master/_ps-exe/irq_reg.psexe");
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/psx-hardware-tests-master/_ps-exe/timer1_hs_count.psexe");
@@ -632,19 +641,18 @@ void runFrame() {
         if (stepped) {
             x++;
 
-            cpu->interconnect.scheduler.addCycles(cycles);
             cpu->interconnect.step(cycles);
         }
 
-        /*if (cpu->pc == 0x80030000) {
-            if (true) {
+        if (cpu->pc == 0x80030000) {
+            if (false) {
                 printf("Skipping bootrom\n");
                 cpu->pc     = cpu->reg(31);
                 cpu->nextpc = cpu->pc + 4;
             } else {
                 //handleLoadExe("");
             }
-        }*/
+        }
         
         //static uint64_t cyclesThisSecond = 0;
         //static uint64_t framesThisSecond = 0;
@@ -1086,7 +1094,7 @@ int main(int argc, char *argv[]) {
     // Correction.. it calls GP0 0x29.. Through DMA, as it get cancelled,
     // It calls VRAMFill with bogos colors causing everything to go bogos
     // Fixed: Had an issue with the GP0 commands being longer than what it was required
-    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Tekken 3 (USA)/Tekken 3 (USA).cue");
+    cpu->interconnect._cdrom.swapDisk("../../ROMS/Tekken 3 (USA)/Tekken 3 (USA).cue");
 
     //cpu->interconnect._cdrom.swapDisk("../../ROMS/Spyro the Dragon (Europe, Australia) (En,Fr,De,Es,It)/Spyro the Dragon (Europe, Australia) (En,Fr,De,Es,It).cue");
 
@@ -1094,7 +1102,7 @@ int main(int argc, char *argv[]) {
      * Had an issue with the controller but now it's fixed,
      * FIXED; Missing; GP0(48h) - Monochrome Poly-line, opaque
      */
-    cpu->interconnect._cdrom.swapDisk("../../ROMS/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It)/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It).cue");
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It)/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It).cue");
 
     /**
      * Also had controller issues.
@@ -1104,10 +1112,10 @@ int main(int argc, char *argv[]) {
     // Works but need to skip all cut scenes to see anything(dont have MDEC)
     // TODO; Uses line rendering but doesn't crash
     // TODO; Uses CDROM (0x14 and 0x13)
-    //cpu->interconnect._cdrom.swapDisk("../ROMS/Pepsiman (Japan)/Pepsiman (Japan).cue");
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Pepsiman (Japan)/Pepsiman (Japan).cue");
 
     // Games that are broken
-    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Yu-Gi-Oh! Forbidden Memories (Europe)/Yu-Gi-Oh! Forbidden Memories (Europe).cue"); // TODO; CDROM(0x10) but it works fine cpu->interconnect._cdrom.swapDisk("../../ROMS/This Is
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Yu-Gi-Oh! Forbidden Memories (Europe)/Yu-Gi-Oh! Forbidden Memories (Europe).cue"); // TODO; CDROM(0x10) but it works fine
     //cpu->interconnect._cdrom.swapDisk("../../ROMS/Football (Europe)/This Is Football (Europe).cue"); // TODO; CDROM(0x11)
     //cpu->interconnect._cdrom.swapDisk("../../ROMS/Crash Bash (Europe) (En,Fr,De,Es,It)/Crash Bash (Europe) (En,Fr,De,Es,It).cue"); // TODO; CDROM(0x11)
 
@@ -1166,6 +1174,10 @@ int main(int argc, char *argv[]) {
         unprocessedTime += passedTime;
         frameTime += passedTime;
 
+        if (unprocessedTime > UPDATE_CAP * 4) {
+            unprocessedTime = UPDATE_CAP * 4;
+        }
+
         /*while (unprocessedTime >= UPDATE_CAP) {
             unprocessedTime -= UPDATE_CAP;
             render = true;
@@ -1208,45 +1220,48 @@ int main(int argc, char *argv[]) {
             continue;
         }
 
+        if (!render) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            continue;
+        }
+
         // Start frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        if (render) {
-            if (cpu->paused)
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        if (cpu->paused)
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            //runFrame();
+        //runFrame();
 
-            /*static bool f = true;
+        /*static bool f = true;
 
-            if (glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_PRESS && f) {
-                f                         = false;
-                gpu->renderer->renderVRAM = !gpu->renderer->renderVRAM;
-            }
-
-            if (glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_RELEASE) {
-                f = true;
-            }*/
-
-            /*if(glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_PRESS && loadNextTest) {
-                loadNextTest = false;
-
-                if(currentIndex + 1 < testPaths.size()) {
-                    currentIndex++;
-
-                    rest("BIOS/ps-22a.bin");
-                    std::cerr << "Loaded test: " << testPaths[currentIndex] << "\n";
-                } else {
-                    std::cerr << "All tests completed!\n";
-                }
-            }
-
-            if(glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_RELEASE) {
-                loadNextTest = true;
-            }*/
+        if (glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_PRESS && f) {
+            f                         = false;
+            gpu->renderer->renderVRAM = !gpu->renderer->renderVRAM;
         }
+
+        if (glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_RELEASE) {
+            f = true;
+        }*/
+
+        /*if(glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_PRESS && loadNextTest) {
+            loadNextTest = false;
+
+            if(currentIndex + 1 < testPaths.size()) {
+                currentIndex++;
+
+                rest("BIOS/ps-22a.bin");
+                std::cerr << "Loaded test: " << testPaths[currentIndex] << "\n";
+            } else {
+                std::cerr << "All tests completed!\n";
+            }
+        }
+
+        if(glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_RELEASE) {
+            loadNextTest = true;
+        }*/
 
         cpu->showDisassembler();
 
@@ -1406,20 +1421,15 @@ int main(int argc, char *argv[]) {
 
         ImGui::Render();
 
-        if (render) {
-            runFrame();
+        runFrame();
 
-            gpu->vram->endTransfer();
-            gpu->renderer->renderFrame();
-            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        gpu->vram->endTransfer();
+        gpu->renderer->renderFrame();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-            glfwSwapBuffers(gpu->renderer->window);
-            glFinish();
+        glfwSwapBuffers(gpu->renderer->window);
 
-            frames++;
-        } else {
-            // std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
+        frames++;
     }
 
     glfwDestroyWindow(gpu->renderer->window);
