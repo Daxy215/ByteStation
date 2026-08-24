@@ -17,8 +17,9 @@
 #include "../Gpu.h"
 
 // #define Test
-//  Ik I shouldn't do this but im lazy
+//Ik I shouldn't do this but im lazy
 enum { WIDTH = 1024, HEIGHT = 512 };
+static int curWidth = 1024, curHeight = 512;
 
 /*namespace {
     static int orient2d(const Emulator::Gpu::Position &a, const Emulator::Gpu::Position &b, int x, int y) {
@@ -469,12 +470,14 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
         }
     }
 
+    glfwSetWindowSizeCallback(window, ([](GLFWwindow* window, int width, int height) { curWidth = width; curHeight = height; }));
+
     nVertices = 0;
 }
 
 static bool isRendering = false;
 static bool useShaders  = false;
-void        Emulator::Renderer::display(const bool displayEntireScreen) {
+void Emulator::Renderer::display(const bool displayEntireScreen) {
     if (isRendering)
         return;
 
@@ -486,7 +489,7 @@ void        Emulator::Renderer::display(const bool displayEntireScreen) {
     //int winWidth = WIDTH, winHeight = HEIGHT;
     //glfwGetFramebufferSize(window, &winWidth, &winHeight);
 
-    glViewport(0, 0, WIDTH, HEIGHT);
+    glViewport(0, 0, curWidth, curHeight);
     // glViewport(0, 0, winWidth, winHeight);
 
     // Render scene
@@ -500,8 +503,8 @@ void        Emulator::Renderer::display(const bool displayEntireScreen) {
 
         //int winWidth, winHeight;
         //glfwGetFramebufferSize(window, &winWidth, &winHeight);
-        //glViewport(0, 0, winWidth, winHeight);
-        glViewport(0, 0, WIDTH, HEIGHT);
+        glViewport(0, 0, curWidth, curHeight);
+        //glViewport(0, 0, WIDTH, HEIGHT);
 
         glUseProgram(postProcessProgram);
 
@@ -520,15 +523,13 @@ void        Emulator::Renderer::display(const bool displayEntireScreen) {
         const uint32_t displayX    = std::clamp<uint32_t>(gpu.displayVramXStart, 0, WIDTH - 1);
         const uint32_t displayY    = std::clamp<uint32_t>(gpu.displayVramYStart, 0, HEIGHT - 1);
         const uint32_t displayW    = std::clamp<uint32_t>(gpu.hres.getResolution(), 1, WIDTH - displayX);
-        const uint32_t rawDisplayH = (gpu.vres == VerticalRes::Y480Lines)
-                                                    ? 480
-                                                    : std::max<uint16_t>(1, gpu.displayLineEnd - gpu.displayLineStart);
+
+        const uint32_t rawDisplayH = (gpu.vres == VerticalRes::Y480Lines) ? 480 : std::max<uint16_t>(1, gpu.displayLineEnd - gpu.displayLineStart);
         const uint32_t displayH    = std::clamp<uint32_t>(rawDisplayH, 1, HEIGHT - displayY);
 
         const float uvMinX = cropOutput ? static_cast<float>(displayX) / static_cast<float>(WIDTH) : 0.0f;
         const float uvMaxX = cropOutput ? static_cast<float>(displayX + displayW) / static_cast<float>(WIDTH) : 1.0f;
-        const float uvMinY =
-                cropOutput ? 1.0f - (static_cast<float>(displayY + displayH) / static_cast<float>(HEIGHT)) : 0.0f;
+        const float uvMinY = cropOutput ? 1.0f - (static_cast<float>(displayY + displayH) / static_cast<float>(HEIGHT)) : 0.0f;
         const float uvMaxY = cropOutput ? 1.0f - (static_cast<float>(displayY) / static_cast<float>(HEIGHT)) : 1.0f;
 
         glUniform2f(glGetUniformLocation(postProcessProgram, "uUvMin"), uvMinX, uvMinY);
