@@ -5,6 +5,9 @@
 #include <iostream>
 #include <unordered_map>
 
+#include "Sector.h"
+#include "../../Utils/FileSystem/FileManager.h"
+
 struct FileAudioData {
     uint32_t offset = 0;
     uint32_t size = 0;
@@ -54,9 +57,9 @@ std::vector<Track> TrackBuilder::parseFile(const std::string& filePath) {
 }
 
 std::vector<Track> TrackBuilder::parseCueFile(const std::string& path) {
-	std::filesystem::path filePath = path;
+	std::filesystem::path filePath = Emulator::Utils::FileManager::resolvePath(path);
 	
-	std::ifstream cueFile(path);
+	std::ifstream cueFile(filePath);
     std::vector<Track> tracks;
 	
 	if(!cueFile) {
@@ -98,24 +101,26 @@ std::vector<Track> TrackBuilder::parseCueFile(const std::string& path) {
             
             size_t modePos = line.find("MODE");
             size_t audioPos = line.find("AUDIO");
-            
+
             if (audioPos != std::string::npos) {
                 track.mode = "AUDIO";
-                track.modeType = 0; // TODO:
+                track.modeType = 1; // TODO:
 
-            	auto audioData = getFileAudioData(track.filePath, track.mode == "AUDIO");
+            	//auto audioData = getFileAudioData(track.filePath, track.mode == "AUDIO");
 
             	// TODO:
-            	continue;
+            	//continue;
             } else if (modePos != std::string::npos) {
                 track.mode = line.substr(modePos, 5);
                 track.modeType = std::stoi(line.substr(modePos + 6));
             } else {
+				printf("Unknown cdrom format\n");
+
                 continue;
             }
 
         	track.fileDataOffset = 0; // TODO:
-            track.sectorCount = static_cast<uint32_t>(getFileSize(currentFile) / track.modeType);
+            track.sectorCount = static_cast<uint32_t>(getFileSize(currentFile) / Sector::RAW_BUFFER);
 
         	printf("Loaded track %lu contains %d sectors (%s)\n", (tracks.size() + 1), track.sectorCount, track.mode.c_str());
             
@@ -164,7 +169,7 @@ std::vector<Track> TrackBuilder::parseCueFile(const std::string& path) {
 }
 
 void TrackBuilder::parseBinFile(const std::string& path) {
-	std::ifstream binFile(path);
+	std::ifstream binFile(Emulator::Utils::FileManager::resolvePath(path));
 
 	if (!binFile.is_open()) {
 		std::cerr << "Error: Could not find bin file." << '\n';
@@ -175,7 +180,7 @@ void TrackBuilder::parseBinFile(const std::string& path) {
 }
 
 uint32_t TrackBuilder::getFileSize(const std::string &path) {
-	std::ifstream file(path, std::ios::binary | std::ios::ate);
+	std::ifstream file(Emulator::Utils::FileManager::resolvePath(path), std::ios::binary | std::ios::ate);
 	if (!file.is_open())
 		throw std::runtime_error("Failed to locate " + path);
 

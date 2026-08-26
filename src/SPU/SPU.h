@@ -404,6 +404,7 @@ namespace Emulator {
         }
 
         void decodeEntireBlock(const uint16_t (&ram)[256 * 1024]) {
+            // TODO: IRQ?
             uint16_t header = ram[currentAddress];
 
             uint8_t shift = header & 0x0F;
@@ -595,15 +596,6 @@ namespace Emulator {
             uint32_t load(uint32_t addr);
             void store(uint32_t addr, uint32_t val);
             void pushCdAudioSample(int16_t left, int16_t right);
-            uint16_t mainVolumeLeft() const { return mainValLeft; }
-            uint16_t mainVolumeRight() const { return mainValRight; }
-            int32_t lastMixedSampleLeft() const { return lastMixedLeft; }
-            int32_t lastMixedSampleRight() const { return lastMixedRight; }
-            uint64_t queuedAudioBuffers() const { return queuedBufferCount; }
-            size_t queuedCdAudioSamples() const { return cdAudioSamples.size(); }
-            uint32_t queuedAudioBytes() const {
-                return device ? SDL_GetQueuedAudioSize(device) : 0;
-            }
 
         private:
             uint32_t handleVoiceLoad(uint32_t addr);
@@ -623,7 +615,7 @@ namespace Emulator {
 
             void pushSamples(int16_t* samples, int sampleCount);
 
-        private:
+        public: // TODO: Revert to private
             // SPU Noise Generator
 
             // Reverb Registers
@@ -647,6 +639,7 @@ namespace Emulator {
             int32_t lastMixedLeft = 0;
             int32_t lastMixedRight = 0;
             uint64_t queuedBufferCount = 0;
+            uint64_t bufferIndex = 0;
 
             uint16_t KON = 0;
             uint16_t KOFF = 0;
@@ -664,6 +657,7 @@ namespace Emulator {
             uint16_t transferControl = 0;
 
         private:
+            uint16_t irqAddress = 0; // (IRQ9)
             uint16_t transferAddress = 0;
             uint16_t currentAddress = 0;
 

@@ -22,9 +22,9 @@ public:
 	uint32_t toLba() const { return (minutes * 60 * 75) + (seconds * 75) + sectors; }
 	
 	static Location fromLBA(uint32_t lba) {
-		int mm = static_cast<int>(lba) / 60 / 75;
-		int ss = (static_cast<int>(lba) % (60 * 75)) / 75;
-		int ff = static_cast<int>(lba) % 75;
+		int mm = (int)lba / 60 / 75;
+		int ss = ((int)lba % (60 * 75)) / 75;
+		int ff = (int)lba % 75;
 		
 		return {mm, ss, ff};
 	}

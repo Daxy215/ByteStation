@@ -15,6 +15,7 @@
 #include "imgui.h"
 
 #include "../Gpu.h"
+#include "../../Utils/FileSystem/FileManager.h"
 
 // #define Test
 //Ik I shouldn't do this but im lazy
@@ -1432,9 +1433,11 @@ GLuint Emulator::Renderer::getProgramAttrib(GLuint program, const std::string &a
 }
 
 std::string Emulator::Renderer::getShaderSource(const std::string &path) {
-    std::filesystem::path absPath = std::filesystem::absolute(path);
-
-    std::ifstream file(absPath /*, std::ios::in | std::ios::binary*/);
+    //std::filesystem::path absPath = std::filesystem::absolute(path);
+    
+    std::filesystem::path absPath = Emulator::Utils::FileManager::resolvePath(path);
+    
+    std::ifstream file(absPath/*, std::ios::in | std::ios::binary*/);
     if (!file.is_open()) {
         std::cerr << "Error: Could not open the file at path: " << absPath << '\n';
         return {};

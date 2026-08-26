@@ -5,6 +5,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "../../../Utils/FileSystem/FileManager.h"
+
 MemoryCard::MemoryCard() : data(128 * 1024) {
 	load();
 }
@@ -248,13 +250,14 @@ void MemoryCard::reset() {
 void MemoryCard::save() {
 	const std::string path = "MemoryCard/MemSave01.bin";
 	
-	std::ofstream stream(path, std::ios::binary);
+	std::filesystem::path resolvedPath = Emulator::Utils::FileManager::resolvePath(path);
+	
+	std::ofstream stream(resolvedPath, std::ios::binary);
 	
 	if(!stream) {
 		std::cerr << "Creating a new save file at: " << path << "\n";
 		
-		std::filesystem::path savePath(path);
-		std::filesystem::create_directories(savePath.parent_path());
+		std::filesystem::create_directories(resolvedPath.parent_path());
 		
 		return;
 	}
@@ -268,7 +271,7 @@ void MemoryCard::save() {
 void MemoryCard::load() {
 	const std::string path = "MemoryCard/MemSave01.bin";
 	
-	std::ifstream stream(path, std::ios::binary);
+	std::ifstream stream(Emulator::Utils::FileManager::resolvePath(path), std::ios::binary);
 	
 	if(!stream) {
 		std::cerr << "Error couldn't find save file to load! " << path << "\n";

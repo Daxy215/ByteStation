@@ -5,6 +5,9 @@
 
 #include <cmath>
 #include <sstream>
+#include <chrono>
+
+#include "Memory/IRQ.h"
 
 #define M_PI 3.14159265358979323846
 
@@ -57,12 +60,12 @@ void Emulator::SPU::pushCdAudioSample(int16_t left, int16_t right) {
 
 void Emulator::SPU::step(uint32_t cycles) {
     curCycles += cycles;
-
+    
     stepTransfer();
-
+    
     // Every 768 CPU cycles -> ~44.1 kHz
-    const int CYCLES_PER_SAMPLE = 768;
-
+    const int CYCLES_PER_SAMPLE = 768; //768
+    
     while (curCycles >= CYCLES_PER_SAMPLE) {
         curCycles -= CYCLES_PER_SAMPLE;
         
@@ -89,6 +92,7 @@ void Emulator::SPU::step(uint32_t cycles) {
         if (!cdAudioSamples.empty()) {
             auto sample = cdAudioSamples.front();
             cdAudioSamples.pop_front();
+
             cdLeft = sample.first;
             cdRight = sample.second;
         }
@@ -97,51 +101,46 @@ void Emulator::SPU::step(uint32_t cycles) {
         right = (right * static_cast<int16_t>(mainValRight)) >> 15;
         
         if (spunct.CD_Audio_Enable) {
-            left += (cdLeft * cdInputVolLeft) >> 15;
-            right += (cdRight * cdInputVolRight) >> 15;
+            left += (cdLeft * cdInputVolLeft);
+            right += (cdRight * cdInputVolRight);
         }
-        
+
+        // Used for UI testing
         lastMixedLeft = left;
         lastMixedRight = right;
         
         audioBuffer[audioIndex++] = static_cast<int16_t>(std::clamp<int32_t>(left,  -32768, 32767));
         audioBuffer[audioIndex++] = static_cast<int16_t>(std::clamp<int32_t>(right, -32768, 32767));
-        
+
+        bufferIndex = (bufferIndex + 2) & 0x3FF;
+
+        auto writeToRam16 = [this](uint32_t addr, uint16_t val) -> uint8_t {
+            uint8_t lower = val & 0xFFFF;
+            uint8_t upper = (val >> 8) & 0xFFFF;
+
+            soundRAM[addr] = lower;
+            soundRAM[addr + 1] = lower;
+
+            if (spunct.IRQ9_Enable && addr == irqAddress * 8) {
+                status.IRQ9_Flag = true;
+                IRQ::trigger(IRQ::SPU);
+            }
+        };
+
+        writeToRam16(bufferIndex, cdLeft);
+        writeToRam16(bufferIndex + 0x400, cdRight);
+        writeToRam16(bufferIndex + 0x800, voices[1].oldSample); // TODO: Dont use oldSample..
+        writeToRam16(bufferIndex + 0xC00, voices[3].oldSample);
+
         if (audioIndex >= AUDIO_BUFFER_SIZE) {
             if (device != 0) {
                 SDL_QueueAudio(device, audioBuffer, sizeof(audioBuffer));
                 queuedBufferCount++;
             }
-
+            
             audioIndex = 0;
         }
     }
-    
-    /*curCycles += cycles;
-
-    if (curCycles < 768)
-        return;
-
-    curCycles -= 768;
-
-    stepTransfer();
-    int32_t left = 0;
-    int32_t right = 0;
-
-    for (int i = 0; i < VOICE_COUNT; i++) {
-        Voice &voice = voices[i];
-        voice.step(i, i > 0 ? voices[i - 1].currentSample : 0, soundRAM);
-
-        left  += voice.currentLeft;
-        right += voice.currentRight;
-    }
-
-    //if (left > 0 || right > 0) {
-    //    printf("f\n");
-    //}
-
-    int32_t frame[2] = { left, right };
-    SDL_QueueAudio(device, frame, sizeof(frame));*/
 }
 
 void Emulator::SPU::stepTransfer() {
@@ -197,6 +196,7 @@ void Emulator::SPU::stepTransfer() {
         }
     }
 
+    // TODO: IRQ?
     uint32_t ramIdx = (currentAddress >> 1) & 0x3FFFF;
     soundRAM[ramIdx] = cachedData;
 
@@ -649,8 +649,13 @@ void Emulator::SPU::handleFlagsStore(uint32_t addr, uint32_t val) {
 uint32_t Emulator::SPU::handleControlLoad(uint32_t addr) {
     switch(addr) {
         case 0x1F801DA2: {
-            // TODO; ??
+            //   1F801DA2h spu   mBASE   base    Reverb Work Area Start Address in Sound RAM
+            // TODO;
             return 0;
+        }
+        case 0x1F801DA4: {
+            // 1F801DA4h - Sound RAM IRQ Address (IRQ9)
+            return irqAddress;
         }
         case 0x1F801DA6: {
             // 1F801DA6h - Sound RAM Data Transfer Address
@@ -714,6 +719,11 @@ void Emulator::SPU::handleControlStore(uint32_t addr, uint32_t val) {
     switch(addr) {
         case 0x1F801DA2: {
             // ??
+            break;
+        }
+        case 0x1F801DA4: {
+            // 1F801DA4h - Sound RAM IRQ Address (IRQ9)
+            irqAddress = (val & 0xFFFFFFFF);
             break;
         }
         case 0x1F801DA6: {

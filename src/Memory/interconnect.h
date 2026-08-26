@@ -113,6 +113,7 @@ public:
     
     bool step(uint32_t cycles);
     void hardwareTick();
+    void spuTick();
 
     inline uint32_t loadInstruction(uint32_t addr) {
         lastICacheMiss = false;
@@ -290,7 +291,7 @@ public:
             // https://github.com/psx-spx/psx-spx.github.io/blob/master/docs/soundprocessingunitspu.md
             //std::cerr << "SPU load register; " << to_hex(addr) << "\n";
             //static int h = 0;
-            uint16_t v = _spu->read(offset) | _spu->read(offset + 1) << 8;
+            //uint16_t v = _spu->read(offset) | _spu->read(offset + 1) << 8;
 
             /*if constexpr (sizeof(T) == 1) {
                 uint32_t regAddr = abs_addr & ~1u;
@@ -304,7 +305,7 @@ public:
                 return static_cast<T>(lo | (hi << 16));
             }*/
             
-            //auto f = spu.load(addr);
+            auto f = spu.load(addr);
             //h++;
 
             //if (f != v) {
@@ -313,8 +314,8 @@ public:
                 //printf("AYO %x != %x\n", v, f);
             //}
 
-            //return f;
-            return v;
+            return f;
+            //return v;
 
             //return spu.load(addr);
         }
@@ -489,10 +490,10 @@ public:
         if (map::SPU.contains(abs_addr, offset)) {
             //throw std::runtime_error(": 0x" + to_hex(offset) + " <- 0x" + to_hex(val));
 
-            _spu->write(offset, (val) & 0xFF);
-            _spu->write(offset + 1, (val >> 8) & 0xFF);
+            //_spu->write(offset, (val) & 0xFF);
+            //_spu->write(offset + 1, (val >> 8) & 0xFF);
 
-            /*if constexpr (sizeof(T) == 1) {
+            if constexpr (sizeof(T) == 1) {
                 uint32_t regAddr = abs_addr & ~1u;
                 uint16_t reg = static_cast<uint16_t>(spu.load(regAddr));
                 uint16_t byteVal = static_cast<uint8_t>(val);
@@ -509,7 +510,7 @@ public:
             } else if constexpr (sizeof(T) == 4) {
                 spu.store(abs_addr & ~1u, static_cast<uint16_t>(val & 0xFFFF));
                 spu.store((abs_addr & ~1u) + 2, static_cast<uint16_t>((val >> 16) & 0xFFFF));
-            }*/
+            }
             
             return;
         }
@@ -645,6 +646,7 @@ public:
 
         scheduler.reset();
         _hardwareTickScheduled = false;
+        _spuTickScheduled = false;
     }
     
 private:
@@ -689,6 +691,10 @@ public:
     Scheduler scheduler;
 
     bool _hardwareTickScheduled = false;
+    bool _spuTickScheduled = false;
     bool _vblankPending = false;
     uint64_t _lastHardwareTickCycle = 0;
+    uint64_t _lastSpuTickCycle = 0;
+
+    static constexpr uint32_t SPU_TICK_CYCLES = 768;
 };

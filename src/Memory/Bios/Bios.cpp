@@ -2,18 +2,22 @@
 
 #include <vector>
 #include <iostream>
+#include <filesystem>
+
+#include "../../Utils/FileSystem/FileManager.h"
 
 Bios::Bios(const std::string& path) : data(0), cache(0)  {
     reset(path);
 }
 
 void Bios::reset(const std::string& path) {
-	std::ifstream file(path, std::ios::binary);
+    std::filesystem::path resolvedPath = Emulator::Utils::FileManager::resolvePath(path);
+	std::ifstream file(resolvedPath, std::ios::binary);
     
 	if (!file.is_open()) {
-		throw std::runtime_error("Failed to open file");
+		throw std::runtime_error("Failed to open file " + resolvedPath.string());
 	}
-    
+
 	std::vector<uint8_t> content;
     
 	// Get the file size
@@ -59,5 +63,5 @@ void Bios::reset(const std::string& path) {
 		throw std::runtime_error("Invalid BIOS size");
 	}
 	
-	std::cerr << "size is gud\n";
+    printf("BIOS loaded\n");
 }

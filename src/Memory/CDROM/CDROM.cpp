@@ -97,20 +97,7 @@ void CDROM::handleSector() {
 	_readSector.set(rawSector);
 	
 	readLocation++;
-	
-	if (_stats.play) {
-		//printf("uh\n");
 
-		if (!mute && _disk.isAudio(pos)) {
-			queueCdAudioSector(rawSector);
-		}
-
-		return;
-	}
-	
-	INT(1, 3000);
-	addResponse(_stats._reg);
-	
 	if (memcmp(_readSector.data(), sync.data(), sync.size()) != 0) {
 		// TODO; This.. does happen on Tekken 3
 		printf("CDROM; Sync failed\n");
@@ -154,6 +141,37 @@ void CDROM::handleSector() {
 	 */
 	auto codinginfo = (_readSector.loadAt(19));
 
+	if (_stats.play && _disk.isAudio(pos)) {
+		INT(1, 1000);
+		addResponse(_stats._reg);
+
+		if (this->mode.cdda) {
+			// Report --> INT1(stat,track,index,mm/amm,ss+80h/ass,sect/asect,peaklo,peakhi)
+
+		}
+
+		if (!mute) {
+			queueCdAudioSector(rawSector);
+		}
+
+		//return;
+	} else if (_stats.read && !_disk.isAudio(pos)) { // TODO: Im lazy..
+		INT(1, 0);
+		addResponse(_stats._reg);
+
+		// Real Time (RT) && Audio
+		if ((submode >> 6 & 1) == 0 && (submode >> 2 & 1) == 0) {
+			uint8_t is37800Hz = (codinginfo >> 2 & 1);
+			uint8_t is8Bits = (codinginfo >> 4 & 1);
+			uint8_t isStereo = (codinginfo >> 5 & 1);
+			uint8_t isEmphasis = (codinginfo >> 6 & 1);
+
+			if (this->mode.cdda && !mute) {
+				printf("Need to decode\n");
+			}
+		}
+	}
+
 	//assert((submode >> 5 & 1) == 0); // Form1
 	assert(mode == 2);
 	
@@ -178,7 +196,7 @@ void CDROM::queueCdAudioSector(const std::vector<uint8_t>& sector) {
 		    static_cast<int16_t>(std::clamp<int32_t>(mixedLeft, -32768, 32767)),
 		    static_cast<int16_t>(std::clamp<int32_t>(mixedRight, -32768, 32767))
 		);
-	}
+    }
 }
 
 void CDROM::applyPendingVolume() {
@@ -192,6 +210,7 @@ bool CDROM::popAudioSample(int16_t& left, int16_t& right) {
 	if (audioSamples.empty()) {
 		left = 0;
 		right = 0;
+
 		return false;
 	}
 	
@@ -199,6 +218,7 @@ bool CDROM::popAudioSample(int16_t& left, int16_t& right) {
 	audioSamples.pop_front();
 	left = sample.first;
 	right = sample.second;
+
 	return true;
 }
 
@@ -573,6 +593,12 @@ void CDROM::decodeAndExecute(uint8_t command) {
 			if (parameters.size() == 1) {
 				trackNo = toBinary(getParamater());
 			}
+
+			/*
+			 * If no parameters where given, or it is a 0,
+			 * then play starts at setloc position (if there was a pending unprocessed setloc)
+			 * or otherwise starts at the current location (eg. the last point seeked, or the current location of the current song; if it was already playing)
+			 */
 			
 			Location pos = Location::fromLBA(readLocation);
 			
@@ -581,10 +607,14 @@ void CDROM::decodeAndExecute(uint8_t command) {
 				int track = std::min(trackNo - 1, (int) _disk.tracks.size() - 1);
 				pos = _disk.getTrackStart(track);
 			} else {
-				if (readLocation != 0) {
-					pos = Location::fromLBA(readLocation);
-					readLocation = 0;
+				if (seekLocation != 0) {
+					pos = Location::fromLBA(seekLocation); // Nice was readLocaiton :}
+					seekLocation = 0;
 				}
+
+				//pos = _disk.getTrackStart(0);
+
+				// TODO: Check audio status, if stop then ig pos = track(0).start?
 			}
 			
 			readLocation = pos.toLba();

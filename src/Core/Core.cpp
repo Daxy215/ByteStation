@@ -1094,7 +1094,7 @@ int main(int argc, char *argv[]) {
     // Correction.. it calls GP0 0x29.. Through DMA, as it get cancelled,
     // It calls VRAMFill with bogos colors causing everything to go bogos
     // Fixed: Had an issue with the GP0 commands being longer than what it was required
-    cpu->interconnect._cdrom.swapDisk("../../ROMS/Tekken 3 (USA)/Tekken 3 (USA).cue");
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Tekken 3 (USA)/Tekken 3 (USA).cue");
 
     //cpu->interconnect._cdrom.swapDisk("../../ROMS/Spyro the Dragon (Europe, Australia) (En,Fr,De,Es,It)/Spyro the Dragon (Europe, Australia) (En,Fr,De,Es,It).cue");
 
@@ -1102,7 +1102,7 @@ int main(int argc, char *argv[]) {
      * Had an issue with the controller but now it's fixed,
      * FIXED; Missing; GP0(48h) - Monochrome Poly-line, opaque
      */
-    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It)/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It).cue");
+    cpu->interconnect._cdrom.swapDisk("../../ROMS/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It)/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It).cue");
 
     /**
      * Also had controller issues.
@@ -1210,7 +1210,7 @@ int main(int argc, char *argv[]) {
             glfwGetFramebufferSize(gpu->renderer->window, &width, &height);
             glViewport(0, 0, width, height);
 
-            std::cerr << "FPS: " << std::to_string(fps) << " - " << std::to_string(gpu->frames) << "\n";
+            //std::cerr << "FPS: " << std::to_string(fps) << " - " << std::to_string(gpu->frames) << "\n";
 
             gpu->frames = 0;
         }
@@ -1388,13 +1388,8 @@ int main(int argc, char *argv[]) {
             ImGui::End();
         }
 
-        /*if (ImGui::Begin("SPU Voices")) {
-            ImGui::Text("main L=%04X R=%04X mixed L=%d R=%d queued=%u buffers=%llu cdQueued=%zu",
-                        cpu->interconnect.spu.mainVolumeLeft(), cpu->interconnect.spu.mainVolumeRight(),
-                        cpu->interconnect.spu.lastMixedSampleLeft(), cpu->interconnect.spu.lastMixedSampleRight(),
-                        cpu->interconnect.spu.queuedAudioBytes(),
-                        static_cast<unsigned long long>(cpu->interconnect.spu.queuedAudioBuffers()),
-                        cpu->interconnect.spu.queuedCdAudioSamples());
+        if (ImGui::Begin("SPU Voices")) {
+            ImGui::Text("Allow CDROM audio: %d", cpu->interconnect.spu.spunct.CD_Audio_Enable);
             ImGui::Separator();
 
             for (int i = 0; i < 24; i++) {
@@ -1417,7 +1412,7 @@ int main(int argc, char *argv[]) {
                 ImGui::PopID();
             }
         }
-        ImGui::End();*/
+        ImGui::End();
 
         ImGui::Render();
 

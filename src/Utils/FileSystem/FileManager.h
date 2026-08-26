@@ -4,13 +4,22 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 
 namespace Emulator {
 	namespace Utils {
 		class FileManager {
 		public:
+			static std::filesystem::path exeDir() {
+				return std::filesystem::canonical("/proc/self/exe").parent_path();
+			}
+			
+			static std::filesystem::path resolvePath(const std::string& path) {
+				return exeDir() / path;
+			}
+			
 			static std::vector<uint8_t> loadFile(const std::string& path) {
-				std::ifstream stream(path.c_str(), std::ios::binary | std::ios::ate);
+				std::ifstream stream(resolvePath(path), std::ios::binary | std::ios::ate);
 				
 				if (!stream.good()) {
 					std::cerr << "Cannot read from file: " << path << '\n';

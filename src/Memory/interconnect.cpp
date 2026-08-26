@@ -14,6 +14,12 @@ bool Interconnect::step(uint32_t cycles) {
         scheduler.scheduleEvent([this] { hardwareTick(); }, 1);
     }
 
+    if (!_spuTickScheduled) {
+        _spuTickScheduled = true;
+        _lastSpuTickCycle = scheduler.currentCycle();
+        scheduler.scheduleEvent([this] { spuTick(); }, SPU_TICK_CYCLES);
+    }
+
     _vblankPending = false;
 
     scheduler.addCycles(cycles);
@@ -41,15 +47,6 @@ void Interconnect::hardwareTick() {
         _timers.step(chunk, _gpu->lastDotTicks);
         _timers.sync(_gpu->isInHBlank, _gpu->isInVBlank, _gpu->dotClockDivider());
 
-        int16_t cdLeft = 0;
-        int16_t cdRight = 0;
-
-        while (_cdrom.popAudioSample(cdLeft, cdRight)) {
-            spu.pushCdAudioSample(cdLeft, cdRight);
-        }
-
-        spu.step(chunk);
-
         elapsed -= chunk;
     }
 
@@ -59,6 +56,24 @@ void Interconnect::hardwareTick() {
     next = std::max(next, 1u);
 
     scheduler.scheduleEvent([this] { hardwareTick(); }, next);
+}
+
+void Interconnect::spuTick() {
+    uint64_t now = scheduler.currentCycle();
+    uint32_t elapsed = static_cast<uint32_t>(now - _lastSpuTickCycle);
+
+    int16_t cdLeft = 0;
+    int16_t cdRight = 0;
+
+    while (_cdrom.popAudioSample(cdLeft, cdRight)) {
+        spu.pushCdAudioSample(cdLeft, cdRight);
+    }
+
+    spu.step(elapsed);
+
+    _lastSpuTickCycle = now;
+
+    scheduler.scheduleEvent([this] { spuTick(); }, SPU_TICK_CYCLES);
 }
 
 uint32_t Interconnect::dmaReg(uint32_t offset) {
