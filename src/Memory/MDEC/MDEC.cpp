@@ -488,7 +488,7 @@ bool MDEC::rl_decode_block(std::array<int16_t, 64> &blk, std::vector<uint16_t>::
         k += rle.LEN + 1;
 
         if (k > 63)
-            k = 63;
+            continue;
         
         val = (cur * qt[k] * dct.Q + 4) / 8;
     }
