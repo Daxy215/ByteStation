@@ -62,13 +62,6 @@ void Interconnect::spuTick() {
     uint64_t now = scheduler.currentCycle();
     uint32_t elapsed = static_cast<uint32_t>(now - _lastSpuTickCycle);
 
-    int16_t cdLeft = 0;
-    int16_t cdRight = 0;
-
-    while (_cdrom.popAudioSample(cdLeft, cdRight)) {
-        spu.pushCdAudioSample(cdLeft, cdRight);
-    }
-
     spu.step(elapsed);
 
     _lastSpuTickCycle = now;

@@ -56,19 +56,37 @@ std::vector<uint8_t> Disk::read(Location location) {
 		return {};
 	}
 
-	static auto f = fopen(tracks[0].filePath.c_str(), "rb");
+	const auto& track = tracks[pos];
+
+	static std::string openFilePath;
+	static FILE* f = nullptr;
+
+	if (f == nullptr || openFilePath != track.filePath) {
+		if (f) {
+			fclose(f);
+		}
+
+		f = fopen(track.filePath.c_str(), "rb");
+		openFilePath = track.filePath;
+	}
+
 	if (!f) {
-		std::printf("Unable to load file %s\n", tracks[0].filePath.c_str());
+		std::printf("Unable to load file %s\n", track.filePath.c_str());
 		return {};
 	}
 
-	auto seek = location - (getTrackBegin(pos) + tracks[pos].pregap);
+	auto seek = location - (getTrackBegin(pos) + track.start());
+	long seekSectors = seek.toLba();
 
-	// 0 -> track num
-	long offset = 0 + seek.toLba() * Sector::RAW_BUFFER;
+	if (seekSectors < 0) {
+		return buffer;
+	}
+
+	long offset = static_cast<long>(track.fileDataOffset) + (seekSectors * Sector::RAW_BUFFER);
 
 	fseek(f, offset, SEEK_SET);
-	fread(buffer.data(), Sector::RAW_BUFFER, 1, f);
+	fread(buffer.data(), 1, Sector::RAW_BUFFER, f);
+	//fclose(f);
 
 	return buffer;
 }
@@ -268,14 +286,14 @@ Location Disk::getSize() {
 	size_t frames = 75 * 2;
 	
 	for(auto t : tracks) {
-		frames += t.pregap.toLba() + t.sectorCount;
+		frames += t.start().toLba() + t.sectorCount;
 	}
 	
 	return Location::fromLBA(frames);
 }
 
 Location Disk::getTrackStart(int track) {
-	return getTrackBegin(track) + tracks[track].pregap;
+	return getTrackBegin(track) + tracks[track].start();
 }
 
 int Disk::getTrackPosition(Location loc) {
@@ -295,12 +313,12 @@ Location Disk::getTrackBegin(int track) {
 	size_t total = 75 * 2;
 	
 	for (int i = 0; i < track; i++) {
-		total += tracks[i].pregap.toLba() + tracks[i].sectorCount;
+		total += tracks[i].start().toLba() + tracks[i].sectorCount;
 	}
 	
 	return Location::fromLBA(total);
 }
 
 Location Disk::getTrackLength(int track) {
-	return Location::fromLBA(tracks[track].pregap.toLba() + tracks[track].sectorCount);
+	return Location::fromLBA(tracks[track].start().toLba() + tracks[track].sectorCount);
 }

@@ -7,32 +7,36 @@
 #include <iostream>
 #include <limits>
 
-/**
- * Error Notes: If the command has been rejected (INT5 sent as 1st response)
- * then the 2nd response isn't sent (eg. on wrong number of parameters,
- * or if disc missing). If the command fails at a later stage (INT5 as 2nd response),
- * then there are cases where another INT5 occurs as 3rd response
- * (eg. on SetSession=02h on non-multisession-disk).
- */
+std::deque<std::pair<int16_t, int16_t>> CDROM::audioSamples;
+
 CDROM::CDROM() : _readSector(Sector::RAW_BUFFER), _sector(Sector::RAW_BUFFER) {
 	
 }
 
 void CDROM::step(uint32_t cycles) {
-	/*if(!interrupts.empty() && IF == 0) {
-		IF |= interrupts.front();
-		interrupts.pop();
-	}
-	
-	triggerInterrupt();*/
-	
-	if(!interrupts.is_empty()) {
-		interrupts.ref().delay -= cycles;
-		
-		if(interrupts.peek().delay <= 0) {
+	/*if(!interrupts.is_empty()) {
+		auto& in = interrupts.ref();
+
+		if(in.delay > 0)
+			in.delay -= cycles;
+
+		if(in.delay <= 0 && !in.fired) {
+			in.fired = true;
 			transmittingCommand = false;
-			
-			if((IE & 7) & (interrupts.peek()._interrupt & 7)) {
+
+			if((IE & 7) & (in._interrupt & 7)) {
+				IRQ::trigger(IRQ::Interrupt::CDROM);
+			}
+		}
+	}*/
+
+	if (!interrupts.is_empty()) {
+		interrupts.ref().delay -= cycles;
+
+		if (interrupts.peek().delay <= 0) {
+			transmittingCommand = false;
+
+			if ((IE & 7) & (interrupts.peek()._interrupt & 7)) {
 				IRQ::trigger(IRQ::Interrupt::CDROM);
 			}
 		}
@@ -45,19 +49,13 @@ void CDROM::step(uint32_t cycles) {
 	 * 4. Command busy flag is unset and parameter fifo is cleared.
 	 * 5. Shortly after (around 1000-6000 cycles later), CDROM IRQ is fired.
 	 */
-	if(busyFor > -1)
-		busyFor -= cycles;
-	
+	busyFor -= cycles;
+
 	if(busyFor < 0)
 		transmittingCommand = false;
 	
-	const int sectorsPerSecond = _stats.play ? 75 : (mode.speed ? 150 : 75);
-
-	// SystemClock*930/4/44100Hz
-	const int cyclesPerSector = (930 * 4 * 44100) / sectorsPerSecond;
-
-	// (44100 * 768) -> CPU clock speed (Unsure where I got this from)
-	//const int cyclesPerSector = (44100 * 768) / sectorsPerSecond;
+	const int sectorsPerSecond = mode.speed ? 150 : 75;
+	const int cyclesPerSector = 33868800 / sectorsPerSecond; // CPU CLOCK
 	
 	this->cycles += cycles;
 	
@@ -98,100 +96,141 @@ void CDROM::handleSector() {
 	
 	readLocation++;
 
-	if (memcmp(_readSector.data(), sync.data(), sync.size()) != 0) {
-		// TODO; This.. does happen on Tekken 3
-		printf("CDROM; Sync failed\n");
-
-		//assert(false);
-		return;
-	}
-	
-	// uint8_t minute = rawSector[12];
-	// uint8_t second = rawSector[13];
-	// uint8_t frame = rawSector[14];
-	uint8_t mode = _readSector.loadAt(15);
-
-	//   0-7 File Number    (00h..FFh) (for Audio/Video Interleave, see below)
-	uint8_t file = _readSector.loadAt(16);
-
-	/*
-	 * 0-4 Channel Number (00h..1Fh) (for Audio/Video Interleave, see below)
-     * 5-7 Should be always zero
-	 */
-	uint8_t channel = _readSector.loadAt(17);
-
-	/**
-	 * 0   End of Record (EOR) (all Volume Descriptors, and all sectors with EOF)
-	 * 1   Video     ;\Sector Type (usually ONE of these bits should be set)
-	 * 2   Audio     ; Note: PSX .STR files are declared as Data (not as Video)
-	 * 3   Data      ;/
-	 * 4   Trigger           (for application use)
-	 * 5   Form2             (0=Form1/800h-byte data, 1=Form2, 914h-byte data)
-	 * 6   Real Time (RT)
-	 * 7   End of File (EOF) (or end of Directory/PathTable/VolumeTerminator)
-	 */
-	auto submode = (_readSector.loadAt(18));
-
-	/**
-	 * 0-1 Mono/Stereo     (0=Mono, 1=Stereo, 2-3=Reserved)
-	 * 2-2 Sample Rate     (0=37800Hz, 1=18900Hz, 2-3=Reserved)
-	 * 4-5 Bits per Sample (0=Normal/4bit, 1=8bit, 2-3=Reserved)
-	 * 6   Emphasis        (0=Normal/Off, 1=Emphasis)
-	 * 7   Reserved        (0)
-	 */
-	auto codinginfo = (_readSector.loadAt(19));
-
 	if (_stats.play && _disk.isAudio(pos)) {
-		INT(1, 1000);
-		addResponse(_stats._reg);
+		int trackNum = _disk.getTrackPosition(Location::fromLBA(readLocation - 1));
 
-		if (this->mode.cdda) {
+		if (this->mode.report) {
 			// Report --> INT1(stat,track,index,mm/amm,ss+80h/ass,sect/asect,peaklo,peakhi)
+			auto posInTrack = pos - _disk.getTrackStart(trackNum);
+			uint8_t sector = pos.sectors;
 
+			auto toBcd = [](uint8_t b) -> uint8_t {
+				return ((b / 10) << 4) | (b % 10);
+			};
+
+			auto cddaReport = [&](bool isTrack) {
+				INT(1, 1000);
+				addResponse(_stats._reg);           // stat
+				addResponse(toBcd(trackNum + 1)); // track
+				addResponse(0x01);                  // index
+
+				if (isTrack) {
+					// mm/ss+80h/sect are returned on asect=10h,30h,50h,70h  ;-within current track
+					addResponse(toBcd(posInTrack.minutes));        // minute (track)
+					addResponse(toBcd(posInTrack.seconds) | 0x80); // second (track)
+					addResponse(toBcd(posInTrack.sectors));        // sector (track)
+				} else {
+					//   amm/ass/asect are returned on asect=00h,20h,40h,60h   ;-absolute time
+					addResponse(toBcd(pos.minutes)); // minute (disc)
+					addResponse(toBcd(pos.seconds)); // second (disc)
+					addResponse(toBcd(pos.sectors)); // sector (disc)
+				}
+
+				// generated via CXD2510Q Signal Processor
+				addResponse(rand());  // peaklo
+				addResponse(rand());  // peakhi
+			};
+
+			if (sector % 0x20 == 0) {
+				cddaReport(false);
+			} else if ((sector - 0x10) % 0x20 == 0) {
+				cddaReport(true);
+			}
 		}
 
-		if (!mute) {
-			queueCdAudioSector(rawSector);
+		if (!mute && mode.cdda) {
+			if (rawSector.size() >= sync.size() && memcmp(rawSector.data(), sync.data(), sync.size()) == 0) {
+				printf("CDROM; Trying to read Data track as audio\n");
+			} else {
+				queueCdAudioSector(rawSector);
+			}
 		}
-
-		//return;
 	} else if (_stats.read && !_disk.isAudio(pos)) { // TODO: Im lazy..
+		if (memcmp(_readSector.data(), sync.data(), sync.size()) != 0) {
+			// TODO; This.. does happen on Tekken 3
+			//printf("CDROM; Sync failed\n");
+
+			//assert(false);
+			return;
+		}
+
 		INT(1, 0);
 		addResponse(_stats._reg);
 
+		// uint8_t minute = rawSector[12];
+		// uint8_t second = rawSector[13];
+		// uint8_t frame = rawSector[14];
+		uint8_t mode = _readSector.loadAt(15);
+
+		//   0-7 File Number    (00h..FFh) (for Audio/Video Interleave, see below)
+		uint8_t file = _readSector.loadAt(16);
+
+		/*
+		 * 0-4 Channel Number (00h..1Fh) (for Audio/Video Interleave, see below)
+		 * 5-7 Should be always zero
+		 */
+		uint8_t channel = _readSector.loadAt(17);
+
+		/**
+		 * 0   End of Record (EOR) (all Volume Descriptors, and all sectors with EOF)
+		 * 1   Video     ;\Sector Type (usually ONE of these bits should be set)
+		 * 2   Audio     ; Note: PSX .STR files are declared as Data (not as Video)
+		 * 3   Data      ;/
+		 * 4   Trigger           (for application use)
+		 * 5   Form2             (0=Form1/800h-byte data, 1=Form2, 914h-byte data)
+		 * 6   Real Time (RT)
+		 * 7   End of File (EOF) (or end of Directory/PathTable/VolumeTerminator)
+		 */
+		auto submode = (_readSector.loadAt(18));
+
+		/**
+		 * 0-1 Mono/Stereo     (0=Mono, 1=Stereo, 2-3=Reserved)
+		 * 2-2 Sample Rate     (0=37800Hz, 1=18900Hz, 2-3=Reserved)
+		 * 4-5 Bits per Sample (0=Normal/4bit, 1=8bit, 2-3=Reserved)
+		 * 6   Emphasis        (0=Normal/Off, 1=Emphasis)
+		 * 7   Reserved        (0)
+		 */
+		auto codinginfo = (_readSector.loadAt(19));
+
 		// Real Time (RT) && Audio
-		if ((submode >> 6 & 1) == 0 && (submode >> 2 & 1) == 0) {
+		if ((submode >> 6 & 1) == 1 && (submode >> 2 & 1) == 1) {
 			uint8_t is37800Hz = (codinginfo >> 2 & 1);
 			uint8_t is8Bits = (codinginfo >> 4 & 1);
 			uint8_t isStereo = (codinginfo >> 5 & 1);
 			uint8_t isEmphasis = (codinginfo >> 6 & 1);
 
-			if (this->mode.cdda && !mute) {
+			if (this->mode.xaAdpcm && !mute) {
 				printf("Need to decode\n");
 			}
 		}
 	}
 
 	//assert((submode >> 5 & 1) == 0); // Form1
-	assert(mode == 2);
+	//assert(mode == 2);
 	
 	// TODO;
 }
 
-void CDROM::queueCdAudioSector(const std::vector<uint8_t>& sector) {
-	static constexpr size_t maxQueuedSamples = 44100 * 2;
-	
-	for (size_t i = 0; i + 3 < sector.size(); i += 4) {
-		if (audioSamples.size() >= maxQueuedSamples) {
-			audioSamples.pop_front();
-		}
-		
-		int16_t left = static_cast<int16_t>(sector[i] | (sector[i + 1] << 8));
+void CDROM::queueCdAudioSector(const std::vector<uint8_t> &sector) {
+	size_t offset = 0;
+
+	static const uint8_t sync[12] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00};
+	if (sector.size() >= 2352 && memcmp(sector.data(), sync, 12) == 0) {
+		offset += 24;
+	}
+
+	const int32_t volL_L = static_cast<uint8_t>(cdLeftToLeft);
+	const int32_t volL_R = static_cast<uint8_t>(cdLeftToRight);
+	const int32_t volR_L = static_cast<uint8_t>(cdRightToLeft);
+	const int32_t volR_R = static_cast<uint8_t>(cdRightToRight);
+
+	for (size_t i = offset; i + 3 < sector.size(); i += 4) {
+		int16_t left  = static_cast<int16_t>(sector[i]     | (sector[i + 1] << 8));
 		int16_t right = static_cast<int16_t>(sector[i + 2] | (sector[i + 3] << 8));
-		
-		int32_t mixedLeft = (left * cdLeftToLeft + right * cdRightToLeft) >> 7;
-		int32_t mixedRight = (left * cdLeftToRight + right * cdRightToRight) >> 7;
-		
+
+		int32_t mixedLeft  = (static_cast<int32_t>(left) * volL_L + static_cast<int32_t>(right) * volR_L) >> 7;
+		int32_t mixedRight = (static_cast<int32_t>(left) * volL_R + static_cast<int32_t>(right) * volR_R) >> 7;
+
 		audioSamples.emplace_back(
 		    static_cast<int16_t>(std::clamp<int32_t>(mixedLeft, -32768, 32767)),
 		    static_cast<int16_t>(std::clamp<int32_t>(mixedRight, -32768, 32767))
@@ -204,22 +243,6 @@ void CDROM::applyPendingVolume() {
 	cdLeftToRight = pendingCdLeftToRight;
 	cdRightToLeft = pendingCdRightToLeft;
 	cdRightToRight = pendingCdRightToRight;
-}
-
-bool CDROM::popAudioSample(int16_t& left, int16_t& right) {
-	if (audioSamples.empty()) {
-		left = 0;
-		right = 0;
-
-		return false;
-	}
-	
-	auto sample = audioSamples.front();
-	audioSamples.pop_front();
-	left = sample.first;
-	right = sample.second;
-
-	return true;
 }
 
 uint8_t CDROM::load(uint32_t addr) {
@@ -257,13 +280,13 @@ uint8_t CDROM::load(uint32_t addr) {
 		uint8_t response = 0;// = responses.front();
 		//responses.pop();
 
-	    /*if(!interrupts.is_empty()) {
-	        auto& in = interrupts.ref();
+		/*if(!interrupts.is_empty()) {
+			auto& in = interrupts.ref();
 
-	        if(!in.responses.is_empty()) {
-	            response = in.responses.get();
-	        }
-	    }*/
+			if(!in.responses.is_empty()) {
+				response = in.responses.get();
+			}
+		}*/
 		
 		if(!interrupts.is_empty()) {
 			auto& in = interrupts.ref();
@@ -295,8 +318,11 @@ uint8_t CDROM::load(uint32_t addr) {
 				if(!interrupts.is_empty()) {
 					auto p = interrupts.peek();
 					
-					if(p.delay <= 0) {
+					/*if(p.fired) {
 						res |= p._interrupt & 7;
+					}*/
+					if (interrupts.peek().delay <= 0) {
+						res |= interrupts.peek()._interrupt & 7;
 					}
 				}
 				
@@ -329,16 +355,13 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 				break;
 			}
 			
-			case 2: {
-				pendingCdLeftToLeft = val;
-				break;
-			}
-			
 			case 3: {
-				pendingCdRightToLeft = val;
+				// 1F801801h.Index3 - Right-CD to Right-SPU Volume (W)
+				pendingCdRightToRight = val;
+				cdRightToRight = val;
 				break;
 			}
-			
+
 		default:
 			printf("");
 			break;
@@ -347,30 +370,31 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 		switch (_index) {
 			case 0: {
 				parameters.push(val & 0xFF);
-				
+
 				break;
 			}
-			
+
 			case 1: {
-				IE = val & 0x1F;
+				IE = val;
 				//triggerInterrupt();
-				
+
 				break;
 			}
-			
+
 			case 2: {
-				pendingCdLeftToRight = val;
+				// 1F801802h.Index2 - Left-CD to Left-SPU Volume (W)
+				pendingCdLeftToLeft = val;
+				cdLeftToLeft = val;
 				break;
 			}
-			
+
 			case 3: {
-				if (val & 0x20) {
-					applyPendingVolume();
-				}
-				
+				// 1F801802h.Index3 - Right-CD to Left-SPU Volume (W)
+				pendingCdRightToLeft = val;
+				cdRightToLeft = val;
 				break;
 			}
-			
+
 			default:
 				printf("");
 				break;
@@ -389,7 +413,7 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 				//7   BFRD Want Data(0 = No / Reset Data Fifo, 1 = Yes / Load Data Fifo)
 				if(val & 0x80) {
 					// Load fifo
-				    if(_sector.isEmpty()) {
+				    if(isEmpty()) {
 						_sector.set(_readSector.read());
 						isBufferEmpty = false;
 					}
@@ -407,18 +431,30 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 			    //    interrupts.get();
 			    //}
 
+					/*if(!interrupts.is_empty() && interrupts.peek().fired) {
+						interrupts.get();
+
+						if(!interrupts.is_empty() && interrupts.peek().delay <= 0) {
+							interrupts.ref().fired = true;
+
+							if((IE & 7) & (interrupts.peek()._interrupt & 7)) {
+								IRQ::trigger(IRQ::Interrupt::CDROM);
+							}
+						}
+					}*/
+
 				if (!interrupts.is_empty()) {
 					interrupts.ref().ack = true;
 					
 					if (interrupts.ref().responses.is_empty()) {
 						interrupts.get();
-					} else {
+					} /*else {
 						// TODO:
 						if(interrupts.ref().attempts++ > 200) {
 							interrupts.ref().responses.get();
 							interrupts.ref().attempts = 0;
 						}
-					}
+					}*/
 				}
 				
 				//IF &= ~(val & 0x1F);
@@ -433,10 +469,21 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 			}
 			
 			case 2: {
-				pendingCdRightToRight = val;
+				// 1F801803h.Index2 - Left-CD to Right-SPU Volume (W)
+				pendingCdLeftToRight = val;
+				cdLeftToRight = val;
 				break;
 			}
-			
+
+			case 3: {
+				// 1F801803h.Index3 - Apply Volume Changes (bit5)
+				if (val & 0x20) {
+					applyPendingVolume();
+				}
+
+				break;
+			}
+
 		default:
 			printf("");
 			break;
@@ -448,14 +495,14 @@ void CDROM::store(uint32_t addr, uint8_t val) {
 
 uint8_t CDROM::readByte() {
 	if (_sector.isEmpty()) {
-	    printf("readByte: Sector is empty!\n");
-		assert(false);
+	    //printf("readByte: Sector is empty!\n");
+		//assert(false);
 		return 0;
 	}
 	
 	// 0 - 0x800 - just data
 	// 1 - 0x924 - whole sector without sync
-	int dataStart = 12; //12 (12 sync, 4 header, 4 sub-header, 4 copy)
+	int dataStart = 12; //24 (12 sync, 4 header, 4 sub-header, 4 copy)
 	if (!mode.sectorSize) dataStart += 12;
 	
 	/**
@@ -499,10 +546,10 @@ void CDROM::reset() {
 	mute = false;
 	audioSamples.clear();
 	
-	pendingCdLeftToLeft = 0x80;
+	pendingCdLeftToLeft = 0x7F;
 	pendingCdLeftToRight = 0x00;
 	pendingCdRightToLeft = 0x00;
-	pendingCdRightToRight = 0x80;
+	pendingCdRightToRight = 0x7F; // 0x80
 	applyPendingVolume();
 	
 	_stats = {};
@@ -616,7 +663,7 @@ void CDROM::decodeAndExecute(uint8_t command) {
 
 				// TODO: Check audio status, if stop then ig pos = track(0).start?
 			}
-			
+
 			readLocation = pos.toLba();
 			_stats.setMode(Stats::Mode::Playing);
 			
@@ -727,9 +774,6 @@ void CDROM::decodeAndExecute(uint8_t command) {
 		INT(2, 500000);
 		addResponse(_stats._reg);
 		_stats.setMode(Stats::Mode::None);
-	} else if (command == 0x0E) {
-	    INT(3);
-	    addResponse(_stats._reg);
 	} else if (command == 0x1E) {
 		// ReadTOC - Command 1Eh --> INT3(stat) --> INT2(stat)
 		INT3();
@@ -751,11 +795,7 @@ void CDROM::decodeAndExecute(uint8_t command) {
 		INT3();
 		
 		//assert(false);
-		if (command != 0x0C && command != 0x0B && command != 0x0D) {
-			// ReadTOC - Command 1Eh --> INT3(stat) --> INT2(stat)
-			// ReadN - Command 06h --> INT3(stat) --> INT1(stat) --> datablock
-			// Mute - Command 0Bh --> INT3(stat)
-			
+		if (command != 0x0D) {
 			printf("Unhandled command %x\n", command);
 		}
 	}
@@ -778,7 +818,7 @@ void CDROM::decodeAndExecute(uint8_t command) {
 
 void CDROM::decodeAndExecuteSub() {
 	if(parameters.empty()) {
-		printf("NAWWWWWWWWWWWWW");
+		printf("NAWWWWWWWWWWWWW\n");
 		return;
 	}
 	
@@ -790,6 +830,8 @@ void CDROM::decodeAndExecuteSub() {
 	if (command == 0x04) {
 		//   04h      -   INT3(stat)         ;Start SCEx reading and reset counters
 		_stats.motor = 1;
+		scexCounter = 0;
+
 		INT3();
 		
 		if (readLocation < 1024) {
@@ -903,7 +945,7 @@ void CDROM::ReadN() {
 		
 		return;
 	}
-	
+
 	readLocation = seekLocation;
 	_stats.setMode(Stats::Mode::Reading);
 	
@@ -941,8 +983,7 @@ void CDROM::Pause() {
 	addResponse(_stats._reg);
 	
 	_stats.setMode(Stats::Mode::None);
-	// TODO: Handle audio pausing
-	audioSamples.clear();
+	//audioSamples.clear();
 	//_stats.motor = 1;
 	
 	INT(2, 20000);
@@ -1002,7 +1043,7 @@ void CDROM::SeekL() {
 	// or at around N-5..N+2 in double speed mode).
 	
 	// TODO; Seek to Setloc's location in data mode
-	
+
 	readLocation = seekLocation;
 	
 	/**
@@ -1056,7 +1097,42 @@ void CDROM::GetID() {
 	INT(3, 0x4A00);
 	addResponse(_stats._reg);
 
-	if (diskPresent) {
+	if (!diskPresent || _disk.tracks.empty()) {
+		_stats.idError = 1;
+
+		INT(5, 449000);
+		addResponse(_stats._reg);
+		addResponse(0x40);
+
+		for (int i = 0; i < 6; i++)
+			addResponse(0x00);
+
+		return;
+	}
+
+	if (_disk.isAudio(Location(0, 2, 0))) {
+		INT(5, 449000);
+		addResponse(0x0A);
+		addResponse(0x90);
+
+		for (int i = 0; i < 6; i++)
+			addResponse(0x00);
+
+		return;
+	}
+
+	INT(2, 449000);
+	addResponse(0x02);
+	addResponse(0x00);
+	addResponse(0x20);
+	addResponse(0x00);
+
+	addResponse('S');
+	addResponse('C');
+	addResponse('E');
+	addResponse('A');
+
+	/*if (diskPresent) {
 		INT(2, 449000);
 	} else {
 		INT(5);
@@ -1073,7 +1149,7 @@ void CDROM::GetID() {
 	addResponse('S'); // 'S' 0x53
 	addResponse('C'); // 'C' 0x43
 	addResponse('E'); // 'E' 0x45
-	addResponse('A'); // // Region code (A=USA, E=Europe, I=Japan)
+	addResponse('A'); // // Region code (A=USA, E=Europe, I=Japan)*/
 	
 	/*if (diskPresent) {
 		//INT(2, 449000);
@@ -1117,8 +1193,8 @@ void CDROM::GetID() {
 
 void CDROM::ReadS() {
 	readLocation = seekLocation;
-	
-	// TODO; Clear audio?
+
+	audioSamples.clear();
 	_stats.setMode(Stats::Mode::Reading);
 	
 	INT(3, 500);

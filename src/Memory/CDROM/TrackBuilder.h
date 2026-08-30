@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -9,7 +10,9 @@ struct Track {
 	std::string filePath;
 	std::string type;
 
-	uint32_t trackIndex     = 0;
+	std::optional<Location> index0;
+	Location index1;
+
 	uint32_t fileDataOffset = 0;
 
 	std::string mode;
@@ -22,6 +25,14 @@ struct Track {
 	// TODO; Handle index
 	//uint32_t start;
 	//uint32_t end;
+
+	Location start() const {
+		if (index0) {
+			return (index1 - *index0);
+		}
+
+		return {0, 0, 0};
+	}
 };
 
 class TrackBuilder {

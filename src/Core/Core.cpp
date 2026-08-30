@@ -571,14 +571,6 @@ void handleLoadExe(std::string path) {
 void rest(const std::string &biosPath) { cpu->reset(); }
 
 static int x    = 0;
-using Clock     = std::chrono::high_resolution_clock;
-using TimePoint = std::chrono::time_point<Clock>;
-
-double secondsSince(const TimePoint &t) { return std::chrono::duration<double>(Clock::now() - t).count(); }
-
-static TimePoint lastSecond           = Clock::now();
-static uint64_t  instructionsExecuted = 0;
-static uint64_t  cyclesExecuted       = 0;
 
 const uint32_t PSX_CPU_CLOCK = 33868800;
 
@@ -593,16 +585,14 @@ const uint32_t GPU_CYCLES_PER_SCANLINE_PAL = 3406;
 
 const uint32_t CYCLES_PER_FRAME_NTSC = uint64_t(SCANLINES_NTSC) * GPU_CYCLES_PER_SCANLINE_NTSC * PSX_CPU_CLOCK / GPU_CLOCK_NTSC;
 const uint32_t CYCLES_PER_FRAME_PAL = uint64_t(SCANLINES_PAL) * GPU_CYCLES_PER_SCANLINE_PAL * PSX_CPU_CLOCK / GPU_CLOCK_PAL;
+bool skipped = true;
 
 void runFrame() {
     uint32_t frameCycles = 0;
 
     auto cyclesPerFrame = gpu->vmode == Emulator::VMode::Pal ? CYCLES_PER_FRAME_PAL : CYCLES_PER_FRAME_NTSC;
-    bool vblanked       = false;
 
     while(frameCycles < cyclesPerFrame) {
-        //int cycles = cpu->executeNextInstruction();
-
         int cycles = 0;
 
         bool stepped = false;
@@ -645,7 +635,9 @@ void runFrame() {
         }
 
         if (cpu->pc == 0x80030000) {
-            if (false) {
+            if (!skipped) {
+                skipped = true;
+
                 printf("Skipping bootrom\n");
                 cpu->pc     = cpu->reg(31);
                 cpu->nextpc = cpu->pc + 4;
@@ -653,267 +645,12 @@ void runFrame() {
                 //handleLoadExe("");
             }
         }
-        
-        //static uint64_t cyclesThisSecond = 0;
-        //static uint64_t framesThisSecond = 0;
-        //static auto lastReport = std::chrono::steady_clock::now();
-        
+
         if(cycles == 0) {
             cycles++;
         }
-        
-        //cyclesThisSecond += cycles;
-        frameCycles += cycles;
-        
-        /*auto now = std::chrono::steady_clock::now();
-        double elapsed = std::chrono::duration<double>(now - lastReport).count();
-
-        if (elapsed >= 1.0) {
-            double mhz = (cyclesThisSecond / elapsed) / 1000000.0;
-            double target = 33.8688;
-            double fps = framesThisSecond / elapsed;
-
-            //printf("%.3f MHz (%.1f%%) | %.2f fps\n", mhz, (mhz / target) * 100.0, fps);
-
-            cyclesThisSecond = 0;
-            framesThisSecond = 0;
-            lastReport = now;
-        }*/
-    }
-
-    return;
-
-    while (cpu->paused ? frameCycles < cyclesPerFrame : !vblanked) {
-        uint32_t currentPC = cpu->pc;
-
-        int cycles = 0;
-
-        bool stepped = false;
-        x++;
-
-        if (!cpu->paused) {
-            cycles = cpu->executeNextInstruction();
-        } else if (cpu->stepRequested) {
-            cycles  = cpu->executeNextInstruction();
-            stepped = true;
-
-            cpu->stepRequested = false;
-            //printf("X; %d\n", x);
-        } else if (cpu->stepUntilBranchTakenRequested) {
-            auto pc = cpu->pc;
-            stepped = true;
-
-            cycles = cpu->executeNextInstruction();
-
-            if (pc + 4 != cpu->pc) {
-                cpu->stepUntilBranchTakenRequested = false;
-                printf("X; %d\n", x);
-            }
-        } else if (cpu->stepUntilBranchNotTakenRequested) {
-            auto pc = cpu->pc;
-            stepped = true;
-
-            cycles = cpu->executeNextInstruction();
-
-            if (pc + 4 == cpu->pc) {
-                cpu->stepUntilBranchNotTakenRequested = false;
-                printf("X; %d\n", x);
-            }
-        }
-
-        uint32_t nextPC = cpu->pc;
-
-        stepped = false;
-
-        /*cyclesExecuted += cycles;
-        instructionsExecuted++;
-
-        if (secondsSince(lastSecond) >= 1.0) {
-            printf("time: %llu | CPS: %llu\n", (uint64_t)instructionsExecuted, (uint64_t)cyclesExecuted);
-
-            instructionsExecuted = 0;
-            cyclesExecuted = 0;
-            lastSecond = Clock::now();
-        }*/
-
-        if (cpu->pc == 0x80030000) {
-            if (false) {
-                printf("Skipping bootrom\n");
-                cpu->pc     = cpu->reg(31);
-                cpu->nextpc = cpu->pc + 4;
-            } else {
-                //handleLoadExe("");
-            }
-        }
-
-        static uint64_t totalCpuCycles      = 0;
-        static uint64_t lastVBlankCpuCycles = 0;
-
-        totalCpuCycles += cycles;
-
-        bool didVBlank = false;
-
-        //if (!cpu->paused) {
-            for (uint32_t i = 0; i < cycles; i++) {
-                if (cpu->interconnect.step(1)) {
-                    didVBlank = true;
-                }
-            }
-        //}
-
-        if (didVBlank) {
-            //IRQ::trigger(IRQ::VBlank);
-            vblanked = true;
-        }
-
-
-
-        if (cycles == 0 && cpu->paused) {
-            cycles++;
-        }
 
         frameCycles += cycles;
-    }
-
-    return;
-
-    while (true) {
-        int cycles = 0;
-
-        cycles += cpu->executeNextInstruction();
-
-        /*if (!cpu->paused) {
-            cycles += cpu->executeNextInstruction();
-        } else if (cpu->stepRequested) {
-            cycles += cpu->executeNextInstruction();
-
-            cpu->stepRequested = false;
-            printf("X; %d\n", x);
-        } else if (cpu->stepUntilBranchTakenRequested) {
-            auto pc = cpu->pc;
-
-            cycles += cpu->executeNextInstruction();
-
-            if (pc + 4 != cpu->pc) {
-                cpu->stepUntilBranchTakenRequested = false;
-                printf("X; %d\n", x);
-            }
-        } else if (cpu->stepUntilBranchNotTakenRequested) {
-            auto pc = cpu->pc;
-
-            cycles += cpu->executeNextInstruction();
-
-            if (pc + 4 == cpu->pc) {
-                cpu->stepUntilBranchNotTakenRequested = false;
-                printf("X; %d\n", x);
-            }
-        }*/
-
-        if (cpu->pc == 0x80030000) {
-            if (true) {
-                printf("Skipping bootrom\n");
-                cpu->pc     = cpu->reg(31);
-                cpu->nextpc = cpu->pc + 4;
-            } else
-                handleLoadExe("" /*testPaths[currentIndex]*/);
-        }
-
-        if (cpu->interconnect.step(cycles)) {
-            IRQ::trigger(IRQ::VBlank);
-            // return;
-        }
-    }
-
-    return;
-
-    while (true) {
-        bool cpuStepped = false;
-
-        int cycles = 0;
-
-        for (int i = 0; i < 100; i++) {
-            // if (cpu->pc != 0x80030000) {
-            if (true) {
-                // cpu->executeNextInstruction();
-
-                // Crash at; 57907068 (Freebios)
-                // if (x == 3593098) {
-                //	cpu->paused = true;
-                //}
-
-                // printf("PC; %x - %d\n", cpu->pc, x);
-
-                if (!cpu->paused) {
-                    cycles += cpu->executeNextInstruction();
-                    cpuStepped = true;
-                } else if (cpu->stepRequested) {
-                    cycles += cpu->executeNextInstruction();
-                    cpuStepped = true;
-
-                    cpu->stepRequested = false;
-                    printf("X; %d\n", x);
-                } else if (cpu->stepUntilBranchTakenRequested) {
-                    auto pc = cpu->pc;
-
-                    cycles += cpu->executeNextInstruction();
-                    cpuStepped = true;
-
-                    if (pc + 4 != cpu->pc) {
-                        cpu->stepUntilBranchTakenRequested = false;
-                        printf("X; %d\n", x);
-                    }
-                } else if (cpu->stepUntilBranchNotTakenRequested) {
-                    auto pc = cpu->pc;
-
-                    cycles += cpu->executeNextInstruction();
-                    cpuStepped = true;
-
-                    if (pc + 4 == cpu->pc) {
-                        cpu->stepUntilBranchNotTakenRequested = false;
-                        printf("X; %d\n", x);
-                    }
-                }
-
-                if (cpuStepped)
-                    x++;
-            } else {
-                if (false) {
-                    // Skip bios logo
-                    printf("Skipping bootrom\n");
-                    cpu->pc     = cpu->reg(31);
-                    cpu->nextpc = cpu->pc + 4;
-                } else {
-                    handleLoadExe("" /*testPaths[currentIndex]*/);
-                }
-            }
-        }
-
-        bool frameDone = false;
-        int  remaining = cycles;
-
-        while (remaining > 0) {
-            int step = std::min(remaining, 20);
-            if (cpu->interconnect.step(step)) {
-                IRQ::trigger(IRQ::VBlank);
-                frameDone = true;
-
-                break;
-            }
-
-            remaining -= step;
-        }
-
-        if (frameDone)
-            break;
-
-        /*if(cpuStepped && cpu->interconnect.step(cycles)) {
-            IRQ::trigger(IRQ::VBlank);
-
-            break;
-        }*/
-
-        if (!cpuStepped)
-            break;
     }
 }
 
@@ -1087,7 +824,7 @@ int main(int argc, char *argv[]) {
     //cpu->interconnect._cdrom.swapDisk("../ROMS/Battle Arena Toshinden (Europe)/Battle Arena Toshinden (Europe).cue");
     //cpu->interconnect._cdrom.swapDisk("ROMS/Sonic Wings Special (Europe)/Sonic Wings Special (Europe)/Sonic Wings Special (Europe).cue");
     //cpu->interconnect._cdrom.swapDisk("../ROMS/Tetris X/Tetris X (Japan).cue");
-    //cpu->interconnect._cdrom.swapDisk("../ROMS/Ridge Racer (Europe)/Ridge Racer (Europe).cue");
+    cpu->interconnect._cdrom.swapDisk("../../ROMS/Ridge Racer (Europe)/Ridge Racer (Europe).cue");
 
     // Uhh works somehow idek how BUT obviously GPU bug but I think it's actually GTE
     // It works until it calls 0x0D CDROM command then everything goes red and freezes
@@ -1102,7 +839,7 @@ int main(int argc, char *argv[]) {
      * Had an issue with the controller but now it's fixed,
      * FIXED; Missing; GP0(48h) - Monochrome Poly-line, opaque
      */
-    cpu->interconnect._cdrom.swapDisk("../../ROMS/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It)/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It).cue");
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It)/Pink Panther - Pinkadelic Pursuit (Europe) (En,Fr,De,Es,It).cue");
 
     /**
      * Also had controller issues.
@@ -1116,7 +853,7 @@ int main(int argc, char *argv[]) {
 
     // Games that are broken
     //cpu->interconnect._cdrom.swapDisk("../../ROMS/Yu-Gi-Oh! Forbidden Memories (Europe)/Yu-Gi-Oh! Forbidden Memories (Europe).cue"); // TODO; CDROM(0x10) but it works fine
-    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Football (Europe)/This Is Football (Europe).cue"); // TODO; CDROM(0x11)
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/This Is Football (Europe)/This Is Football (Europe).cue"); // TODO; CDROM(0x11)
     //cpu->interconnect._cdrom.swapDisk("../../ROMS/Crash Bash (Europe) (En,Fr,De,Es,It)/Crash Bash (Europe) (En,Fr,De,Es,It).cue"); // TODO; CDROM(0x11)
 
     // cpu->interconnect._cdrom.swapDisk("../ROMS/Final Fantasy IX (USA, Canada) (Disc 1) (Rev 1)/Final Fantasy IX (USA, Canada) (Disc 1) (Rev 1).cue");
@@ -1156,7 +893,7 @@ int main(int argc, char *argv[]) {
     std::chrono::steady_clock::time_point lastTime        = std::chrono::steady_clock::now();
     double                                passedTime      = 0;
     double                                unprocessedTime = 0;
-    constexpr double                      UPDATE_CAP      = 1.0 / 60.0;
+    double                                UPDATE_CAP      = 1.0 / 60.0;
 
     bool render         = false;
     bool showVramViewer = false;
@@ -1167,6 +904,8 @@ int main(int argc, char *argv[]) {
         render = false;
 
         glfwPollEvents();
+
+        UPDATE_CAP = gpu->vmode == Emulator::VMode::Pal ? 1.0 / 50.0 : 1.0 / 60.0;
 
         std::chrono::steady_clock::time_point firstTime = std::chrono::steady_clock::now();
         passedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(firstTime - lastTime).count() / 1000000000.0; // firstTime - lastTime;
@@ -1388,7 +1127,7 @@ int main(int argc, char *argv[]) {
             ImGui::End();
         }
 
-        if (ImGui::Begin("SPU Voices")) {
+        /*if (ImGui::Begin("SPU Voices")) {
             ImGui::Text("Allow CDROM audio: %d", cpu->interconnect.spu.spunct.CD_Audio_Enable);
             ImGui::Separator();
 
@@ -1412,7 +1151,7 @@ int main(int argc, char *argv[]) {
                 ImGui::PopID();
             }
         }
-        ImGui::End();
+        ImGui::End();*/
 
         ImGui::Render();
 

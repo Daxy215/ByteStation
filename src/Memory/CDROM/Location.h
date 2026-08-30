@@ -19,7 +19,7 @@ public:
 		//location = sectors + (seconds * 75) + (minutes * 60 * 70);
 	}
 	
-	uint32_t toLba() const { return (minutes * 60 * 75) + (seconds * 75) + sectors; }
+	[[nodiscard]] int toLba() const { return (minutes * 60 * 75) + (seconds * 75) + sectors; }
 	
 	static Location fromLBA(uint32_t lba) {
 		int mm = (int)lba / 60 / 75;

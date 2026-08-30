@@ -27,21 +27,21 @@ class IRQ {
 	            COP0::cause &= ~0x400;
 	    }
 
-	    [[nodiscard]] uint16_t getStatus() const {
+	    static uint16_t getStatus() {
 		    return status;
 	    }
 
-	    void acknowledge(uint16_t ack) noexcept {
+	    static void acknowledge(uint16_t ack) noexcept {
 	        status &= ack;
 	        status &= 0x07FF;
 	        step();
 	    }
 
-	    [[nodiscard]] uint16_t getMask() const {
+	    static uint16_t getMask() {
 		    return mask;
 	    }
 
-	    void setMask(uint16_t val) {
+	    static void setMask(uint16_t val) {
 	        mask = val & 0x07FF;
 	        step();
 	    }
@@ -56,14 +56,14 @@ class IRQ {
 	        step();
 	    }
 
-	    void reset() {
+	    static void reset() {
 	        status = 0;
 	        mask = 0;
 	        step();
 	    }
 
     public:
-	    // Im to lazy
+	    // Im too lazy
 	    inline static uint16_t status = 0;
 	    inline static uint16_t mask = 0;
 };

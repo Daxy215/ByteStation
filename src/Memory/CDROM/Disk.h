@@ -21,7 +21,7 @@ public:
 	Location getSize();
 	Location getTrackStart(int i);
 
-private:
+public:
 	int getTrackPosition(Location location);
 	
 	Location getTrackBegin(int track);

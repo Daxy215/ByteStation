@@ -16,19 +16,21 @@ class CDROM {
 		enum class Mode { None, Reading, Seeking, Playing };
 		
 		struct {
-			uint8_t error : 1;
-			uint8_t motor : 1;
-			uint8_t seekError : 1;
-			uint8_t idError : 1;
-			uint8_t shellOpen : 1;
-			uint8_t read : 1;
-			uint8_t seek : 1;
-			uint8_t play : 1;
+			uint8_t error     : 1; //0 Error         Invalid Command/parameters (followed by Error Byte)
+			uint8_t motor     : 1; //1 Spindle Motor (0=Motor off, or in spin-up phase, 1=Motor on)
+			uint8_t seekError : 1; //2 SeekError     (0=Okay, 1=Seek error)     (followed by Error Byte)
+			uint8_t idError	  : 1; //3 IdError       (0=Okay, 1=GetID denied) (also set when Setmode.Bit4=1)
+			uint8_t shellOpen : 1; //4 ShellOpen     Once shell open (0=Closed, 1=Is/was Open)
+			uint8_t read      : 1; //5 Read          Reading data sectors  ;/set until after Seek completion)
+			uint8_t seek      : 1; //6 Seek          Seeking               ; at a time (ie. Read/Play won't get
+			uint8_t play      : 1; //7 Play          Playing CD-DA         ;\only ONE of these bits can be set
 		};
 		
 		uint8_t _reg;
 		
 		void setMode(Mode mode) {
+			bool prvErr = idError;
+
 			error = seekError = idError = false;
 			read = seek = play = false;
 			motor = true;
@@ -40,6 +42,8 @@ class CDROM {
 			} else if (mode == Mode::Playing) {
 				play = true;
 			}
+
+			idError = prvErr;
 		}
 		
 		void setShell(bool opened) {
@@ -82,7 +86,8 @@ class CDROM {
 		int32_t delay = 0;
 		int32_t attempts = 0;
 		bool ack = false;
-		
+		bool fired = false;
+
 		Interrupt() = default;
 		
 		Interrupt(uint8_t interrupt, int32_t delay)
@@ -98,7 +103,6 @@ public:
 	uint32_t cyclesUntilNextInterrupt() const;
 
 	void handleSector();
-	bool popAudioSample(int16_t& left, int16_t& right);
 	
 	uint8_t load(uint32_t addr);
 	void store(uint32_t addr, uint8_t val);
@@ -151,7 +155,7 @@ private:
 	void addResponse(uint8_t response) {
 		//responses.push(response);
 		if(interrupts.is_empty()) {
-			printf("");
+			printf("Uhh\n");
 			return;
 		}
 		
@@ -162,6 +166,9 @@ private:
 		
 		entry.responses.add(response);
 	}
+
+public:
+	static std::deque<std::pair<int16_t, int16_t>> audioSamples; // I am lazy
 	
 private:
 	uint8_t getParamater();
@@ -191,8 +198,7 @@ private:
 	bool isBufferEmpty = true;
 	
 	bool mute = false;
-	std::deque<std::pair<int16_t, int16_t>> audioSamples;
-	
+
 	uint8_t pendingCdLeftToLeft = 0x80;
 	uint8_t pendingCdLeftToRight = 0x00;
 	uint8_t pendingCdRightToLeft = 0x00;

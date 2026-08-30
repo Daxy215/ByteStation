@@ -148,12 +148,16 @@ uint8_t fifo[6];
 int fifo_len = 0;
 
 void Emulator::VRAM::setPixel(uint32_t x, uint32_t y, uint16_t color) {
+    // TODO; Double check this
+    x %= MAX_WIDTH;
+    y %= MAX_HEIGHT;
+
     // https://stackoverflow.com/questions/73092064/is-there-a-way-to-convert-16-bit-color-to-24-bit-color-efficiently-while-avoidin
     uint32_t initalX = ((gpu.startX * 2) / 3);
     
     if (gpu.displayDepth == DisplayDepth::D24Bits) {
         if (gpu.startX24 >= MAX_WIDTH || gpu.startY24 >= MAX_HEIGHT) {
-            printf("BAD PIXEL x=%u y=%u\n", x, y);
+            //printf("BAD PIXEL x=%u y=%u\n", x, y);
             return;
         }
         
@@ -200,7 +204,7 @@ void Emulator::VRAM::setPixel(uint32_t x, uint32_t y, uint16_t color) {
         }
     } else {
         if (x >= MAX_WIDTH || y >= MAX_HEIGHT) {
-            printf("BAD PIXEL x=%u y=%u\n", x, y);
+            //printf("BAD PIXEL x=%u y=%u\n", x, y);
         }
         
         y = MAX_HEIGHT - y - 1;

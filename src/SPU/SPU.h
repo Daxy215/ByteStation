@@ -8,8 +8,11 @@
 #define SDL_MAIN_HANDLED
 #include <SDL2/SDL.h>
 #include <algorithm>
+#include <functional>
 
 namespace Emulator {
+    class SPU;
+
     struct Fifo {
         static constexpr uint32_t SIZE = 32;
         static constexpr uint32_t MASK = SIZE - 1;
@@ -240,6 +243,7 @@ namespace Emulator {
         }
     };
 
+    class SPU {
     struct Voice {
         uint32_t pitchCounter = 0;
 
@@ -349,7 +353,7 @@ namespace Emulator {
          * @param vxOut - Output of previous voice
          * @param ram - A reference to the soundRAM
          */
-        void step(uint8_t voiceIndex, int16_t vxOut, uint16_t (&ram)[256 * 1024]) {
+        void step(uint8_t voiceIndex, int16_t vxOut, SPU &spu) {
             adpcm.step();
             adsr.step();
 
@@ -376,7 +380,7 @@ namespace Emulator {
 
                 if (currentSampleIndex >= 28) {
                     currentSampleIndex = 0;
-                    advanceToNextBlock(ram);
+                    advanceToNextBlock(spu);
                 }
 
                 sampleHistory[3] = sampleHistory[2];
@@ -403,9 +407,8 @@ namespace Emulator {
             currentRight = (gatedSample * adsr.volRight) >> 15;
         }
 
-        void decodeEntireBlock(const uint16_t (&ram)[256 * 1024]) {
-            // TODO: IRQ?
-            uint16_t header = ram[currentAddress];
+        void decodeEntireBlock(SPU &spu) {
+            uint16_t header = spu.readFromRAM16(currentAddress);//ram[currentAddress];
 
             uint8_t shift = header & 0x0F;
             shift = shift > 12 ? 9 : shift;
@@ -415,8 +418,9 @@ namespace Emulator {
             int16_t prev2 = olderSample;
 
             for (int i = 0; i < 28; i++) {
-                uint16_t sampleWord = ram[currentAddress + 1 + i / 4];
+                uint16_t sampleWord = spu.readFromRAM16(currentAddress + 1 + i / 4);
                 int16_t nibble = (sampleWord >> (4 * (i % 4))) & 0x0F;
+
                 if (nibble & 0x8) {
                     nibble |= 0xFFF0;
                 }
@@ -453,7 +457,7 @@ namespace Emulator {
                 prev2 = prev1;
                 prev1 = clamppedSample;
             }
-            
+
             olderSample = prev2;
             oldSample = prev1;
 
@@ -490,10 +494,10 @@ namespace Emulator {
             oldSample = prev1;*/
         }
 
-        void advanceToNextBlock(const uint16_t (&ram)[256 * 1024]) {
-            decodeEntireBlock(ram);
+        void advanceToNextBlock(SPU &spu) {
+            decodeEntireBlock(spu);
 
-            uint8_t flags = (ram[currentAddress] >> 8) & 0xFF;
+            uint8_t flags = (spu.readFromRAM16(currentAddress) >> 8) & 0xFF;
 
             // Loop start
             if ((flags & 0x04) != 0) {
@@ -540,10 +544,10 @@ namespace Emulator {
 
             return oldSample;
         }*/
-        
+
         int cycles;
 
-        void triggerKeyOn(int cycles, const uint16_t (&ram)[256 * 1024]) {
+        void triggerKeyOn(int cycles, SPU &spu) {
             currentAddress = startAddress * 4;
             if (repeatAddress == 0) {
                 repeatAddress = currentAddress;
@@ -561,13 +565,13 @@ namespace Emulator {
 
             std::fill(std::begin(sampleHistory), std::end(sampleHistory), 0);
 
-            advanceToNextBlock(ram);
+            advanceToNextBlock(spu);
 
             //sampleBuffer.fill(0);
 
             // 1F801D9Ch - Voice 0..23 ON/OFF (status) (ENDX) (R)
             //this->internalStatusRegister &= ~(1 << n); // Clear "End" flag for this voice
-            
+
             // TODO: REMOVE
             this->cycles = cycles;
         }
@@ -576,17 +580,17 @@ namespace Emulator {
             /*if (cycles != 0 && cycles - this->cycles < 384) {
                 return;
             }*/
-            
+
             // and switches from Sustain to Release when the software sets the Key OFF flag.
             adsr.state = ADSR::Release;
             adsr.cycleCounter = 0;
-            
+
             //currentLeft = 0;
             //currentRight = 0;
         }
     };
 
-    class SPU {
+
         public:
             SPU();
 
@@ -595,7 +599,6 @@ namespace Emulator {
 
             uint32_t load(uint32_t addr);
             void store(uint32_t addr, uint32_t val);
-            void pushCdAudioSample(int16_t left, int16_t right);
 
         private:
             uint32_t handleVoiceLoad(uint32_t addr);
@@ -614,6 +617,13 @@ namespace Emulator {
             void handleVoiceInternalStore(uint32_t addr, uint32_t val);
 
             void pushSamples(int16_t* samples, int sampleCount);
+
+        public:
+            void writeToRAM8(uint32_t addr, uint8_t val);
+            uint8_t readFromRAM8(uint32_t addr);
+
+            void writeToRAM16(uint32_t addr, uint16_t val);
+            uint16_t readFromRAM16(uint32_t addr);
 
         public: // TODO: Revert to private
             // SPU Noise Generator
@@ -636,8 +646,6 @@ namespace Emulator {
 
             // 1F801D82h - Main volume right
             uint16_t mainValRight = 0;
-            int32_t lastMixedLeft = 0;
-            int32_t lastMixedRight = 0;
             uint64_t queuedBufferCount = 0;
             uint64_t bufferIndex = 0;
 
@@ -647,7 +655,6 @@ namespace Emulator {
             // 1F801DB0h - CD Audio Input Volume (for normal CD-DA, and compressed XA-ADPCM)
             int16_t cdInputVolLeft = 0;
             int16_t cdInputVolRight = 0;
-            std::deque<std::pair<int16_t, int16_t>> cdAudioSamples;
 
             // 1F801DB4h - External Audio Input Volume
             uint16_t exVolLeft = 0;

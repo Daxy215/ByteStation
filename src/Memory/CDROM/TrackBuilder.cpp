@@ -13,12 +13,12 @@ struct FileAudioData {
     uint32_t size = 0;
 };
 
-static uint32_t parseCueIndexLba(const std::string& value) {
+static Location parseCueIndexLba(const std::string& value) {
     int minutes = std::stoi(value.substr(0, 2));
     int seconds = std::stoi(value.substr(3, 2));
-    int frames = std::stoi(value.substr(6, 2));
-    
-    return static_cast<uint32_t>((minutes * 60 * 75) + (seconds * 75) + frames);
+    int sectors = std::stoi(value.substr(6, 2));
+
+    return {minutes, seconds, sectors}; //static_cast<uint32_t>((minutes * 60 * 75) + (seconds * 75) + frames);
 }
 
 static uint32_t readLe32(std::ifstream& file) {
@@ -129,42 +129,47 @@ std::vector<Track> TrackBuilder::parseCueFile(const std::string& path) {
             continue;
         }
         
-        if (line.find("INDEX 01") == 0 && !tracks.empty()) {
+        if (line.find("INDEX") == 0 && !tracks.empty()) {
+        	int indexNo = std::stoi(line.substr(line.find_first_of(' ') + 1).substr(1, 2));
+
             size_t pos = line.find_last_of(' ');
 
             if (pos != std::string::npos) {
-                tracks.back().trackIndex = parseCueIndexLba(line.substr(pos + 1));
+            	if (indexNo == 0) {
+					tracks.back().index0 = parseCueIndexLba(line.substr(pos + 1));
+            	} else {
+					tracks.back().index1 = parseCueIndexLba(line.substr(pos + 1));
+            	}
             }
         }
     }
 
-	/**
-	 * Wtf was I doing??
-	 */
-    /*std::unordered_map<std::string, uint32_t> fileSectors;
-    for (const auto& track : tracks) {
-        if (fileSectors.find(track.filePath) != fileSectors.end()) {
-            continue;
-        }
+	for (size_t i = 0; i < tracks.size(); i++) {
+		if (!tracks[i].index0) {
+			tracks[i].index0 = tracks[i].index1;
+		}
 
-        fileSectors[track.filePath] = static_cast<uint32_t>(getFileSize(track.filePath) / track.modeType);
-    }
-    
-    for (size_t i = 0; i < tracks.size(); i++) {
-        uint32_t end = fileSectors[tracks[i].filePath];
+		uint32_t ownPregapSectors = tracks[i].start().toLba();
 
-        for (size_t j = i + 1; j < tracks.size(); j++) {
-            if (tracks[j].filePath == tracks[i].filePath) {
-                end = tracks[j].trackIndex;
-                break;
-            }
-        }
+		if (i > 0 && tracks[i].filePath == tracks[i - 1].filePath) {
+			tracks[i].fileDataOffset = tracks[i - 1].fileDataOffset
+				+ (tracks[i - 1].sectorCount * Sector::RAW_BUFFER)
+				+ (ownPregapSectors * Sector::RAW_BUFFER);
+		} else {
+			tracks[i].fileDataOffset = ownPregapSectors * Sector::RAW_BUFFER;
+		}
 
-        tracks[i].sectorCount = end > tracks[i].trackIndex
-                                ? end - tracks[i].trackIndex
-                                : fileSectors[tracks[i].filePath];
-    }*/
-	
+		bool isSameFileAsNext = (i + 1 < tracks.size()) && (tracks[i].filePath == tracks[i + 1].filePath);
+
+		if (isSameFileAsNext) {
+			Location nextIndex0 = tracks[i + 1].index0.value_or(tracks[i + 1].index1);
+			tracks[i].sectorCount = (nextIndex0 - tracks[i].index1).toLba();
+		} else {
+			size_t fileSize = getFileSize(tracks[i].filePath);
+			tracks[i].sectorCount = static_cast<uint32_t>((fileSize - tracks[i].fileDataOffset) / Sector::RAW_BUFFER);
+		}
+	}
+
 	return tracks;
 }
 

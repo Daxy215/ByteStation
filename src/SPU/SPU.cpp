@@ -8,6 +8,7 @@
 #include <chrono>
 
 #include "Memory/IRQ.h"
+#include "Memory/CDROM/CDROM.h"
 
 #define M_PI 3.14159265358979323846
 
@@ -44,21 +45,19 @@ Emulator::SPU::SPU () {
 }
 
 static uint32_t curCycles = 0;
-static const int AUDIO_BUFFER_SIZE = 1024 * 2;
+static const int AUDIO_BUFFER_SIZE = 28 * 2 * 4;//1024 * 2;
 int16_t audioBuffer[AUDIO_BUFFER_SIZE];
 int audioIndex = 0;
 
-void Emulator::SPU::pushCdAudioSample(int16_t left, int16_t right) {
-    static constexpr size_t maxQueuedSamples = 44100 * 2;
-    
-    if (cdAudioSamples.size() >= maxQueuedSamples) {
-        cdAudioSamples.pop_front();
-    }
-    
-    cdAudioSamples.emplace_back(left, right);
-}
-
 void Emulator::SPU::step(uint32_t cycles) {
+    /**
+     * TODO:
+     * It seems like its meant to do this per cycle..
+     * And not everything at once
+     *
+     * https://psx-spx.consoledev.net/soundprocessingunitspu/#notes_1
+     */
+
     curCycles += cycles;
     
     stepTransfer();
@@ -68,20 +67,50 @@ void Emulator::SPU::step(uint32_t cycles) {
     
     while (curCycles >= CYCLES_PER_SAMPLE) {
         curCycles -= CYCLES_PER_SAMPLE;
-        
+
         int32_t left = 0;
         int32_t right = 0;
         int32_t cdLeft = 0;
         int32_t cdRight = 0;
+
+        if (!CDROM::audioSamples.empty()) {
+            auto sample = CDROM::audioSamples.front();
+            CDROM::audioSamples.pop_front();
+
+            cdLeft = sample.first;
+            cdRight = sample.second;
+        }
+
+        auto writeData = [this, cdLeft, cdRight]() {
+            uint32_t idx = bufferIndex /*& 0x3FF*/;
+
+            writeToRAM16(0x0000 + idx, cdLeft);
+            writeToRAM16(0x0200 + idx, cdRight);
+            writeToRAM16(0x0400 + idx, voices[1].oldSample); // TODO: Dont use oldSample..
+            writeToRAM16(0x0600 + idx, voices[3].oldSample); // TODO: Dont use oldSample..
+        };
         
         for (int i = 0; i < VOICE_COUNT; i++) {
             Voice &voice = voices[i];
-            
+
+            /**
+             * Voice 1
+             * Write CD Left
+             * Write CD Right
+             * Write Voice 1
+             * Write Voice 3
+             * Reveb
+             * Reset of the Voices
+             */
+            if (i == 1) {
+                writeData();
+            }
+
             if (voice.adsr.state == ADSR::Off)
                 continue;
             
-            voice.step(i, i > 0 ? voices[i - 1].oldSample : 0, soundRAM);
-            
+            voice.step(i, i > 0 ? voices[i - 1].oldSample : 0, *this);
+
             if (voice.muted)
                 continue;
             
@@ -89,48 +118,18 @@ void Emulator::SPU::step(uint32_t cycles) {
             right += voice.currentRight;
         }
         
-        if (!cdAudioSamples.empty()) {
-            auto sample = cdAudioSamples.front();
-            cdAudioSamples.pop_front();
-
-            cdLeft = sample.first;
-            cdRight = sample.second;
+        if (spunct.CD_Audio_Enable) {
+            left += (cdLeft * cdInputVolLeft) >> 15;
+            right += (cdRight * cdInputVolRight) >> 15;
         }
-        
+
         left = (left * static_cast<int16_t>(mainValLeft)) >> 15;
         right = (right * static_cast<int16_t>(mainValRight)) >> 15;
-        
-        if (spunct.CD_Audio_Enable) {
-            left += (cdLeft * cdInputVolLeft);
-            right += (cdRight * cdInputVolRight);
-        }
 
-        // Used for UI testing
-        lastMixedLeft = left;
-        lastMixedRight = right;
-        
         audioBuffer[audioIndex++] = static_cast<int16_t>(std::clamp<int32_t>(left,  -32768, 32767));
         audioBuffer[audioIndex++] = static_cast<int16_t>(std::clamp<int32_t>(right, -32768, 32767));
 
         bufferIndex = (bufferIndex + 2) & 0x3FF;
-
-        auto writeToRam16 = [this](uint32_t addr, uint16_t val) -> uint8_t {
-            uint8_t lower = val & 0xFFFF;
-            uint8_t upper = (val >> 8) & 0xFFFF;
-
-            soundRAM[addr] = lower;
-            soundRAM[addr + 1] = lower;
-
-            if (spunct.IRQ9_Enable && addr == irqAddress * 8) {
-                status.IRQ9_Flag = true;
-                IRQ::trigger(IRQ::SPU);
-            }
-        };
-
-        writeToRam16(bufferIndex, cdLeft);
-        writeToRam16(bufferIndex + 0x400, cdRight);
-        writeToRam16(bufferIndex + 0x800, voices[1].oldSample); // TODO: Dont use oldSample..
-        writeToRam16(bufferIndex + 0xC00, voices[3].oldSample);
 
         if (audioIndex >= AUDIO_BUFFER_SIZE) {
             if (device != 0) {
@@ -198,7 +197,7 @@ void Emulator::SPU::stepTransfer() {
 
     // TODO: IRQ?
     uint32_t ramIdx = (currentAddress >> 1) & 0x3FFFF;
-    soundRAM[ramIdx] = cachedData;
+    writeToRAM16(ramIdx, cachedData);
 
     currentAddress = (currentAddress + 2) & 0x7FFFF;
 }
@@ -484,14 +483,14 @@ void Emulator::SPU::handleVolumeStore(const uint32_t addr, const uint32_t val) {
         case 0x1f801D80: {
             // 1F801D80h - Mainvolume left
             mainValLeft = (val & 0xFFFF);
-            
+
             break;
         }
-        
+
         case 0x1f801D82: {
             // 1F801D82h - Mainvolume right
             mainValRight = (val & 0xFFFF);
-            
+
             break;
         }
         
@@ -547,7 +546,7 @@ void Emulator::SPU::handleFlagsStore(uint32_t addr, uint32_t val) {
         case 0x1F801D88: { // low 16
             for(int i = 0; i < 16; i++) {
                 if(spunct.SPU_Enable && (v >> i) & 1) {
-                    voices[i].triggerKeyOn(curCycles, soundRAM);
+                    voices[i].triggerKeyOn(curCycles, *this);
                 }
             }
 
@@ -557,8 +556,8 @@ void Emulator::SPU::handleFlagsStore(uint32_t addr, uint32_t val) {
         }
         case 0x1F801D8A: { // high 16
             for(int i = 0; i < 8; i++) {
-                if(spunct.SPU_Enable &&(v >> i) & 1) {
-                    voices[i + 16].triggerKeyOn(curCycles, soundRAM);
+                if(spunct.SPU_Enable && (v >> i) & 1) {
+                    voices[i + 16].triggerKeyOn(curCycles, *this);
                 }
             }
 
@@ -723,7 +722,7 @@ void Emulator::SPU::handleControlStore(uint32_t addr, uint32_t val) {
         }
         case 0x1F801DA4: {
             // 1F801DA4h - Sound RAM IRQ Address (IRQ9)
-            irqAddress = (val & 0xFFFFFFFF);
+            irqAddress = (val & 0xFFFF);
             break;
         }
         case 0x1F801DA6: {
@@ -743,7 +742,7 @@ void Emulator::SPU::handleControlStore(uint32_t addr, uint32_t val) {
         case 0x1F801DAA: {
             // 1F801DAAh - SPU Control Register (SPUCNT)
             spunct._reg = val;
-            
+
             // Bits 0-5: Current SPU Mode (delayed version of SPUCNT.Bit5-0)
             status.Current_SPU_Mode = spunct._reg & 0x3F;
             
@@ -862,6 +861,34 @@ void Emulator::SPU::handleVoiceInternalStore(uint32_t addr, uint32_t val) {
                 break;
             }
     }
+}
+
+void Emulator::SPU::writeToRAM8(uint32_t addr, uint8_t val) {
+    soundRAM[addr & 0x3FFFF] = val;
+
+    if (spunct.IRQ9_Enable && addr == irqAddress * 8) {
+        status.IRQ9_Flag = true;
+        IRQ::trigger(IRQ::Interrupt::SPU);
+    }
+}
+
+uint8_t Emulator::SPU::readFromRAM8(uint32_t addr) {
+    return soundRAM[addr & 0x3FFFF];
+}
+
+void Emulator::SPU::writeToRAM16(uint32_t addr, uint16_t val) {
+    uint32_t idx = addr & 0x3FFFF;
+
+    soundRAM[idx] = val;
+
+    if (spunct.IRQ9_Enable && addr == irqAddress * 8) {
+        status.IRQ9_Flag = true;
+        IRQ::trigger(IRQ::Interrupt::SPU);
+    }
+}
+
+uint16_t Emulator::SPU::readFromRAM16(uint32_t addr) {
+    return soundRAM[addr & 0x3FFFF];
 }
 
 void Emulator::SPU::pushSamples(int16_t* samples, int sampleCount) {

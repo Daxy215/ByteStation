@@ -243,8 +243,8 @@ void MDEC::handleCommandProcessing(uint32_t val) {
     switch (command.Op) {
         case 1: {
             // MDEC(1) - Decode Macroblock(s)
-            input.push_back(val         & 0xFFFF);
-            input.push_back((val >> 16) & 0xFFFF);
+            input.push_back(val         & 0xFFFFFFFF);
+            input.push_back((val >> 16) & 0xFFFFFFFF);
             counter += 2;
             
             if (counter >= command.NumberOfParameterWords * 2) {
@@ -265,7 +265,7 @@ void MDEC::handleCommandProcessing(uint32_t val) {
                 ? colorQuantTable.data()
                 : luminanceQuantTable.data();
             
-            int zz = (counter % 16) * 4;
+            uint32_t zz = (counter % 16) * 4;
             
             table[zigzag[zz + 0]] = (val      ) & 0xFF;
             table[zigzag[zz + 1]] = (val >>  8) & 0xFF;
@@ -303,8 +303,8 @@ void MDEC::handleCommandProcessing(uint32_t val) {
             /*for (int i = 0; i < 2; i++) {
                 scaleTable[counter * 2 + i] = val >> (i * 16);
             }*/
-            scaleTable[counter++] = static_cast<int16_t>(val & 0xFFFF);
-            scaleTable[counter++] = static_cast<int16_t>((val >> 16) & 0xFFFF);
+            scaleTable[counter++] = static_cast<int16_t>(val & 0xFFFFFFFF);
+            scaleTable[counter++] = static_cast<int16_t>((val >> 16) & 0xFFFFFFFF);
             
             break;
         }
@@ -343,18 +343,15 @@ void MDEC::decodeBlocks() {
             //printf("Block %d failed to decode!\n", blockCount);
             continue;
         }
-        
-        //printf("Block %d: data size = %zu\n", blockCount, block->data.size());
+
         blockCount++;
-        
+
         // TODO; Handle 4-8bit
         const uint32_t words = (command.DataOutputDepth == 2) ? 192 : 256;
         
         for (uint32_t i = 0; i < words; i++)
             output.push_back(block->data[i]);
     }
-    
-    //printf("Total blocks decoded: %d\n", blockCount);
 }
 
 struct RGB { uint8_t r, g, b; };
@@ -404,7 +401,7 @@ std::optional<MDEC::DCTBlock> MDEC::decodeMarcoBlocks(std::vector<uint16_t>::ite
                 uint16_t r5 = (p0.r >> 3);
                 uint16_t g5 = (p0.g >> 3);
                 uint16_t b5 = (p0.b >> 3);
-            
+
                 block.data[i] =
                         (b5 << 10) |
                         (g5 << 5)  |
@@ -459,7 +456,10 @@ bool MDEC::rl_decode_block(std::array<int16_t, 64> &blk, std::vector<uint16_t>::
         src++;
     }
     
-    if (src == input.end()) return false;
+    if (src == input.end()) {
+        return false;
+    }
+
     const DCT dct = *src++;
     int32_t cur = extend_sign<10>(dct.DC);
     int32_t val = cur * qt[0];
