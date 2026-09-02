@@ -14,10 +14,10 @@ namespace Emulator {
     class SPU;
 
     struct Fifo {
-        static constexpr uint32_t SIZE = 32;
+        static constexpr uint32_t SIZE = 65536; // 32
         static constexpr uint32_t MASK = SIZE - 1;
 
-        uint16_t buffer[SIZE]{};
+        std::vector<uint16_t> buffer = std::vector<uint16_t>(SIZE, 0);
         uint32_t write_pos = 0;
         uint32_t read_pos  = 0;
         uint32_t count     = 0;
@@ -97,6 +97,59 @@ namespace Emulator {
         Spucnt(uint32_t reg) : _reg(reg) {}
     };
 
+    struct VolumeSweep {
+        uint16_t reg = 0;
+        int16_t current = 0;
+        int32_t cycleCounter = 0;
+
+        void write(uint16_t value) {
+            reg = value;
+
+            if ((value & 0x8000) == 0) {
+                int32_t level = value & 0x7FFF;
+
+                if (level & 0x4000)
+                    level |= ~0x7FFF;
+
+                current = static_cast<int16_t>(std::clamp<int32_t>(level * 2, -32768, 32767));
+                cycleCounter = 0;
+            }
+        }
+
+        void step() {
+            if ((reg & 0x8000) == 0)
+                return;
+
+            bool isExponential = (reg >> 14) & 1;
+            bool isDecrease = (reg >> 13) & 1;
+            int32_t shiftVal = (reg >> 2) & 0x1F;
+            uint8_t stepIdx = reg & 3;
+
+            if (cycleCounter > 0) {
+                cycleCounter--;
+
+                return;
+            }
+
+            static const int inc[] = { 7, 6, 5, 4 };
+            static const int dec[] = { -8, -7, -6, -5 };
+
+            int32_t stepVal = isDecrease ? dec[stepIdx] : inc[stepIdx];
+            int32_t cycle = 1 << std::max(0, shiftVal - 11);
+            int32_t sweepStep = stepVal << std::max(0, 11 - shiftVal);
+
+            if (isExponential && isDecrease)
+                sweepStep = (sweepStep * current) >> 15;
+
+            if (isExponential && !isDecrease && current > 0x6000)
+                cycle *= 4;
+
+            cycleCounter = cycle - 1;
+
+            current = static_cast<int16_t>(std::clamp<int32_t>(current + sweepStep, 0, 0x7FFF));
+        }
+    };
+
     // SPU Volume and ADSR Generator
     struct ADSR {
         enum State: int {
@@ -111,10 +164,10 @@ namespace Emulator {
         uint32_t adsr = 0;
 
         // 1F801C00h+N*10h - Voice 0..23 Volume Left
-        uint16_t volLeft = 0;
+        VolumeSweep volLeft = {};
 
         // 1F801C02h+N*10h - Voice 0..23 Volume Right
-        uint16_t volRight = 0;
+        VolumeSweep volRight = {};
 
         // 1F801C0Ch+N*10h - Voice 0..23 Current ADSR volume (R/W)
         int16_t currentVolume = 0;
@@ -142,8 +195,8 @@ namespace Emulator {
                     break;
                 }
                 case Attack: {
-                    stepVal = ((adsr >> 8) & 3) ^ 0; // attack step 7..4
-                    stepVal = 7 - stepVal;
+                    //stepVal = ((adsr >> 8) & 3) ^ 0; // attack step 7..4
+                    stepVal = 7 - ((adsr >> 8) & 3);
                     shiftVal = (adsr >> 10) & 0x1F;
                     isExponential = ((adsr >> 15) & 1) != 0;
                     isDecrease = false;
@@ -155,7 +208,8 @@ namespace Emulator {
                     shiftVal = (adsr >> 4) & 0xF;
                     isExponential = true;
                     isDecrease = true;
-                    targetLevel = ((adsr & 0xF) + 1) * 0x800;
+                    targetLevel = std::min<int32_t>(((adsr & 0xF) + 1) * 0x800, 0x7FFF);
+
                     break;
                 }
                 case Sustain: {
@@ -180,38 +234,20 @@ namespace Emulator {
 
             if (cycleCounter > 0) {
                 cycleCounter--;
-                //return;
-            }
 
-            int cycle;
-            int adsrStep;
-
-            //if (shiftVal < 11) {
-            //    cycle = 1;
-                adsrStep = stepVal << std::max(0, 11 - shiftVal);
-            //} else {
-                cycle = 1 << std::max(0, shiftVal - 11);
-            //    adsrStep = stepVal;
-            //}
-
-            if (isExponential && isDecrease/* && currentVolume > 0*/) {
-                adsrStep = (adsrStep * currentVolume) >> 15;
-            }
-
-            if (isExponential && !isDecrease && currentVolume > 0x6000) {
-                adsrStep >>= 2;
-                //cycle *= 4;
-            }
-            
-            if (cycleCounter > 0)
                 return;
-            
-            cycleCounter = cycle;
-            
-            //int32_t nextVol = static_cast<int32_t>(currentVolume) + adsrStep;
+            }
 
-            //if (nextVol > 0x7FFF) nextVol = 0x7FFF;
-            //if (nextVol < 0) nextVol = 0;
+            int32_t cycle = 1 << std::max(0, shiftVal - 11);
+            int32_t adsrStep = stepVal << std::max(0, 11 - shiftVal);
+
+            if (isExponential && isDecrease)
+                adsrStep = (adsrStep * currentVolume) >> 15;
+
+            if (isExponential && !isDecrease && currentVolume > 0x6000)
+                cycle *= 4;
+            
+            cycleCounter = cycle - 1;
 
             currentVolume = std::clamp(static_cast<int32_t>(currentVolume) + adsrStep, 0, 0x7FFF);
 
@@ -339,6 +375,8 @@ namespace Emulator {
         // used for Gaussian
         int16_t oldSample;
         int16_t olderSample;
+        int16_t currentSample = 0;
+
         int16_t decodedSamples[28];  // Must be 28 samples per ADPCM block
         int16_t sampleHistory[4] = {0, 0, 0, 0}; // [0]=new, [1]=old, [2]=older, [3]=oldest
         uint8_t currentSampleIndex = 0;
@@ -357,6 +395,14 @@ namespace Emulator {
             adpcm.step();
             adsr.step();
 
+            if (adsr.state == ADSR::Off) {
+                currentSample = 0;
+                currentLeft = 0;
+                currentRight = 0;
+
+                return;
+            }
+
             // ;range +0000h..+FFFFh (0...705.6 kHz)
             int32_t step = adpcm.vxPitch;
 
@@ -374,13 +420,13 @@ namespace Emulator {
 
             pitchCounter += step;
 
-            if (pitchCounter >= 0x1000) {
+            while (pitchCounter >= 0x1000) {
                 pitchCounter -= 0x1000;
                 currentSampleIndex++;
 
                 if (currentSampleIndex >= 28) {
                     currentSampleIndex = 0;
-                    advanceToNextBlock(spu);
+                    advanceToNextBlock(voiceIndex, spu);
                 }
 
                 sampleHistory[3] = sampleHistory[2];
@@ -396,19 +442,28 @@ namespace Emulator {
 
             int32_t interpolated = 0;
 
-            interpolated += (kGaussianTable[0x0FF - i] * sampleHistory[3]) >> 15;
-            interpolated += (kGaussianTable[0x1FF - i] * sampleHistory[2]) >> 15;
-            interpolated += (kGaussianTable[0x100 + i] * sampleHistory[1]) >> 15;
-            interpolated += (kGaussianTable[0x000 + i] * sampleHistory[0]) >> 15;
+            if ((spu.NON >> voiceIndex) & 1) {
+                interpolated = spu.noiseLevel;
+            } else {
+                interpolated += (kGaussianTable[0x0FF - i] * sampleHistory[3]) >> 15;
+                interpolated += (kGaussianTable[0x1FF - i] * sampleHistory[2]) >> 15;
+                interpolated += (kGaussianTable[0x100 + i] * sampleHistory[1]) >> 15;
+                interpolated += (kGaussianTable[0x000 + i] * sampleHistory[0]) >> 15;
+            }
+
+            adsr.volLeft.step();
+            adsr.volRight.step();
 
             int32_t gatedSample = (interpolated * adsr.currentVolume) >> 15;
 
-            currentLeft  = (gatedSample * adsr.volLeft)  >> 15;
-            currentRight = (gatedSample * adsr.volRight) >> 15;
+            currentSample = static_cast<int16_t>(std::clamp<int32_t>(gatedSample, -32768, 32767));
+
+            currentLeft  = static_cast<int16_t>(std::clamp<int32_t>((gatedSample * adsr.volLeft.current)  >> 15, -32768, 32767));
+            currentRight = static_cast<int16_t>(std::clamp<int32_t>((gatedSample * adsr.volRight.current) >> 15, -32768, 32767));
         }
 
         void decodeEntireBlock(SPU &spu) {
-            uint16_t header = spu.readFromRAM16(currentAddress);//ram[currentAddress];
+            uint16_t header = spu.readFromRAM16(currentAddress);
 
             uint8_t shift = header & 0x0F;
             shift = shift > 12 ? 9 : shift;
@@ -427,7 +482,7 @@ namespace Emulator {
 
                 int32_t shiftedSample = nibble << (12 - shift);
 
-                int32_t filteredSample;
+                int32_t filteredSample = shiftedSample;
                 switch (filterIdx) {
                     case 0: {
                         filteredSample = shiftedSample;
@@ -460,41 +515,9 @@ namespace Emulator {
 
             olderSample = prev2;
             oldSample = prev1;
-
-            /*
-            static const int f0[] = { 0, 60, 115, 98, 122 };
-            static const int f1[] = { 0, 0, -52, -55, -60 };
-
-            int16_t prev1 = oldSample;
-            int16_t prev2 = olderSample;
-
-            for (int i = 0; i < 28; i++) {
-                uint32_t wordOffset = 1 + (i / 4);
-                uint16_t rawWord = ram[(currentAddress / 2) + wordOffset];
-
-                int16_t nibble = (rawWord >> ((i % 4) * 4)) & 0x0F;
-                if (nibble & 0x8) nibble |= 0xFFF0;
-
-                int32_t prediction =
-                    (prev1 * f0[filterIdx] +
-                     prev2 * f1[filterIdx] + 32) >> 6;
-
-                int32_t current = (nibble << (12 - shift)) + prediction;
-
-                if (current > 32767) current = 32767;
-                if (current < -32768) current = -32768;
-
-                decodedSamples[i] = static_cast<int16_t>(current);
-
-                prev2 = prev1;
-                prev1 = decodedSamples[i];
-            }
-
-            olderSample = prev2;
-            oldSample = prev1;*/
         }
 
-        void advanceToNextBlock(SPU &spu) {
+        void advanceToNextBlock(uint8_t voiceIndex, SPU &spu) {
             decodeEntireBlock(spu);
 
             uint8_t flags = (spu.readFromRAM16(currentAddress) >> 8) & 0xFF;
@@ -505,7 +528,7 @@ namespace Emulator {
             }
 
             if ((flags & 0x01) != 0) { // Loop End
-                // internalStatusRegister |= (1 << voiceIndex);
+                spu.ENDX |= (1u << voiceIndex);
                 currentAddress = repeatAddress;
 
                 if ((flags & 0x02) == 0) {
@@ -517,62 +540,33 @@ namespace Emulator {
             }
         }
 
-        /*int16_t decodeAdpcmSample(uint8_t sampleIndex, uint16_t (&ram)[256 * 1024]) {
-            uint16_t header = ram[currentAddress / 2];
-            uint8_t shift = header & 0x0F;
-            uint8_t filterIdx = (header >> 4) & 0x07;
-
-            if (filterIdx > 4) filterIdx = 0;
-
-            uint32_t wordOffset = 1 + (sampleIndex / 4);
-            uint16_t rawWord = ram[(currentAddress / 2) + wordOffset];
-
-            int16_t nibble = (rawWord >> ((sampleIndex % 4) * 4)) & 0x0F;
-            if (nibble & 0x8) nibble |= 0xFFF0;
-
-            static const int f0[] = { 0, 60, 115, 98, 122 };
-            static const int f1[] = { 0, 0, -52, -55, -60 };
-
-            int32_t prediction = (oldSample * f0[filterIdx] + olderSample * f1[filterIdx] + 32) >> 6;
-            int32_t current = (nibble << (12 - shift)) + prediction;
-
-            if (current > 32767) current = 32767;
-            if (current < -32768) current = -32768;
-
-            olderSample = oldSample;
-            oldSample = static_cast<int16_t>(current);
-
-            return oldSample;
-        }*/
-
         int cycles;
 
-        void triggerKeyOn(int cycles, SPU &spu) {
+        void triggerKeyOn(uint8_t voiceIndex, int cycles, SPU &spu) {
             currentAddress = startAddress * 4;
-            if (repeatAddress == 0) {
-                repeatAddress = currentAddress;
-            }
+            repeatAddress = currentAddress;
 
             adsr.currentVolume = 0;
             adsr.state = ADSR::Attack;
+            adsr.cycleCounter = 0;
 
             pitchCounter = 0;
+            currentSampleIndex = 0;
 
             oldSample = 0;
             olderSample = 0;
             currentLeft = 0;
             currentRight = 0;
+            currentSample = 0;
 
             std::fill(std::begin(sampleHistory), std::end(sampleHistory), 0);
 
-            advanceToNextBlock(spu);
+            spu.ENDX &= ~(1u << voiceIndex);
 
-            //sampleBuffer.fill(0);
+            advanceToNextBlock(voiceIndex, spu);
 
-            // 1F801D9Ch - Voice 0..23 ON/OFF (status) (ENDX) (R)
-            //this->internalStatusRegister &= ~(1 << n); // Clear "End" flag for this voice
+            sampleHistory[0] = decodedSamples[0];
 
-            // TODO: REMOVE
             this->cycles = cycles;
         }
 
@@ -649,8 +643,16 @@ namespace Emulator {
             uint64_t queuedBufferCount = 0;
             uint64_t bufferIndex = 0;
 
-            uint16_t KON = 0;
-            uint16_t KOFF = 0;
+            // User-controlled output settings (not part of the emulated hardware)
+            bool  audioEnabled = true;
+            float masterVolume = 1.0f;
+
+            uint32_t KON = 0;
+            uint32_t KOFF = 0;
+            uint32_t ENDX = 0;
+
+            int32_t noiseTimer = 0;
+            int16_t noiseLevel = 0;
 
             // 1F801DB0h - CD Audio Input Volume (for normal CD-DA, and compressed XA-ADPCM)
             int16_t cdInputVolLeft = 0;
@@ -662,11 +664,13 @@ namespace Emulator {
 
             // 1F801DACh - Sound RAM Data Transfer Control (should be 0004h)
             uint16_t transferControl = 0;
+            uint16_t transferCache = 0;
+            uint32_t transferIndex = 0;
 
         private:
             uint16_t irqAddress = 0; // (IRQ9)
             uint16_t transferAddress = 0;
-            uint16_t currentAddress = 0;
+            uint32_t currentAddress = 0;
 
             static const uint8_t VOICE_COUNT = 24;
 
@@ -690,7 +694,7 @@ namespace Emulator {
              *   01000h-xxxxxh  ADPCM Samples  (first 16bytes usually contain a Sine wave)
              *   xxxxxh-7FFFFh  Reverb work area
              */
-            uint16_t soundRAM[256 * 1024]{};
+            std::vector<uint16_t> soundRAM = std::vector<uint16_t>(256 * 1024, 0);
 
             Fifo buffer;
 

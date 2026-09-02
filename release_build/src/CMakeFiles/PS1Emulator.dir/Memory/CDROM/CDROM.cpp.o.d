@@ -119,12 +119,14 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/CDROM.cpp.o: \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Sector.h \
  /usr/include/c++/16/cstring /usr/include/string.h /usr/include/strings.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/TrackBuilder.h \
- /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Location.h \
- /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/fifo.h \
- /usr/include/c++/16/stdexcept /usr/include/c++/16/exception \
+ /usr/include/c++/16/optional /usr/include/c++/16/exception \
  /usr/include/c++/16/bits/exception_ptr.h \
  /usr/include/c++/16/bits/cxxabi_init_exception.h \
  /usr/include/c++/16/typeinfo /usr/include/c++/16/bits/nested_exception.h \
+ /usr/include/c++/16/bits/enable_special_members.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Location.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/fifo.h \
+ /usr/include/c++/16/stdexcept \
  /usr/include/c++/16/bits/stdexcept_except.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/../IRQ.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/../../CPU/COP/COP0.h \

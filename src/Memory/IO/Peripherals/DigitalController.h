@@ -47,7 +47,7 @@ public:
     };
     
 public:
-    DigitalController();
+    DigitalController(uint8_t index);
     
     // TODO; Not sure if this is needed?
     void step(uint32_t cycles);
@@ -62,8 +62,7 @@ private:
     // TODO; Temp
     //   5A41h=Digital Pad         (or analog pad/stick in digital mode; LED=Off)
     const uint16_t TYPE = 0x5A41;
-    
-    //uint16_t _buttons = 0xFFFF;
+    const uint8_t INDEX = 0;
     
 public:
     bool interrupt = false;

@@ -2,7 +2,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o: \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/TrackBuilder.cpp \
  /usr/include/stdc-predef.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/TrackBuilder.h \
- /usr/include/c++/16/string /usr/include/c++/16/bits/requires_hosted.h \
+ /usr/include/c++/16/optional /usr/include/c++/16/bits/version.h \
  /usr/include/c++/16/x86_64-redhat-linux/bits/c++config.h \
  /usr/include/bits/wordsize.h \
  /usr/include/c++/16/x86_64-redhat-linux/bits/os_defines.h \
@@ -11,27 +11,42 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o: \
  /usr/include/bits/long-double.h /usr/include/gnu/stubs.h \
  /usr/include/gnu/stubs-64.h \
  /usr/include/c++/16/x86_64-redhat-linux/bits/cpu_defines.h \
- /usr/include/c++/16/pstl/pstl_config.h \
+ /usr/include/c++/16/pstl/pstl_config.h /usr/include/c++/16/type_traits \
+ /usr/include/c++/16/exception /usr/include/c++/16/bits/exception.h \
+ /usr/include/c++/16/bits/exception_ptr.h \
+ /usr/include/c++/16/bits/exception_defines.h \
+ /usr/include/c++/16/bits/cxxabi_init_exception.h \
+ /usr/lib/gcc/x86_64-redhat-linux/16/include/stddef.h \
+ /usr/include/c++/16/typeinfo /usr/include/c++/16/bits/hash_bytes.h \
+ /usr/include/c++/16/new /usr/include/c++/16/bits/new_except.h \
+ /usr/include/c++/16/bits/move.h \
+ /usr/include/c++/16/bits/nested_exception.h \
+ /usr/include/c++/16/initializer_list \
+ /usr/include/c++/16/bits/enable_special_members.h \
+ /usr/include/c++/16/bits/functional_hash.h \
+ /usr/include/c++/16/bits/stl_construct.h \
+ /usr/include/c++/16/bits/stl_iterator_base_types.h \
+ /usr/include/c++/16/bits/stl_iterator_base_funcs.h \
+ /usr/include/c++/16/bits/concept_check.h \
+ /usr/include/c++/16/debug/assertions.h \
+ /usr/include/c++/16/bits/utility.h /usr/include/c++/16/string \
+ /usr/include/c++/16/bits/requires_hosted.h \
  /usr/include/c++/16/bits/stringfwd.h \
- /usr/include/c++/16/bits/memoryfwd.h /usr/include/c++/16/bits/version.h \
+ /usr/include/c++/16/bits/memoryfwd.h \
  /usr/include/c++/16/bits/char_traits.h \
  /usr/include/c++/16/bits/postypes.h /usr/include/c++/16/cwchar \
  /usr/include/wchar.h /usr/include/bits/libc-header-start.h \
  /usr/include/bits/floatn.h /usr/include/bits/floatn-common.h \
- /usr/lib/gcc/x86_64-redhat-linux/16/include/stddef.h \
  /usr/lib/gcc/x86_64-redhat-linux/16/include/stdarg.h \
  /usr/include/bits/wchar.h /usr/include/bits/types/wint_t.h \
  /usr/include/bits/types/mbstate_t.h \
  /usr/include/bits/types/__mbstate_t.h /usr/include/bits/types/__FILE.h \
  /usr/include/bits/types/FILE.h /usr/include/bits/types/locale_t.h \
- /usr/include/bits/types/__locale_t.h /usr/include/c++/16/type_traits \
+ /usr/include/bits/types/__locale_t.h \
  /usr/include/c++/16/bits/allocator.h \
  /usr/include/c++/16/x86_64-redhat-linux/bits/c++allocator.h \
- /usr/include/c++/16/bits/new_allocator.h /usr/include/c++/16/new \
- /usr/include/c++/16/bits/exception.h \
- /usr/include/c++/16/bits/new_except.h \
- /usr/include/c++/16/bits/exception_defines.h \
- /usr/include/c++/16/bits/new_throw.h /usr/include/c++/16/bits/move.h \
+ /usr/include/c++/16/bits/new_allocator.h \
+ /usr/include/c++/16/bits/new_throw.h \
  /usr/include/c++/16/bits/cpp_type_traits.h \
  /usr/include/c++/16/bits/localefwd.h \
  /usr/include/c++/16/x86_64-redhat-linux/bits/c++locale.h \
@@ -42,10 +57,6 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o: \
  /usr/include/bits/time64.h /usr/include/bits/endian.h \
  /usr/include/bits/endianness.h /usr/include/c++/16/bits/ostream_insert.h \
  /usr/include/c++/16/bits/cxxabi_forced.h \
- /usr/include/c++/16/bits/stl_iterator_base_funcs.h \
- /usr/include/c++/16/bits/concept_check.h \
- /usr/include/c++/16/debug/assertions.h \
- /usr/include/c++/16/bits/stl_iterator_base_types.h \
  /usr/include/c++/16/bits/stl_iterator.h \
  /usr/include/c++/16/ext/type_traits.h \
  /usr/include/c++/16/bits/ptr_traits.h \
@@ -55,17 +66,13 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o: \
  /usr/include/c++/16/bits/stdexcept_throw.h \
  /usr/include/c++/16/bits/stdexcept_throwfwd.h \
  /usr/include/c++/16/bits/stl_algobase.h \
- /usr/include/c++/16/bits/stl_pair.h /usr/include/c++/16/bits/utility.h \
- /usr/include/c++/16/debug/debug.h \
+ /usr/include/c++/16/bits/stl_pair.h /usr/include/c++/16/debug/debug.h \
  /usr/include/c++/16/bits/predefined_ops.h /usr/include/c++/16/bit \
  /usr/include/c++/16/concepts /usr/include/c++/16/bits/range_access.h \
- /usr/include/c++/16/initializer_list /usr/include/c++/16/bits/erase_if.h \
+ /usr/include/c++/16/bits/erase_if.h \
  /usr/include/c++/16/bits/basic_string.h \
  /usr/include/c++/16/ext/alloc_traits.h \
- /usr/include/c++/16/bits/alloc_traits.h \
- /usr/include/c++/16/bits/stl_construct.h /usr/include/c++/16/string_view \
- /usr/include/c++/16/bits/functional_hash.h \
- /usr/include/c++/16/bits/hash_bytes.h \
+ /usr/include/c++/16/bits/alloc_traits.h /usr/include/c++/16/string_view \
  /usr/include/c++/16/bits/string_view.tcc \
  /usr/include/c++/16/ext/string_conversions.h /usr/include/c++/16/cstdlib \
  /usr/include/stdlib.h /usr/include/bits/waitflags.h \
@@ -110,10 +117,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o: \
  /usr/include/bits/stdint-least.h /usr/include/c++/16/filesystem \
  /usr/include/c++/16/bits/fs_fwd.h /usr/include/c++/16/system_error \
  /usr/include/c++/16/x86_64-redhat-linux/bits/error_constants.h \
- /usr/include/c++/16/stdexcept /usr/include/c++/16/exception \
- /usr/include/c++/16/bits/exception_ptr.h \
- /usr/include/c++/16/bits/cxxabi_init_exception.h \
- /usr/include/c++/16/typeinfo /usr/include/c++/16/bits/nested_exception.h \
+ /usr/include/c++/16/stdexcept \
  /usr/include/c++/16/bits/stdexcept_except.h \
  /usr/include/c++/16/bits/chrono.h /usr/include/c++/16/ratio \
  /usr/include/c++/16/limits /usr/include/c++/16/ctime /usr/include/time.h \
@@ -179,6 +183,7 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/TrackBuilder.cpp.o: \
  /usr/include/c++/16/bits/unordered_map.h \
  /usr/include/c++/16/bits/hashtable.h \
  /usr/include/c++/16/bits/hashtable_policy.h \
- /usr/include/c++/16/bits/enable_special_members.h \
  /usr/include/c++/16/bits/node_handle.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Sector.h \
+ /usr/include/c++/16/cstring /usr/include/string.h /usr/include/strings.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/../../Utils/FileSystem/FileManager.h

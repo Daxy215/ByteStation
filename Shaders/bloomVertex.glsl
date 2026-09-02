@@ -5,7 +5,10 @@ layout (location = 1) in vec2 aTexCoords;
 
 out vec2 TexCoords;
 
+uniform vec2 uUvMin;
+uniform vec2 uUvMax;
+
 void main() {
-    TexCoords = aTexCoords;
-    gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
+    vUV = mix(uUvMin, uUvMax, aUV);
+    gl_Position = vec4(aPos, 0.0, 1.0);
 }

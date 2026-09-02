@@ -28,7 +28,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -39,6 +38,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     searched_directories:
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/uname"
       - "/opt/psx-tools/bin/uname"
@@ -48,27 +49,12 @@ events:
       - "/home/daxy/.local/bin/uname"
       - "/home/daxy/.local/npm/bin/uname"
       - "/usr/local/cuda/bin/uname"
-      - "/home/daxy/.local/share/nvim/mason/bin/uname"
       - "/home/daxy/.sdkman/candidates/java/current/bin/uname"
       - "/home/daxy/bin/uname"
       - "/usr/local/bin/uname"
     found: "/usr/bin/uname"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -111,19 +97,18 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "message-v1"
     backtrace:
       - "/usr/share/cmake/Modules/CMakeDetermineSystem.cmake:212 (message)"
       - "CMakeLists.txt:5 (project)"
     message: |
-      The system is: Linux - 7.1.7-200.fc44.x86_64 - x86_64
+      The system is: Linux - 7.1.10-200.fc44.x86_64 - x86_64
   -
     kind: "find-v1"
     backtrace:
@@ -153,7 +138,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -164,6 +148,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     searched_directories:
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gmake"
       - "/opt/psx-tools/bin/gmake"
@@ -173,27 +159,12 @@ events:
       - "/home/daxy/.local/bin/gmake"
       - "/home/daxy/.local/npm/bin/gmake"
       - "/usr/local/cuda/bin/gmake"
-      - "/home/daxy/.local/share/nvim/mason/bin/gmake"
       - "/home/daxy/.sdkman/candidates/java/current/bin/gmake"
       - "/home/daxy/bin/gmake"
       - "/usr/local/bin/gmake"
     found: "/usr/bin/gmake"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -236,12 +207,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -276,7 +246,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -287,6 +256,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     searched_directories:
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/cc"
       - "/opt/psx-tools/bin/cc"
@@ -296,27 +267,12 @@ events:
       - "/home/daxy/.local/bin/cc"
       - "/home/daxy/.local/npm/bin/cc"
       - "/usr/local/cuda/bin/cc"
-      - "/home/daxy/.local/share/nvim/mason/bin/cc"
       - "/home/daxy/.sdkman/candidates/java/current/bin/cc"
       - "/home/daxy/bin/cc"
       - "/usr/local/bin/cc"
     found: "/usr/bin/cc"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -359,12 +315,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -405,20 +360,6 @@ events:
         - "/home/daxy/.cargo/bin"
         - "/usr/local/cuda/bin"
         - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
         - "/opt/psx-tools/bin"
@@ -448,12 +389,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "message-v1"
     backtrace:
@@ -505,7 +445,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -515,23 +454,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     found: "/usr/bin/ar"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -574,12 +501,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -609,7 +535,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -619,23 +544,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     found: "/usr/bin/ranlib"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -678,12 +591,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -713,7 +625,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -723,23 +634,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     found: "/usr/bin/strip"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -782,12 +681,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -817,7 +715,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -827,23 +724,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     found: "/usr/bin/ld"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -886,12 +771,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -921,7 +805,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -931,23 +814,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     found: "/usr/bin/nm"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -990,12 +861,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1025,7 +895,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -1035,23 +904,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     found: "/usr/bin/objdump"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -1094,12 +951,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1129,7 +985,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -1139,23 +994,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     found: "/usr/bin/objcopy"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -1198,12 +1041,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1233,7 +1075,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -1243,23 +1084,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     found: "/usr/bin/readelf"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -1302,12 +1131,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1337,7 +1165,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -1347,6 +1174,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     searched_directories:
       - "/usr/bin/dlltool"
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/dlltool"
@@ -1357,7 +1186,6 @@ events:
       - "/home/daxy/.local/bin/dlltool"
       - "/home/daxy/.local/npm/bin/dlltool"
       - "/usr/local/cuda/bin/dlltool"
-      - "/home/daxy/.local/share/nvim/mason/bin/dlltool"
       - "/home/daxy/.sdkman/candidates/java/current/bin/dlltool"
       - "/home/daxy/bin/dlltool"
       - "/usr/local/bin/dlltool"
@@ -1367,23 +1195,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/dlltool"
       - "/home/daxy/Android/Sdk/emulator/dlltool"
       - "/home/daxy/Android/Sdk/tools/dlltool"
+      - "/home/daxy/.platformio/penv/bin/dlltool"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/dlltool"
     found: false
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -1426,12 +1242,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1461,7 +1276,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -1471,23 +1285,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     found: "/usr/bin/addr2line"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -1530,12 +1332,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1565,7 +1366,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -1575,6 +1375,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     searched_directories:
       - "/usr/bin/tapi"
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/tapi"
@@ -1585,7 +1387,6 @@ events:
       - "/home/daxy/.local/bin/tapi"
       - "/home/daxy/.local/npm/bin/tapi"
       - "/usr/local/cuda/bin/tapi"
-      - "/home/daxy/.local/share/nvim/mason/bin/tapi"
       - "/home/daxy/.sdkman/candidates/java/current/bin/tapi"
       - "/home/daxy/bin/tapi"
       - "/usr/local/bin/tapi"
@@ -1595,23 +1396,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/tapi"
       - "/home/daxy/Android/Sdk/emulator/tapi"
       - "/home/daxy/Android/Sdk/tools/tapi"
+      - "/home/daxy/.platformio/penv/bin/tapi"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/tapi"
     found: false
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -1654,12 +1443,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1678,7 +1466,7 @@ events:
       CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
       CMAKE_FIND_USE_INSTALL_PREFIX: true
     names:
-      - "gcc-ar-16.1"
+      - "gcc-ar-16.2"
       - "gcc-ar-16"
       - "gcc-ar16"
       - "gcc-ar"
@@ -1692,7 +1480,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -1702,26 +1489,29 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     searched_directories:
-      - "/usr/bin/gcc-ar-16.1"
-      - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ar-16.1"
-      - "/opt/psx-tools/bin/gcc-ar-16.1"
-      - "/home/daxy/.cargo/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/psn00bsdk/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/npm/bin/gcc-ar-16.1"
-      - "/usr/local/cuda/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ar-16.1"
-      - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ar-16.1"
-      - "/home/daxy/bin/gcc-ar-16.1"
-      - "/usr/local/bin/gcc-ar-16.1"
-      - "/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/share/JetBrains/Toolbox/scripts/gcc-ar-16.1"
-      - "/var/lib/snapd/snap/bin/gcc-ar-16.1"
-      - "/home/daxy/Android/Sdk/platform-tools/gcc-ar-16.1"
-      - "/home/daxy/Android/Sdk/emulator/gcc-ar-16.1"
-      - "/home/daxy/Android/Sdk/tools/gcc-ar-16.1"
+      - "/usr/bin/gcc-ar-16.2"
+      - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ar-16.2"
+      - "/opt/psx-tools/bin/gcc-ar-16.2"
+      - "/home/daxy/.cargo/bin/gcc-ar-16.2"
+      - "/home/daxy/.local/psn00bsdk/bin/gcc-ar-16.2"
+      - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/gcc-ar-16.2"
+      - "/home/daxy/.local/bin/gcc-ar-16.2"
+      - "/home/daxy/.local/npm/bin/gcc-ar-16.2"
+      - "/usr/local/cuda/bin/gcc-ar-16.2"
+      - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ar-16.2"
+      - "/home/daxy/bin/gcc-ar-16.2"
+      - "/usr/local/bin/gcc-ar-16.2"
+      - "/bin/gcc-ar-16.2"
+      - "/home/daxy/.local/share/JetBrains/Toolbox/scripts/gcc-ar-16.2"
+      - "/var/lib/snapd/snap/bin/gcc-ar-16.2"
+      - "/home/daxy/Android/Sdk/platform-tools/gcc-ar-16.2"
+      - "/home/daxy/Android/Sdk/emulator/gcc-ar-16.2"
+      - "/home/daxy/Android/Sdk/tools/gcc-ar-16.2"
+      - "/home/daxy/.platformio/penv/bin/gcc-ar-16.2"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ar-16.2"
       - "/usr/bin/gcc-ar-16"
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ar-16"
       - "/opt/psx-tools/bin/gcc-ar-16"
@@ -1731,7 +1521,6 @@ events:
       - "/home/daxy/.local/bin/gcc-ar-16"
       - "/home/daxy/.local/npm/bin/gcc-ar-16"
       - "/usr/local/cuda/bin/gcc-ar-16"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ar-16"
       - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ar-16"
       - "/home/daxy/bin/gcc-ar-16"
       - "/usr/local/bin/gcc-ar-16"
@@ -1741,6 +1530,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/gcc-ar-16"
       - "/home/daxy/Android/Sdk/emulator/gcc-ar-16"
       - "/home/daxy/Android/Sdk/tools/gcc-ar-16"
+      - "/home/daxy/.platformio/penv/bin/gcc-ar-16"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ar-16"
       - "/usr/bin/gcc-ar16"
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ar16"
       - "/opt/psx-tools/bin/gcc-ar16"
@@ -1750,7 +1541,6 @@ events:
       - "/home/daxy/.local/bin/gcc-ar16"
       - "/home/daxy/.local/npm/bin/gcc-ar16"
       - "/usr/local/cuda/bin/gcc-ar16"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ar16"
       - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ar16"
       - "/home/daxy/bin/gcc-ar16"
       - "/usr/local/bin/gcc-ar16"
@@ -1760,23 +1550,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/gcc-ar16"
       - "/home/daxy/Android/Sdk/emulator/gcc-ar16"
       - "/home/daxy/Android/Sdk/tools/gcc-ar16"
+      - "/home/daxy/.platformio/penv/bin/gcc-ar16"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ar16"
     found: "/usr/bin/gcc-ar"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -1819,12 +1597,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -1843,7 +1620,7 @@ events:
       CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
       CMAKE_FIND_USE_INSTALL_PREFIX: true
     names:
-      - "gcc-ranlib-16.1"
+      - "gcc-ranlib-16.2"
       - "gcc-ranlib-16"
       - "gcc-ranlib16"
       - "gcc-ranlib"
@@ -1857,7 +1634,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -1867,26 +1643,29 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     searched_directories:
-      - "/usr/bin/gcc-ranlib-16.1"
-      - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ranlib-16.1"
-      - "/opt/psx-tools/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.cargo/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/psn00bsdk/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/npm/bin/gcc-ranlib-16.1"
-      - "/usr/local/cuda/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ranlib-16.1"
-      - "/home/daxy/bin/gcc-ranlib-16.1"
-      - "/usr/local/bin/gcc-ranlib-16.1"
-      - "/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/share/JetBrains/Toolbox/scripts/gcc-ranlib-16.1"
-      - "/var/lib/snapd/snap/bin/gcc-ranlib-16.1"
-      - "/home/daxy/Android/Sdk/platform-tools/gcc-ranlib-16.1"
-      - "/home/daxy/Android/Sdk/emulator/gcc-ranlib-16.1"
-      - "/home/daxy/Android/Sdk/tools/gcc-ranlib-16.1"
+      - "/usr/bin/gcc-ranlib-16.2"
+      - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ranlib-16.2"
+      - "/opt/psx-tools/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.cargo/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.local/psn00bsdk/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.local/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.local/npm/bin/gcc-ranlib-16.2"
+      - "/usr/local/cuda/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ranlib-16.2"
+      - "/home/daxy/bin/gcc-ranlib-16.2"
+      - "/usr/local/bin/gcc-ranlib-16.2"
+      - "/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.local/share/JetBrains/Toolbox/scripts/gcc-ranlib-16.2"
+      - "/var/lib/snapd/snap/bin/gcc-ranlib-16.2"
+      - "/home/daxy/Android/Sdk/platform-tools/gcc-ranlib-16.2"
+      - "/home/daxy/Android/Sdk/emulator/gcc-ranlib-16.2"
+      - "/home/daxy/Android/Sdk/tools/gcc-ranlib-16.2"
+      - "/home/daxy/.platformio/penv/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ranlib-16.2"
       - "/usr/bin/gcc-ranlib-16"
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ranlib-16"
       - "/opt/psx-tools/bin/gcc-ranlib-16"
@@ -1896,7 +1675,6 @@ events:
       - "/home/daxy/.local/bin/gcc-ranlib-16"
       - "/home/daxy/.local/npm/bin/gcc-ranlib-16"
       - "/usr/local/cuda/bin/gcc-ranlib-16"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ranlib-16"
       - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ranlib-16"
       - "/home/daxy/bin/gcc-ranlib-16"
       - "/usr/local/bin/gcc-ranlib-16"
@@ -1906,6 +1684,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/gcc-ranlib-16"
       - "/home/daxy/Android/Sdk/emulator/gcc-ranlib-16"
       - "/home/daxy/Android/Sdk/tools/gcc-ranlib-16"
+      - "/home/daxy/.platformio/penv/bin/gcc-ranlib-16"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ranlib-16"
       - "/usr/bin/gcc-ranlib16"
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ranlib16"
       - "/opt/psx-tools/bin/gcc-ranlib16"
@@ -1915,7 +1695,6 @@ events:
       - "/home/daxy/.local/bin/gcc-ranlib16"
       - "/home/daxy/.local/npm/bin/gcc-ranlib16"
       - "/usr/local/cuda/bin/gcc-ranlib16"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ranlib16"
       - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ranlib16"
       - "/home/daxy/bin/gcc-ranlib16"
       - "/usr/local/bin/gcc-ranlib16"
@@ -1925,23 +1704,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/gcc-ranlib16"
       - "/home/daxy/Android/Sdk/emulator/gcc-ranlib16"
       - "/home/daxy/Android/Sdk/tools/gcc-ranlib16"
+      - "/home/daxy/.platformio/penv/bin/gcc-ranlib16"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ranlib16"
     found: "/usr/bin/gcc-ranlib"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -1984,12 +1751,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -2036,20 +1802,6 @@ events:
         - "/home/daxy/.cargo/bin"
         - "/usr/local/cuda/bin"
         - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
         - "/opt/psx-tools/bin"
@@ -2079,12 +1831,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -2125,20 +1876,6 @@ events:
         - "/home/daxy/.cargo/bin"
         - "/usr/local/cuda/bin"
         - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
         - "/opt/psx-tools/bin"
@@ -2168,12 +1905,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "message-v1"
     backtrace:
@@ -2214,7 +1950,7 @@ events:
       CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
       CMAKE_FIND_USE_INSTALL_PREFIX: true
     names:
-      - "gcc-ar-16.1"
+      - "gcc-ar-16.2"
       - "gcc-ar-16"
       - "gcc-ar16"
       - "gcc-ar"
@@ -2228,7 +1964,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -2238,26 +1973,29 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     searched_directories:
-      - "/usr/bin/gcc-ar-16.1"
-      - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ar-16.1"
-      - "/opt/psx-tools/bin/gcc-ar-16.1"
-      - "/home/daxy/.cargo/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/psn00bsdk/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/npm/bin/gcc-ar-16.1"
-      - "/usr/local/cuda/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ar-16.1"
-      - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ar-16.1"
-      - "/home/daxy/bin/gcc-ar-16.1"
-      - "/usr/local/bin/gcc-ar-16.1"
-      - "/bin/gcc-ar-16.1"
-      - "/home/daxy/.local/share/JetBrains/Toolbox/scripts/gcc-ar-16.1"
-      - "/var/lib/snapd/snap/bin/gcc-ar-16.1"
-      - "/home/daxy/Android/Sdk/platform-tools/gcc-ar-16.1"
-      - "/home/daxy/Android/Sdk/emulator/gcc-ar-16.1"
-      - "/home/daxy/Android/Sdk/tools/gcc-ar-16.1"
+      - "/usr/bin/gcc-ar-16.2"
+      - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ar-16.2"
+      - "/opt/psx-tools/bin/gcc-ar-16.2"
+      - "/home/daxy/.cargo/bin/gcc-ar-16.2"
+      - "/home/daxy/.local/psn00bsdk/bin/gcc-ar-16.2"
+      - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/gcc-ar-16.2"
+      - "/home/daxy/.local/bin/gcc-ar-16.2"
+      - "/home/daxy/.local/npm/bin/gcc-ar-16.2"
+      - "/usr/local/cuda/bin/gcc-ar-16.2"
+      - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ar-16.2"
+      - "/home/daxy/bin/gcc-ar-16.2"
+      - "/usr/local/bin/gcc-ar-16.2"
+      - "/bin/gcc-ar-16.2"
+      - "/home/daxy/.local/share/JetBrains/Toolbox/scripts/gcc-ar-16.2"
+      - "/var/lib/snapd/snap/bin/gcc-ar-16.2"
+      - "/home/daxy/Android/Sdk/platform-tools/gcc-ar-16.2"
+      - "/home/daxy/Android/Sdk/emulator/gcc-ar-16.2"
+      - "/home/daxy/Android/Sdk/tools/gcc-ar-16.2"
+      - "/home/daxy/.platformio/penv/bin/gcc-ar-16.2"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ar-16.2"
       - "/usr/bin/gcc-ar-16"
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ar-16"
       - "/opt/psx-tools/bin/gcc-ar-16"
@@ -2267,7 +2005,6 @@ events:
       - "/home/daxy/.local/bin/gcc-ar-16"
       - "/home/daxy/.local/npm/bin/gcc-ar-16"
       - "/usr/local/cuda/bin/gcc-ar-16"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ar-16"
       - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ar-16"
       - "/home/daxy/bin/gcc-ar-16"
       - "/usr/local/bin/gcc-ar-16"
@@ -2277,6 +2014,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/gcc-ar-16"
       - "/home/daxy/Android/Sdk/emulator/gcc-ar-16"
       - "/home/daxy/Android/Sdk/tools/gcc-ar-16"
+      - "/home/daxy/.platformio/penv/bin/gcc-ar-16"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ar-16"
       - "/usr/bin/gcc-ar16"
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ar16"
       - "/opt/psx-tools/bin/gcc-ar16"
@@ -2286,7 +2025,6 @@ events:
       - "/home/daxy/.local/bin/gcc-ar16"
       - "/home/daxy/.local/npm/bin/gcc-ar16"
       - "/usr/local/cuda/bin/gcc-ar16"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ar16"
       - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ar16"
       - "/home/daxy/bin/gcc-ar16"
       - "/usr/local/bin/gcc-ar16"
@@ -2296,23 +2034,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/gcc-ar16"
       - "/home/daxy/Android/Sdk/emulator/gcc-ar16"
       - "/home/daxy/Android/Sdk/tools/gcc-ar16"
+      - "/home/daxy/.platformio/penv/bin/gcc-ar16"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ar16"
     found: "/usr/bin/gcc-ar"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -2355,12 +2081,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "find-v1"
     backtrace:
@@ -2379,7 +2104,7 @@ events:
       CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
       CMAKE_FIND_USE_INSTALL_PREFIX: true
     names:
-      - "gcc-ranlib-16.1"
+      - "gcc-ranlib-16.2"
       - "gcc-ranlib-16"
       - "gcc-ranlib16"
       - "gcc-ranlib"
@@ -2393,7 +2118,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -2403,26 +2127,29 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
     searched_directories:
-      - "/usr/bin/gcc-ranlib-16.1"
-      - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ranlib-16.1"
-      - "/opt/psx-tools/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.cargo/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/psn00bsdk/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/npm/bin/gcc-ranlib-16.1"
-      - "/usr/local/cuda/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ranlib-16.1"
-      - "/home/daxy/bin/gcc-ranlib-16.1"
-      - "/usr/local/bin/gcc-ranlib-16.1"
-      - "/bin/gcc-ranlib-16.1"
-      - "/home/daxy/.local/share/JetBrains/Toolbox/scripts/gcc-ranlib-16.1"
-      - "/var/lib/snapd/snap/bin/gcc-ranlib-16.1"
-      - "/home/daxy/Android/Sdk/platform-tools/gcc-ranlib-16.1"
-      - "/home/daxy/Android/Sdk/emulator/gcc-ranlib-16.1"
-      - "/home/daxy/Android/Sdk/tools/gcc-ranlib-16.1"
+      - "/usr/bin/gcc-ranlib-16.2"
+      - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ranlib-16.2"
+      - "/opt/psx-tools/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.cargo/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.local/psn00bsdk/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.local/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.local/npm/bin/gcc-ranlib-16.2"
+      - "/usr/local/cuda/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ranlib-16.2"
+      - "/home/daxy/bin/gcc-ranlib-16.2"
+      - "/usr/local/bin/gcc-ranlib-16.2"
+      - "/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.local/share/JetBrains/Toolbox/scripts/gcc-ranlib-16.2"
+      - "/var/lib/snapd/snap/bin/gcc-ranlib-16.2"
+      - "/home/daxy/Android/Sdk/platform-tools/gcc-ranlib-16.2"
+      - "/home/daxy/Android/Sdk/emulator/gcc-ranlib-16.2"
+      - "/home/daxy/Android/Sdk/tools/gcc-ranlib-16.2"
+      - "/home/daxy/.platformio/penv/bin/gcc-ranlib-16.2"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ranlib-16.2"
       - "/usr/bin/gcc-ranlib-16"
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ranlib-16"
       - "/opt/psx-tools/bin/gcc-ranlib-16"
@@ -2432,7 +2159,6 @@ events:
       - "/home/daxy/.local/bin/gcc-ranlib-16"
       - "/home/daxy/.local/npm/bin/gcc-ranlib-16"
       - "/usr/local/cuda/bin/gcc-ranlib-16"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ranlib-16"
       - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ranlib-16"
       - "/home/daxy/bin/gcc-ranlib-16"
       - "/usr/local/bin/gcc-ranlib-16"
@@ -2442,6 +2168,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/gcc-ranlib-16"
       - "/home/daxy/Android/Sdk/emulator/gcc-ranlib-16"
       - "/home/daxy/Android/Sdk/tools/gcc-ranlib-16"
+      - "/home/daxy/.platformio/penv/bin/gcc-ranlib-16"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ranlib-16"
       - "/usr/bin/gcc-ranlib16"
       - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin/gcc-ranlib16"
       - "/opt/psx-tools/bin/gcc-ranlib16"
@@ -2451,7 +2179,6 @@ events:
       - "/home/daxy/.local/bin/gcc-ranlib16"
       - "/home/daxy/.local/npm/bin/gcc-ranlib16"
       - "/usr/local/cuda/bin/gcc-ranlib16"
-      - "/home/daxy/.local/share/nvim/mason/bin/gcc-ranlib16"
       - "/home/daxy/.sdkman/candidates/java/current/bin/gcc-ranlib16"
       - "/home/daxy/bin/gcc-ranlib16"
       - "/usr/local/bin/gcc-ranlib16"
@@ -2461,23 +2188,11 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/gcc-ranlib16"
       - "/home/daxy/Android/Sdk/emulator/gcc-ranlib16"
       - "/home/daxy/Android/Sdk/tools/gcc-ranlib16"
+      - "/home/daxy/.platformio/penv/bin/gcc-ranlib16"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/gcc-ranlib16"
     found: "/usr/bin/gcc-ranlib"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -2520,12 +2235,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
   -
     kind: "try_compile-v1"
     backtrace:
@@ -2535,8 +2249,8 @@ events:
     checks:
       - "Detecting C compiler ABI info"
     directories:
-      source: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-XpmrK8"
-      binary: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-XpmrK8"
+      source: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-nzIaeM"
+      binary: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-nzIaeM"
     cmakeVariables:
       CMAKE_CXX_STDLIB_MODULES_JSON: ""
       CMAKE_C_FLAGS: ""
@@ -2546,26 +2260,26 @@ events:
       variable: "CMAKE_C_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-XpmrK8'
+        Change Dir: '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-nzIaeM'
         
-        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_701ca/fast
-        /usr/bin/gmake  -f CMakeFiles/cmTC_701ca.dir/build.make CMakeFiles/cmTC_701ca.dir/build
-        gmake[1]: Entering directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-XpmrK8'
-        Building C object CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o
-        /usr/bin/cc   -v -o CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake/Modules/CMakeCCompilerABI.c
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_43b90/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_43b90.dir/build.make CMakeFiles/cmTC_43b90.dir/build
+        gmake[1]: Entering directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-nzIaeM'
+        Building C object CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o
+        /usr/bin/cc   -v -o CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake/Modules/CMakeCCompilerABI.c
         Using built-in specs.
         COLLECT_GCC=/usr/bin/cc
         OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
         OFFLOAD_TARGET_DEFAULT=1
         Target: x86_64-redhat-linux
-        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,algol68,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.1.1-build/gcc-16.1.1-20260515/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
+        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,algol68,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.2.1-build/gcc-16.2.1-20260819/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
         Thread model: posix
         Supported LTO compression algorithms: zlib zstd
-        gcc version 16.1.1 20260515 (Red Hat 16.1.1-2) (GCC) 
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_701ca.dir/'
-         /usr/libexec/gcc/x86_64-redhat-linux/16/cc1 -quiet -v /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_701ca.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -mtls-dialect=gnu2 -version -o /tmp/ccyEzsat.s
-        GNU C23 (GCC) version 16.1.1 20260515 (Red Hat 16.1.1-2) (x86_64-redhat-linux)
-        	compiled by GNU C version 16.1.1 20260515 (Red Hat 16.1.1-2), GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.4.1, isl version isl-0.24-GMP
+        gcc version 16.2.1 20260819 (Red Hat 16.2.1-2) (GCC) 
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_43b90.dir/'
+         /usr/libexec/gcc/x86_64-redhat-linux/16/cc1 -quiet -v /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_43b90.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -mtls-dialect=gnu2 -version -o /tmp/ccD7SyQh.s
+        GNU C23 (GCC) version 16.2.1 20260819 (Red Hat 16.2.1-2) (x86_64-redhat-linux)
+        	compiled by GNU C version 16.2.1 20260819 (Red Hat 16.2.1-2), GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.4.1, isl version isl-0.24-GMP
         
         GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
         ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/16/include-fixed"
@@ -2576,35 +2290,35 @@ events:
          /usr/local/include
          /usr/include
         End of search list.
-        Compiler executable checksum: 02fd4c3bc0302122b50e730803efc7d8
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_701ca.dir/'
-         as -v --64 -o CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o /tmp/ccyEzsat.s
+        Compiler executable checksum: 9bab69ee039b57e5d63c6dcf5d331ec2
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_43b90.dir/'
+         as -v --64 -o CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o /tmp/ccD7SyQh.s
         GNU assembler version 2.46.1 (x86_64-redhat-linux) using BFD version version 2.46.1-1.fc44
         COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/
         LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../:/lib/:/usr/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.'
-        Linking C executable cmTC_701ca
-        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_701ca.dir/link.txt --verbose=1
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.'
+        Linking C executable cmTC_43b90
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_43b90.dir/link.txt --verbose=1
         Using built-in specs.
         COLLECT_GCC=/usr/bin/cc
         COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper
         OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
         OFFLOAD_TARGET_DEFAULT=1
         Target: x86_64-redhat-linux
-        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,algol68,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.1.1-build/gcc-16.1.1-20260515/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
+        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,algol68,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.2.1-build/gcc-16.2.1-20260819/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
         Thread model: posix
         Supported LTO compression algorithms: zlib zstd
-        gcc version 16.1.1 20260515 (Red Hat 16.1.1-2) (GCC) 
+        gcc version 16.2.1 20260819 (Red Hat 16.2.1-2) (GCC) 
         COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/
         LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../:/lib/:/usr/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_701ca' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_701ca.'
-         /usr/libexec/gcc/x86_64-redhat-linux/16/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccMXOkDa.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_701ca /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
-        collect2 version 16.1.1 20260515 (Red Hat 16.1.1-2)
-        /usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccMXOkDa.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_701ca /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_43b90' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_43b90.'
+         /usr/libexec/gcc/x86_64-redhat-linux/16/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccrbmLsJ.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_43b90 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+        collect2 version 16.2.1 20260819 (Red Hat 16.2.1-2)
+        /usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccrbmLsJ.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_43b90 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
         GNU ld version 2.46.1-1.fc44
-        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_701ca' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_701ca.'
-        /usr/bin/cc  -v -Wl,-v CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o -o cmTC_701ca
-        gmake[1]: Leaving directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-XpmrK8'
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_43b90' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_43b90.'
+        /usr/bin/cc  -v -Wl,-v CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o -o cmTC_43b90
+        gmake[1]: Leaving directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-nzIaeM'
         
       exitCode: 0
   -
@@ -2637,26 +2351,26 @@ events:
       Parsed C implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-XpmrK8']
+        ignore line: [Change Dir: '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-nzIaeM']
         ignore line: []
-        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_701ca/fast]
-        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_701ca.dir/build.make CMakeFiles/cmTC_701ca.dir/build]
-        ignore line: [gmake[1]: Entering directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-XpmrK8']
-        ignore line: [Building C object CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o]
-        ignore line: [/usr/bin/cc   -v -o CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_43b90/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_43b90.dir/build.make CMakeFiles/cmTC_43b90.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-nzIaeM']
+        ignore line: [Building C object CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o]
+        ignore line: [/usr/bin/cc   -v -o CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o -c /usr/share/cmake/Modules/CMakeCCompilerABI.c]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/cc]
         ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
         ignore line: [OFFLOAD_TARGET_DEFAULT=1]
         ignore line: [Target: x86_64-redhat-linux]
-        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol algol68 lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.1.1-build/gcc-16.1.1-20260515/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
+        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol algol68 lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.2.1-build/gcc-16.2.1-20260819/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
         ignore line: [Thread model: posix]
         ignore line: [Supported LTO compression algorithms: zlib zstd]
-        ignore line: [gcc version 16.1.1 20260515 (Red Hat 16.1.1-2) (GCC) ]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_701ca.dir/']
-        ignore line: [ /usr/libexec/gcc/x86_64-redhat-linux/16/cc1 -quiet -v /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_701ca.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -mtls-dialect=gnu2 -version -o /tmp/ccyEzsat.s]
-        ignore line: [GNU C23 (GCC) version 16.1.1 20260515 (Red Hat 16.1.1-2) (x86_64-redhat-linux)]
-        ignore line: [	compiled by GNU C version 16.1.1 20260515 (Red Hat 16.1.1-2)  GMP version 6.3.0  MPFR version 4.2.2  MPC version 1.4.1  isl version isl-0.24-GMP]
+        ignore line: [gcc version 16.2.1 20260819 (Red Hat 16.2.1-2) (GCC) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_43b90.dir/']
+        ignore line: [ /usr/libexec/gcc/x86_64-redhat-linux/16/cc1 -quiet -v /usr/share/cmake/Modules/CMakeCCompilerABI.c -quiet -dumpdir CMakeFiles/cmTC_43b90.dir/ -dumpbase CMakeCCompilerABI.c.c -dumpbase-ext .c -mtune=generic -march=x86-64 -mtls-dialect=gnu2 -version -o /tmp/ccD7SyQh.s]
+        ignore line: [GNU C23 (GCC) version 16.2.1 20260819 (Red Hat 16.2.1-2) (x86_64-redhat-linux)]
+        ignore line: [	compiled by GNU C version 16.2.1 20260819 (Red Hat 16.2.1-2)  GMP version 6.3.0  MPFR version 4.2.2  MPC version 1.4.1  isl version isl-0.24-GMP]
         ignore line: []
         ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
         ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/16/include-fixed"]
@@ -2667,34 +2381,34 @@ events:
         ignore line: [ /usr/local/include]
         ignore line: [ /usr/include]
         ignore line: [End of search list.]
-        ignore line: [Compiler executable checksum: 02fd4c3bc0302122b50e730803efc7d8]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_701ca.dir/']
-        ignore line: [ as -v --64 -o CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o /tmp/ccyEzsat.s]
+        ignore line: [Compiler executable checksum: 9bab69ee039b57e5d63c6dcf5d331ec2]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_43b90.dir/']
+        ignore line: [ as -v --64 -o CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o /tmp/ccD7SyQh.s]
         ignore line: [GNU assembler version 2.46.1 (x86_64-redhat-linux) using BFD version version 2.46.1-1.fc44]
         ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/]
         ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../:/lib/:/usr/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.']
-        ignore line: [Linking C executable cmTC_701ca]
-        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_701ca.dir/link.txt --verbose=1]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o' '-c' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.']
+        ignore line: [Linking C executable cmTC_43b90]
+        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_43b90.dir/link.txt --verbose=1]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/cc]
         ignore line: [COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper]
         ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
         ignore line: [OFFLOAD_TARGET_DEFAULT=1]
         ignore line: [Target: x86_64-redhat-linux]
-        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol algol68 lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.1.1-build/gcc-16.1.1-20260515/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
+        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol algol68 lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.2.1-build/gcc-16.2.1-20260819/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
         ignore line: [Thread model: posix]
         ignore line: [Supported LTO compression algorithms: zlib zstd]
-        ignore line: [gcc version 16.1.1 20260515 (Red Hat 16.1.1-2) (GCC) ]
+        ignore line: [gcc version 16.2.1 20260819 (Red Hat 16.2.1-2) (GCC) ]
         ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/]
         ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../:/lib/:/usr/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_701ca' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_701ca.']
-        link line: [ /usr/libexec/gcc/x86_64-redhat-linux/16/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccMXOkDa.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_701ca /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_43b90' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_43b90.']
+        link line: [ /usr/libexec/gcc/x86_64-redhat-linux/16/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccrbmLsJ.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_43b90 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o]
           arg [/usr/libexec/gcc/x86_64-redhat-linux/16/collect2] ==> ignore
           arg [-plugin] ==> ignore
           arg [/usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so] ==> ignore
           arg [-plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper] ==> ignore
-          arg [-plugin-opt=-fresolution=/tmp/ccMXOkDa.res] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccrbmLsJ.res] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc_s_asneeded] ==> ignore
           arg [-plugin-opt=-pass-through=-latomic_asneeded] ==> ignore
@@ -2710,7 +2424,7 @@ events:
           arg [-dynamic-linker] ==> ignore
           arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
           arg [-o] ==> ignore
-          arg [cmTC_701ca] ==> ignore
+          arg [cmTC_43b90] ==> ignore
           arg [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o]
           arg [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o]
           arg [/usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o]
@@ -2722,7 +2436,7 @@ events:
           arg [-L/lib] ==> dir [/lib]
           arg [-L/usr/lib] ==> dir [/usr/lib]
           arg [-v] ==> ignore
-          arg [CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o] ==> ignore
           arg [-lgcc] ==> lib [gcc]
           arg [-lgcc_s_asneeded] ==> lib [gcc_s_asneeded]
           arg [-latomic_asneeded] ==> lib [atomic_asneeded]
@@ -2731,8 +2445,8 @@ events:
           arg [-lgcc_s_asneeded] ==> lib [gcc_s_asneeded]
           arg [/usr/lib/gcc/x86_64-redhat-linux/16/crtend.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/16/crtend.o]
           arg [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o]
-        ignore line: [collect2 version 16.1.1 20260515 (Red Hat 16.1.1-2)]
-        ignore line: [/usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccMXOkDa.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_701ca /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_701ca.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o]
+        ignore line: [collect2 version 16.2.1 20260819 (Red Hat 16.2.1-2)]
+        ignore line: [/usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccrbmLsJ.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s_asneeded --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_43b90 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_43b90.dir/CMakeCCompilerABI.c.o -lgcc -lgcc_s_asneeded -latomic_asneeded -lc -lgcc -lgcc_s_asneeded /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o]
         linker tool for 'C': /usr/bin/ld
         collapse obj [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o] ==> [/usr/lib64/crt1.o]
         collapse obj [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o] ==> [/usr/lib64/crti.o]
@@ -2769,8 +2483,8 @@ events:
     checks:
       - "Detecting CXX compiler ABI info"
     directories:
-      source: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-RcVY6h"
-      binary: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-RcVY6h"
+      source: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-7JFUH4"
+      binary: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-7JFUH4"
     cmakeVariables:
       CMAKE_CXX_FLAGS: ""
       CMAKE_CXX_FLAGS_DEBUG: "-g"
@@ -2781,26 +2495,26 @@ events:
       variable: "CMAKE_CXX_ABI_COMPILED"
       cached: true
       stdout: |
-        Change Dir: '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-RcVY6h'
+        Change Dir: '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-7JFUH4'
         
-        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_154f6/fast
-        /usr/bin/gmake  -f CMakeFiles/cmTC_154f6.dir/build.make CMakeFiles/cmTC_154f6.dir/build
-        gmake[1]: Entering directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-RcVY6h'
-        Building CXX object CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o
-        /usr/bin/c++   -v -o CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_95379/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_95379.dir/build.make CMakeFiles/cmTC_95379.dir/build
+        gmake[1]: Entering directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-7JFUH4'
+        Building CXX object CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o
+        /usr/bin/c++   -v -o CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp
         Using built-in specs.
         COLLECT_GCC=/usr/bin/c++
         OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
         OFFLOAD_TARGET_DEFAULT=1
         Target: x86_64-redhat-linux
-        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,algol68,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.1.1-build/gcc-16.1.1-20260515/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
+        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,algol68,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.2.1-build/gcc-16.2.1-20260819/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
         Thread model: posix
         Supported LTO compression algorithms: zlib zstd
-        gcc version 16.1.1 20260515 (Red Hat 16.1.1-2) (GCC) 
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_154f6.dir/'
-         /usr/libexec/gcc/x86_64-redhat-linux/16/cc1plus -quiet -v -D_GNU_SOURCE /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_154f6.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -mtls-dialect=gnu2 -version -o /tmp/ccV4lHcl.s
-        GNU C++20 (GCC) version 16.1.1 20260515 (Red Hat 16.1.1-2) (x86_64-redhat-linux)
-        	compiled by GNU C version 16.1.1 20260515 (Red Hat 16.1.1-2), GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.4.1, isl version isl-0.24-GMP
+        gcc version 16.2.1 20260819 (Red Hat 16.2.1-2) (GCC) 
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_95379.dir/'
+         /usr/libexec/gcc/x86_64-redhat-linux/16/cc1plus -quiet -v -D_GNU_SOURCE /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_95379.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -mtls-dialect=gnu2 -version -o /tmp/ccHq8cJ4.s
+        GNU C++20 (GCC) version 16.2.1 20260819 (Red Hat 16.2.1-2) (x86_64-redhat-linux)
+        	compiled by GNU C version 16.2.1 20260819 (Red Hat 16.2.1-2), GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.4.1, isl version isl-0.24-GMP
         
         GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
         ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/16/include-fixed"
@@ -2814,35 +2528,35 @@ events:
          /usr/local/include
          /usr/include
         End of search list.
-        Compiler executable checksum: f7f3cb99b253d13f382d2bbd7f6c1fbf
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_154f6.dir/'
-         as -v --64 -o CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccV4lHcl.s
+        Compiler executable checksum: 65ab9aa42e0ee60985a3e473fe6610c4
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_95379.dir/'
+         as -v --64 -o CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccHq8cJ4.s
         GNU assembler version 2.46.1 (x86_64-redhat-linux) using BFD version version 2.46.1-1.fc44
         COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/
         LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../:/lib/:/usr/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.'
-        Linking CXX executable cmTC_154f6
-        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_154f6.dir/link.txt --verbose=1
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.'
+        Linking CXX executable cmTC_95379
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_95379.dir/link.txt --verbose=1
         Using built-in specs.
         COLLECT_GCC=/usr/bin/c++
         COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper
         OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa
         OFFLOAD_TARGET_DEFAULT=1
         Target: x86_64-redhat-linux
-        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,algol68,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.1.1-build/gcc-16.1.1-20260515/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
+        Configured with: ../configure --enable-bootstrap --enable-languages=c,c++,fortran,objc,obj-c++,ada,go,d,m2,cobol,algol68,lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.2.1-build/gcc-16.2.1-20260819/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none,amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp
         Thread model: posix
         Supported LTO compression algorithms: zlib zstd
-        gcc version 16.1.1 20260515 (Red Hat 16.1.1-2) (GCC) 
+        gcc version 16.2.1 20260819 (Red Hat 16.2.1-2) (GCC) 
         COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/
         LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../:/lib/:/usr/lib/
-        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_154f6' '-foffload-options=-l_GCC_stdc++' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_154f6.'
-         /usr/libexec/gcc/x86_64-redhat-linux/16/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccraM2pI.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_154f6 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -latomic_asneeded -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
-        collect2 version 16.1.1 20260515 (Red Hat 16.1.1-2)
-        /usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccraM2pI.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_154f6 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -latomic_asneeded -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_95379' '-foffload-options=-l_GCC_stdc++' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_95379.'
+         /usr/libexec/gcc/x86_64-redhat-linux/16/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccMZhtut.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_95379 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -latomic_asneeded -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
+        collect2 version 16.2.1 20260819 (Red Hat 16.2.1-2)
+        /usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccMZhtut.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_95379 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -latomic_asneeded -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o
         GNU ld version 2.46.1-1.fc44
-        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_154f6' '-foffload-options=-l_GCC_stdc++' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_154f6.'
-        /usr/bin/c++  -v -Wl,-v CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_154f6
-        gmake[1]: Leaving directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-RcVY6h'
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_95379' '-foffload-options=-l_GCC_stdc++' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_95379.'
+        /usr/bin/c++  -v -Wl,-v CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_95379
+        gmake[1]: Leaving directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-7JFUH4'
         
       exitCode: 0
   -
@@ -2881,26 +2595,26 @@ events:
       Parsed CXX implicit link information:
         link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
         linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
-        ignore line: [Change Dir: '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-RcVY6h']
+        ignore line: [Change Dir: '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-7JFUH4']
         ignore line: []
-        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_154f6/fast]
-        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_154f6.dir/build.make CMakeFiles/cmTC_154f6.dir/build]
-        ignore line: [gmake[1]: Entering directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-RcVY6h']
-        ignore line: [Building CXX object CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o]
-        ignore line: [/usr/bin/c++   -v -o CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_95379/fast]
+        ignore line: [/usr/bin/gmake  -f CMakeFiles/cmTC_95379.dir/build.make CMakeFiles/cmTC_95379.dir/build]
+        ignore line: [gmake[1]: Entering directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-7JFUH4']
+        ignore line: [Building CXX object CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o]
+        ignore line: [/usr/bin/c++   -v -o CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/c++]
         ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
         ignore line: [OFFLOAD_TARGET_DEFAULT=1]
         ignore line: [Target: x86_64-redhat-linux]
-        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol algol68 lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.1.1-build/gcc-16.1.1-20260515/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
+        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol algol68 lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.2.1-build/gcc-16.2.1-20260819/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
         ignore line: [Thread model: posix]
         ignore line: [Supported LTO compression algorithms: zlib zstd]
-        ignore line: [gcc version 16.1.1 20260515 (Red Hat 16.1.1-2) (GCC) ]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_154f6.dir/']
-        ignore line: [ /usr/libexec/gcc/x86_64-redhat-linux/16/cc1plus -quiet -v -D_GNU_SOURCE /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_154f6.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -mtls-dialect=gnu2 -version -o /tmp/ccV4lHcl.s]
-        ignore line: [GNU C++20 (GCC) version 16.1.1 20260515 (Red Hat 16.1.1-2) (x86_64-redhat-linux)]
-        ignore line: [	compiled by GNU C version 16.1.1 20260515 (Red Hat 16.1.1-2)  GMP version 6.3.0  MPFR version 4.2.2  MPC version 1.4.1  isl version isl-0.24-GMP]
+        ignore line: [gcc version 16.2.1 20260819 (Red Hat 16.2.1-2) (GCC) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_95379.dir/']
+        ignore line: [ /usr/libexec/gcc/x86_64-redhat-linux/16/cc1plus -quiet -v -D_GNU_SOURCE /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_95379.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -mtls-dialect=gnu2 -version -o /tmp/ccHq8cJ4.s]
+        ignore line: [GNU C++20 (GCC) version 16.2.1 20260819 (Red Hat 16.2.1-2) (x86_64-redhat-linux)]
+        ignore line: [	compiled by GNU C version 16.2.1 20260819 (Red Hat 16.2.1-2)  GMP version 6.3.0  MPFR version 4.2.2  MPC version 1.4.1  isl version isl-0.24-GMP]
         ignore line: []
         ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
         ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-redhat-linux/16/include-fixed"]
@@ -2914,34 +2628,34 @@ events:
         ignore line: [ /usr/local/include]
         ignore line: [ /usr/include]
         ignore line: [End of search list.]
-        ignore line: [Compiler executable checksum: f7f3cb99b253d13f382d2bbd7f6c1fbf]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_154f6.dir/']
-        ignore line: [ as -v --64 -o CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccV4lHcl.s]
+        ignore line: [Compiler executable checksum: 65ab9aa42e0ee60985a3e473fe6610c4]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_95379.dir/']
+        ignore line: [ as -v --64 -o CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o /tmp/ccHq8cJ4.s]
         ignore line: [GNU assembler version 2.46.1 (x86_64-redhat-linux) using BFD version version 2.46.1-1.fc44]
         ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/]
         ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../:/lib/:/usr/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.']
-        ignore line: [Linking CXX executable cmTC_154f6]
-        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_154f6.dir/link.txt --verbose=1]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.']
+        ignore line: [Linking CXX executable cmTC_95379]
+        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_95379.dir/link.txt --verbose=1]
         ignore line: [Using built-in specs.]
         ignore line: [COLLECT_GCC=/usr/bin/c++]
         ignore line: [COLLECT_LTO_WRAPPER=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper]
         ignore line: [OFFLOAD_TARGET_NAMES=nvptx-none:amdgcn-amdhsa]
         ignore line: [OFFLOAD_TARGET_DEFAULT=1]
         ignore line: [Target: x86_64-redhat-linux]
-        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol algol68 lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.1.1-build/gcc-16.1.1-20260515/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
+        ignore line: [Configured with: ../configure --enable-bootstrap --enable-languages=c c++ fortran objc obj-c++ ada go d m2 cobol algol68 lto --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://bugzilla.redhat.com/ --enable-shared --enable-threads=posix --enable-checking=release --enable-multilib --with-system-zlib --enable-__cxa_atexit --disable-libunwind-exceptions --enable-gnu-unique-object --enable-linker-build-id --with-gcc-major-version-only --enable-libstdcxx-backtrace --with-libstdcxx-zoneinfo=/usr/share/zoneinfo --with-linker-hash-style=gnu --enable-plugin --enable-initfini-array --with-isl=/builddir/build/BUILD/gcc-16.2.1-build/gcc-16.2.1-20260819/obj-x86_64-redhat-linux/isl-install --enable-offload-targets=nvptx-none amdgcn-amdhsa --enable-offload-defaulted --without-cuda-driver --enable-gnu-indirect-function --enable-cet --with-tune=generic --with-tls=gnu2 --with-arch_32=i686 --build=x86_64-redhat-linux --with-build-config=bootstrap-lto --enable-link-serialization=1 --disable-libssp]
         ignore line: [Thread model: posix]
         ignore line: [Supported LTO compression algorithms: zlib zstd]
-        ignore line: [gcc version 16.1.1 20260515 (Red Hat 16.1.1-2) (GCC) ]
+        ignore line: [gcc version 16.2.1 20260819 (Red Hat 16.2.1-2) (GCC) ]
         ignore line: [COMPILER_PATH=/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/16/:/usr/libexec/gcc/x86_64-redhat-linux/:/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/]
         ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-redhat-linux/16/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/:/lib/../lib64/:/usr/lib/../lib64/:/usr/lib/gcc/x86_64-redhat-linux/16/../../../:/lib/:/usr/lib/]
-        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_154f6' '-foffload-options=-l_GCC_stdc++' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_154f6.']
-        link line: [ /usr/libexec/gcc/x86_64-redhat-linux/16/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccraM2pI.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_154f6 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -latomic_asneeded -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_95379' '-foffload-options=-l_GCC_stdc++' '-foffload-options=-l_GCC_m' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-mtls-dialect=gnu2' '-dumpdir' 'cmTC_95379.']
+        link line: [ /usr/libexec/gcc/x86_64-redhat-linux/16/collect2 -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccMZhtut.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_95379 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -latomic_asneeded -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o]
           arg [/usr/libexec/gcc/x86_64-redhat-linux/16/collect2] ==> ignore
           arg [-plugin] ==> ignore
           arg [/usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so] ==> ignore
           arg [-plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper] ==> ignore
-          arg [-plugin-opt=-fresolution=/tmp/ccraM2pI.res] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccMZhtut.res] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
           arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
           arg [-plugin-opt=-pass-through=-latomic_asneeded] ==> ignore
@@ -2957,7 +2671,7 @@ events:
           arg [-dynamic-linker] ==> ignore
           arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
           arg [-o] ==> ignore
-          arg [cmTC_154f6] ==> ignore
+          arg [cmTC_95379] ==> ignore
           arg [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o]
           arg [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o]
           arg [/usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o]
@@ -2969,7 +2683,7 @@ events:
           arg [-L/lib] ==> dir [/lib]
           arg [-L/usr/lib] ==> dir [/usr/lib]
           arg [-v] ==> ignore
-          arg [CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+          arg [CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
           arg [-lstdc++] ==> lib [stdc++]
           arg [-lm] ==> lib [m]
           arg [-lgcc_s] ==> lib [gcc_s]
@@ -2980,8 +2694,8 @@ events:
           arg [-lgcc] ==> lib [gcc]
           arg [/usr/lib/gcc/x86_64-redhat-linux/16/crtend.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/16/crtend.o]
           arg [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o] ==> obj [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o]
-        ignore line: [collect2 version 16.1.1 20260515 (Red Hat 16.1.1-2)]
-        ignore line: [/usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccraM2pI.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_154f6 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_154f6.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -latomic_asneeded -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o]
+        ignore line: [collect2 version 16.2.1 20260819 (Red Hat 16.2.1-2)]
+        ignore line: [/usr/bin/ld -plugin /usr/libexec/gcc/x86_64-redhat-linux/16/liblto_plugin.so -plugin-opt=/usr/libexec/gcc/x86_64-redhat-linux/16/lto-wrapper -plugin-opt=-fresolution=/tmp/ccMZhtut.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-latomic_asneeded -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --no-add-needed --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -o cmTC_95379 /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o /usr/lib/gcc/x86_64-redhat-linux/16/crtbegin.o -L/usr/lib/gcc/x86_64-redhat-linux/16 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-redhat-linux/16/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_95379.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -latomic_asneeded -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-redhat-linux/16/crtend.o /usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crtn.o]
         linker tool for 'CXX': /usr/bin/ld
         collapse obj [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crt1.o] ==> [/usr/lib64/crt1.o]
         collapse obj [/usr/lib/gcc/x86_64-redhat-linux/16/../../../../lib64/crti.o] ==> [/usr/lib64/crti.o]
@@ -3036,7 +2750,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -3047,6 +2760,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
       - "/usr/local/include/"
       - "/usr/local/"
       - "/usr/include/"
@@ -3071,7 +2786,6 @@ events:
       - "/home/daxy/.local/bin/GL/gl.h"
       - "/home/daxy/.local/npm/bin/GL/gl.h"
       - "/usr/local/cuda/bin/GL/gl.h"
-      - "/home/daxy/.local/share/nvim/mason/bin/GL/gl.h"
       - "/home/daxy/.sdkman/candidates/java/current/bin/GL/gl.h"
       - "/home/daxy/bin/GL/gl.h"
       - "/usr/local/bin/GL/gl.h"
@@ -3082,25 +2796,13 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/GL/gl.h"
       - "/home/daxy/Android/Sdk/emulator/GL/gl.h"
       - "/home/daxy/Android/Sdk/tools/GL/gl.h"
+      - "/home/daxy/.platformio/penv/bin/GL/gl.h"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/GL/gl.h"
       - "/usr/local/include/GL/gl.h"
       - "/usr/local/GL/gl.h"
     found: "/usr/include/"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -3143,12 +2845,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -3188,7 +2889,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -3199,6 +2899,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
       - "/usr/local/include/"
       - "/usr/local/"
       - "/usr/include/"
@@ -3220,7 +2922,6 @@ events:
       - "/home/daxy/.local/bin/GL/glx.h"
       - "/home/daxy/.local/npm/bin/GL/glx.h"
       - "/usr/local/cuda/bin/GL/glx.h"
-      - "/home/daxy/.local/share/nvim/mason/bin/GL/glx.h"
       - "/home/daxy/.sdkman/candidates/java/current/bin/GL/glx.h"
       - "/home/daxy/bin/GL/glx.h"
       - "/usr/local/bin/GL/glx.h"
@@ -3231,25 +2932,13 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/GL/glx.h"
       - "/home/daxy/Android/Sdk/emulator/GL/glx.h"
       - "/home/daxy/Android/Sdk/tools/GL/glx.h"
+      - "/home/daxy/.platformio/penv/bin/GL/glx.h"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/GL/glx.h"
       - "/usr/local/include/GL/glx.h"
       - "/usr/local/GL/glx.h"
     found: "/usr/include/"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -3292,12 +2981,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -3337,7 +3025,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -3348,6 +3035,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
       - "/usr/local/include/"
       - "/usr/local/"
       - "/usr/include/"
@@ -3369,7 +3058,6 @@ events:
       - "/home/daxy/.local/bin/EGL/egl.h"
       - "/home/daxy/.local/npm/bin/EGL/egl.h"
       - "/usr/local/cuda/bin/EGL/egl.h"
-      - "/home/daxy/.local/share/nvim/mason/bin/EGL/egl.h"
       - "/home/daxy/.sdkman/candidates/java/current/bin/EGL/egl.h"
       - "/home/daxy/bin/EGL/egl.h"
       - "/usr/local/bin/EGL/egl.h"
@@ -3380,25 +3068,13 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/EGL/egl.h"
       - "/home/daxy/Android/Sdk/emulator/EGL/egl.h"
       - "/home/daxy/Android/Sdk/tools/EGL/egl.h"
+      - "/home/daxy/.platformio/penv/bin/EGL/egl.h"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/EGL/egl.h"
       - "/usr/local/include/EGL/egl.h"
       - "/usr/local/EGL/egl.h"
     found: "/usr/include/"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -3441,12 +3117,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -3486,7 +3161,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -3497,6 +3171,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
       - "/usr/local/include/"
       - "/usr/local/"
       - "/usr/include/"
@@ -3518,7 +3194,6 @@ events:
       - "/home/daxy/.local/bin/GLES2/gl2.h"
       - "/home/daxy/.local/npm/bin/GLES2/gl2.h"
       - "/usr/local/cuda/bin/GLES2/gl2.h"
-      - "/home/daxy/.local/share/nvim/mason/bin/GLES2/gl2.h"
       - "/home/daxy/.sdkman/candidates/java/current/bin/GLES2/gl2.h"
       - "/home/daxy/bin/GLES2/gl2.h"
       - "/usr/local/bin/GLES2/gl2.h"
@@ -3529,25 +3204,13 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/GLES2/gl2.h"
       - "/home/daxy/Android/Sdk/emulator/GLES2/gl2.h"
       - "/home/daxy/Android/Sdk/tools/GLES2/gl2.h"
+      - "/home/daxy/.platformio/penv/bin/GLES2/gl2.h"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/GLES2/gl2.h"
       - "/usr/local/include/GLES2/gl2.h"
       - "/usr/local/GLES2/gl2.h"
     found: "/usr/include/"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -3590,12 +3253,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -3635,7 +3297,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -3646,6 +3307,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
       - "/usr/local/include/"
       - "/usr/local/"
       - "/usr/include/"
@@ -3667,7 +3330,6 @@ events:
       - "/home/daxy/.local/bin/GLES3/gl3.h"
       - "/home/daxy/.local/npm/bin/GLES3/gl3.h"
       - "/usr/local/cuda/bin/GLES3/gl3.h"
-      - "/home/daxy/.local/share/nvim/mason/bin/GLES3/gl3.h"
       - "/home/daxy/.sdkman/candidates/java/current/bin/GLES3/gl3.h"
       - "/home/daxy/bin/GLES3/gl3.h"
       - "/usr/local/bin/GLES3/gl3.h"
@@ -3678,25 +3340,13 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/GLES3/gl3.h"
       - "/home/daxy/Android/Sdk/emulator/GLES3/gl3.h"
       - "/home/daxy/Android/Sdk/tools/GLES3/gl3.h"
+      - "/home/daxy/.platformio/penv/bin/GLES3/gl3.h"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/GLES3/gl3.h"
       - "/usr/local/include/GLES3/gl3.h"
       - "/usr/local/GLES3/gl3.h"
     found: "/usr/include/"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -3739,12 +3389,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -3784,7 +3433,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -3795,6 +3443,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
       - "/usr/local/include/"
       - "/usr/local/"
       - "/usr/include/"
@@ -3819,7 +3469,6 @@ events:
       - "/home/daxy/.local/bin/GL/xmesa.h"
       - "/home/daxy/.local/npm/bin/GL/xmesa.h"
       - "/usr/local/cuda/bin/GL/xmesa.h"
-      - "/home/daxy/.local/share/nvim/mason/bin/GL/xmesa.h"
       - "/home/daxy/.sdkman/candidates/java/current/bin/GL/xmesa.h"
       - "/home/daxy/bin/GL/xmesa.h"
       - "/usr/local/bin/GL/xmesa.h"
@@ -3830,6 +3479,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/GL/xmesa.h"
       - "/home/daxy/Android/Sdk/emulator/GL/xmesa.h"
       - "/home/daxy/Android/Sdk/tools/GL/xmesa.h"
+      - "/home/daxy/.platformio/penv/bin/GL/xmesa.h"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/GL/xmesa.h"
       - "/usr/local/include/GL/xmesa.h"
       - "/usr/local/GL/xmesa.h"
       - "/usr/include/GL/xmesa.h"
@@ -3848,20 +3499,6 @@ events:
     found: false
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -3904,12 +3541,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -3949,7 +3585,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -3960,6 +3595,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
       - "/usr/local/include/"
       - "/usr/local/"
       - "/usr/include/"
@@ -3981,7 +3618,6 @@ events:
       - "/home/daxy/.local/bin/GL/glu.h"
       - "/home/daxy/.local/npm/bin/GL/glu.h"
       - "/usr/local/cuda/bin/GL/glu.h"
-      - "/home/daxy/.local/share/nvim/mason/bin/GL/glu.h"
       - "/home/daxy/.sdkman/candidates/java/current/bin/GL/glu.h"
       - "/home/daxy/bin/GL/glu.h"
       - "/usr/local/bin/GL/glu.h"
@@ -3992,25 +3628,13 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/GL/glu.h"
       - "/home/daxy/Android/Sdk/emulator/GL/glu.h"
       - "/home/daxy/Android/Sdk/tools/GL/glu.h"
+      - "/home/daxy/.platformio/penv/bin/GL/glu.h"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/GL/glu.h"
       - "/usr/local/include/GL/glu.h"
       - "/usr/local/GL/glu.h"
     found: "/usr/include/"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -4053,12 +3677,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -4096,7 +3719,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4121,7 +3743,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4135,20 +3756,6 @@ events:
     found: "/usr/lib64/libOpenGL.so"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -4191,12 +3798,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -4234,7 +3840,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4259,7 +3864,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4273,20 +3877,6 @@ events:
     found: "/usr/lib64/libGLX.so"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -4329,12 +3919,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -4372,7 +3961,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4397,7 +3985,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4411,20 +3998,6 @@ events:
     found: "/usr/lib64/libEGL.so"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -4467,12 +4040,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -4510,7 +4082,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4535,7 +4106,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4549,20 +4119,6 @@ events:
     found: "/usr/lib64/libGLESv2.so"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -4605,12 +4161,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -4649,7 +4204,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4674,7 +4228,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4698,7 +4251,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4712,20 +4264,6 @@ events:
     found: "/usr/lib64/libGLESv2.so"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -4768,12 +4306,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -4812,7 +4349,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4837,7 +4373,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -4851,20 +4386,6 @@ events:
     found: "/usr/lib64/libGLU.so"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -4907,12 +4428,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -4939,8 +4459,8 @@ events:
     checks:
       - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
     directories:
-      source: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-LihhmA"
-      binary: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-LihhmA"
+      source: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-YuEZUF"
+      binary: "/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-YuEZUF"
     cmakeVariables:
       CMAKE_CXX_STDLIB_MODULES_JSON: ""
       CMAKE_C_FLAGS: ""
@@ -4950,17 +4470,17 @@ events:
       variable: "CMAKE_HAVE_LIBC_PTHREAD"
       cached: true
       stdout: |
-        Change Dir: '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-LihhmA'
+        Change Dir: '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-YuEZUF'
         
-        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_8fbb5/fast
-        /usr/bin/gmake  -f CMakeFiles/cmTC_8fbb5.dir/build.make CMakeFiles/cmTC_8fbb5.dir/build
-        gmake[1]: Entering directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-LihhmA'
-        Building C object CMakeFiles/cmTC_8fbb5.dir/src.c.o
-        /usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_8fbb5.dir/src.c.o -c /home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-LihhmA/src.c
-        Linking C executable cmTC_8fbb5
-        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8fbb5.dir/link.txt --verbose=1
-        /usr/bin/cc CMakeFiles/cmTC_8fbb5.dir/src.c.o -o cmTC_8fbb5
-        gmake[1]: Leaving directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-LihhmA'
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_cdb04/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_cdb04.dir/build.make CMakeFiles/cmTC_cdb04.dir/build
+        gmake[1]: Entering directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-YuEZUF'
+        Building C object CMakeFiles/cmTC_cdb04.dir/src.c.o
+        /usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_cdb04.dir/src.c.o -c /home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-YuEZUF/src.c
+        Linking C executable cmTC_cdb04
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_cdb04.dir/link.txt --verbose=1
+        /usr/bin/cc CMakeFiles/cmTC_cdb04.dir/src.c.o -o cmTC_cdb04
+        gmake[1]: Leaving directory '/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/CMakeScratch/TryCompile-YuEZUF'
         
       exitCode: 0
   -
@@ -5162,26 +4682,6 @@ events:
         mode: "cps"
         reason: "no_exist"
       -
-        path: "/home/daxy/.local/share/nvim/mason/glfw3Config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/glfw3-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/lib64/cps/glfw3.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/lib/cps/glfw3.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/share/cps/glfw3.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
         path: "/home/daxy/.sdkman/candidates/java/current/glfw3Config.cmake"
         mode: "config"
         reason: "no_exist"
@@ -5280,20 +4780,6 @@ events:
         - "/home/daxy/.cargo/bin"
         - "/usr/local/cuda/bin"
         - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
         - "/opt/psx-tools/bin"
@@ -5323,12 +4809,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -5637,38 +5122,6 @@ events:
         mode: "cps"
         reason: "no_exist"
       -
-        path: "/home/daxy/.local/share/nvim/mason/SDL2Config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/sdl2-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/lib64/cps/SDL2.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/lib64/cps/sdl2.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/lib/cps/SDL2.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/lib/cps/sdl2.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/share/cps/SDL2.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/share/cps/sdl2.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
         path: "/home/daxy/.sdkman/candidates/java/current/SDL2Config.cmake"
         mode: "config"
         reason: "no_exist"
@@ -5815,20 +5268,6 @@ events:
         - "/home/daxy/.cargo/bin"
         - "/usr/local/cuda/bin"
         - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
         - "/opt/psx-tools/bin"
@@ -5858,12 +5297,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -6173,38 +5611,6 @@ events:
         mode: "cps"
         reason: "no_exist"
       -
-        path: "/home/daxy/.local/share/nvim/mason/GLEWConfig.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/glew-config.cmake"
-        mode: "config"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/lib64/cps/GLEW.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/lib64/cps/glew.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/lib/cps/GLEW.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/lib/cps/glew.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/share/cps/GLEW.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
-        path: "/home/daxy/.local/share/nvim/mason/share/cps/glew.cps"
-        mode: "cps"
-        reason: "no_exist"
-      -
         path: "/home/daxy/.sdkman/candidates/java/current/GLEWConfig.cmake"
         mode: "config"
         reason: "no_exist"
@@ -6493,6 +5899,38 @@ events:
         mode: "cps"
         reason: "no_exist"
       -
+        path: "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/GLEWConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/glew-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/lib64/cps/GLEW.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/lib64/cps/glew.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/lib/cps/GLEW.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/lib/cps/glew.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/share/cps/GLEW.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
+        path: "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/share/cps/glew.cps"
+        mode: "cps"
+        reason: "no_exist"
+      -
         path: "/opt/GLEWConfig.cmake"
         mode: "config"
         reason: "no_exist"
@@ -6540,20 +5978,6 @@ events:
         - "/home/daxy/.cargo/bin"
         - "/usr/local/cuda/bin"
         - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
         - "/opt/psx-tools/bin"
@@ -6583,12 +6007,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -6626,7 +6049,6 @@ events:
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/usr/local/cuda/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/bin/"
       - "/usr/local/bin/"
@@ -6637,6 +6059,8 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/"
       - "/home/daxy/Android/Sdk/emulator/"
       - "/home/daxy/Android/Sdk/tools/"
+      - "/home/daxy/.platformio/penv/bin/"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/"
       - "/usr/local/include/"
       - "/usr/local/"
       - "/usr/include/"
@@ -6658,7 +6082,6 @@ events:
       - "/home/daxy/.local/bin/GL/glew.h"
       - "/home/daxy/.local/npm/bin/GL/glew.h"
       - "/usr/local/cuda/bin/GL/glew.h"
-      - "/home/daxy/.local/share/nvim/mason/bin/GL/glew.h"
       - "/home/daxy/.sdkman/candidates/java/current/bin/GL/glew.h"
       - "/home/daxy/bin/GL/glew.h"
       - "/usr/local/bin/GL/glew.h"
@@ -6669,25 +6092,13 @@ events:
       - "/home/daxy/Android/Sdk/platform-tools/GL/glew.h"
       - "/home/daxy/Android/Sdk/emulator/GL/glew.h"
       - "/home/daxy/Android/Sdk/tools/GL/glew.h"
+      - "/home/daxy/.platformio/penv/bin/GL/glew.h"
+      - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin/GL/glew.h"
       - "/usr/local/include/GL/glew.h"
       - "/usr/local/GL/glew.h"
     found: "/usr/include/"
     search_context:
       ENV{PATH}:
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
         - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
@@ -6730,12 +6141,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -6775,7 +6185,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -6823,9 +6232,6 @@ events:
       - "/home/daxy/.local/npm/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
@@ -6896,20 +6302,6 @@ events:
         - "/home/daxy/.cargo/bin"
         - "/usr/local/cuda/bin"
         - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
         - "/opt/psx-tools/bin"
@@ -6939,12 +6331,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -6984,7 +6375,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -7032,9 +6422,6 @@ events:
       - "/home/daxy/.local/npm/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
@@ -7135,20 +6522,6 @@ events:
         - "/home/daxy/.cargo/bin"
         - "/usr/local/cuda/bin"
         - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
         - "/opt/psx-tools/bin"
@@ -7178,12 +6551,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -7223,7 +6595,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -7271,9 +6642,6 @@ events:
       - "/home/daxy/.local/npm/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
@@ -7374,20 +6742,6 @@ events:
         - "/home/daxy/.cargo/bin"
         - "/usr/local/cuda/bin"
         - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
         - "/opt/psx-tools/bin"
@@ -7417,12 +6771,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"
@@ -7462,7 +6815,6 @@ events:
       - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin/"
       - "/home/daxy/.local/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/usr/local/bin/"
       - "/usr/bin/"
@@ -7510,9 +6862,6 @@ events:
       - "/home/daxy/.local/npm/bin/"
       - "/home/daxy/.local/npm/bin/"
       - "/home/daxy/.local/npm/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
-      - "/home/daxy/.local/share/nvim/mason/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
       - "/home/daxy/.sdkman/candidates/java/current/bin/"
@@ -7613,20 +6962,6 @@ events:
         - "/home/daxy/.cargo/bin"
         - "/usr/local/cuda/bin"
         - "/usr/local/cuda/bin"
-        - "/home/daxy/.local/share/nvim/mason/bin"
-        - "/home/daxy/Documents/android-studio-panda4-patch1-linux/android-studio/jbr/bin"
-        - "/opt/psx-tools/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/psn00bsdk/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/psx-toolchain/mipsel-unknown-elf/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.local/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/home/daxy/.local/npm/bin"
-        - "/home/daxy/.cargo/bin"
-        - "/usr/local/cuda/bin"
-        - "/usr/local/cuda/bin"
         - "/opt/psx-tools/bin"
         - "/home/daxy/.cargo/bin"
         - "/opt/psx-tools/bin"
@@ -7656,12 +6991,11 @@ events:
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
         - "/home/daxy/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/daxy/.platformio/penv/bin"
         - "/home/daxy/Android/Sdk/platform-tools"
         - "/home/daxy/Android/Sdk/emulator"
         - "/home/daxy/Android/Sdk/tools"
-        - "/home/daxy/Android/Sdk/platform-tools"
-        - "/home/daxy/Android/Sdk/emulator"
-        - "/home/daxy/Android/Sdk/tools"
+        - "/home/daxy/.claude/plugins/cache/claude-plugins-official/clangd-lsp/1.0.0/bin"
       CMAKE_INSTALL_PREFIX: "/usr/local"
       CMAKE_SYSTEM_PREFIX_PATH:
         - "/usr/local"

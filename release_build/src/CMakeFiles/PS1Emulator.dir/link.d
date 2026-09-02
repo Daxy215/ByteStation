@@ -15,10 +15,10 @@ PS1Emulator: \
   CMakeFiles/PS1Emulator.dir/CPU/COP/Stolen/gte/math.cpp.o \
   CMakeFiles/PS1Emulator.dir/CPU/COP/Stolen/gte/opcodes.cpp.o \
   CMakeFiles/PS1Emulator.dir/CPU/CPU.cpp.o \
-  CMakeFiles/PS1Emulator.dir/CPU/CPUTests.cpp.o \
   CMakeFiles/PS1Emulator.dir/CPU/Instruction.cpp.o \
   CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o \
   CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o \
+  CMakeFiles/PS1Emulator.dir/Core/GameLibrary.cpp.o \
   CMakeFiles/PS1Emulator.dir/Core/config.cpp.o \
   CMakeFiles/PS1Emulator.dir/DMA/Channel.cpp.o \
   CMakeFiles/PS1Emulator.dir/DMA/Dma.cpp.o \
@@ -129,13 +129,13 @@ CMakeFiles/PS1Emulator.dir/CPU/COP/Stolen/gte/opcodes.cpp.o:
 
 CMakeFiles/PS1Emulator.dir/CPU/CPU.cpp.o:
 
-CMakeFiles/PS1Emulator.dir/CPU/CPUTests.cpp.o:
-
 CMakeFiles/PS1Emulator.dir/CPU/Instruction.cpp.o:
 
 CMakeFiles/PS1Emulator.dir/CPU/R3000Tests.cpp.o:
 
 CMakeFiles/PS1Emulator.dir/Core/Core.cpp.o:
+
+CMakeFiles/PS1Emulator.dir/Core/GameLibrary.cpp.o:
 
 CMakeFiles/PS1Emulator.dir/Core/config.cpp.o:
 

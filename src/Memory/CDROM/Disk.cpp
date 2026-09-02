@@ -4,10 +4,91 @@
 #include <iostream>
 #include <memory>
 #include <cstdio>
+#include <cstring>
 #include <fstream>
 
 #include "CDROM.h"
 #include "../../Utils/FileSystem/FileManager.h"
+
+static uint32_t readLe32(const uint8_t* p) {
+	return static_cast<uint32_t>(p[0]) | (static_cast<uint32_t>(p[1]) << 8) |
+	       (static_cast<uint32_t>(p[2]) << 16) | (static_cast<uint32_t>(p[3]) << 24);
+}
+
+static bool readIsoSector(std::ifstream& file, uint32_t lba, uint8_t* out2048) {
+	file.clear();
+	file.seekg(static_cast<std::streamoff>(lba) * Sector::RAW_BUFFER + 24, std::ios::beg);
+	file.read(reinterpret_cast<char*>(out2048), 2048);
+
+	return file.gcount() == 2048;
+}
+
+static std::string readSystemCnfViaIso9660(std::ifstream& file) {
+	uint8_t pvd[2048];
+
+	if (!readIsoSector(file, 16, pvd))
+		return "";
+
+	if (pvd[0] != 1 || memcmp(pvd + 1, "CD001", 5) != 0)
+		return "";
+
+	const uint8_t* rootRecord = pvd + 156;
+	uint32_t       rootLba    = readLe32(rootRecord + 2);
+	uint32_t       rootSize   = readLe32(rootRecord + 10);
+
+	uint32_t dirSectors = std::min<uint32_t>((rootSize + 2047) / 2048, 16);
+	if (dirSectors == 0)
+		return "";
+
+	std::vector<uint8_t> dir(static_cast<size_t>(dirSectors) * 2048);
+
+	for (uint32_t s = 0; s < dirSectors; s++) {
+		if (!readIsoSector(file, rootLba + s, dir.data() + s * 2048))
+			return "";
+	}
+
+	size_t offset = 0;
+
+	while (offset + 33 <= dir.size()) {
+		uint8_t recordLen = dir[offset];
+
+		if (recordLen == 0) {
+			offset = ((offset / 2048) + 1) * 2048;
+			continue;
+		}
+
+		uint8_t     nameLen = dir[offset + 32];
+		std::string name(reinterpret_cast<char*>(&dir[offset + 33]), nameLen);
+
+		size_t versionPos = name.find(';');
+		if (versionPos != std::string::npos)
+			name = name.substr(0, versionPos);
+
+		std::string upperName;
+		for (char c : name)
+			upperName += toupper((unsigned char)c);
+
+		if (upperName == "SYSTEM.CNF") {
+			uint32_t extentLba  = readLe32(&dir[offset + 2]);
+			uint32_t extentSize = readLe32(&dir[offset + 10]);
+
+			uint32_t fileSectors = std::max<uint32_t>(1, std::min<uint32_t>((extentSize + 2047) / 2048, 4));
+
+			std::vector<uint8_t> content(static_cast<size_t>(fileSectors) * 2048);
+
+			for (uint32_t s = 0; s < fileSectors; s++) {
+				if (!readIsoSector(file, extentLba + s, content.data() + s * 2048))
+					break;
+			}
+
+			return Disk::extractSerialFromIso(content);
+		}
+
+		offset += recordLen;
+	}
+
+	return "";
+}
 
 Disk::Disk() = default;
 
@@ -96,6 +177,83 @@ bool Disk::isAudio(Location location) {
 	return pos >= 0 && tracks[pos].mode == "AUDIO";
 }
 
+std::string Disk::extractSerialFromIso(const std::vector<uint8_t>& iso) {
+	const char* needle = "cdrom:";
+
+	auto it = std::search(iso.begin(), iso.end(), needle, needle + 6);
+
+	size_t offset = std::distance(iso.begin(), it) + 6;
+
+	std::string raw;
+
+	while (offset < iso.size()) {
+		char c = (char)iso[offset];
+
+		if (c == '\r' || c == '\n' || c == ';' || c == '\0')
+			break;
+
+		raw += c;
+
+		offset++;
+	}
+
+	size_t lastSeparator = raw.find_last_of("\\/");
+	std::string fileName = (lastSeparator == std::string::npos) ? raw : raw.substr(lastSeparator + 1);
+
+	std::string serial;
+
+	for (char c : fileName) {
+		if (isalnum((unsigned char)c))
+			serial += toupper((unsigned char)c);
+	}
+
+	return serial;
+}
+
+std::string Disk::readSerial(const std::string& path) {
+	TrackBuilder builder;
+	std::vector<Track> tracks;
+
+	try {
+		tracks = builder.parseFile(path);
+	} catch (...) {
+		return "";
+	}
+
+	if (tracks.empty())
+		return "";
+
+	const Track& track = tracks[0];
+
+	std::ifstream file(Emulator::Utils::FileManager::resolvePath(track.filePath), std::ios::binary);
+
+	if (!file.is_open())
+		return "";
+
+	std::string serial = readSystemCnfViaIso9660(file);
+
+	if (!serial.empty())
+		return serial;
+
+	file.clear();
+	file.seekg(0, std::ios::beg);
+
+	uint32_t sectorCount = std::min<uint32_t>(track.sectorCount, 150);
+
+	std::vector<uint8_t> raw(static_cast<size_t>(sectorCount) * Sector::RAW_BUFFER);
+	file.read(reinterpret_cast<char*>(raw.data()), raw.size());
+
+	std::vector<uint8_t> iso;
+	iso.reserve(static_cast<size_t>(sectorCount) * 2048);
+
+	for (size_t s = 0; s < sectorCount; s++) {
+		const uint8_t* sector = &raw[s * Sector::RAW_BUFFER];
+		iso.insert(iso.end(), sector + 24, sector + 24 + 2048);
+	}
+
+	return extractSerialFromIso(iso);
+}
+
 void Disk::set(const std::string& path) {
 	tracks.clear();
 	tracks = _builder.parseFile(path);
@@ -129,32 +287,7 @@ void Disk::set(const std::string& path) {
 		iso.insert(iso.end(), sector + 24, sector + 24 + 2048);
 	}
 
-	const char* needle = "cdrom:";
-
-	auto it = std::search(iso.begin(), iso.end(), needle, needle + 6);
-
-	size_t offset = std::distance(iso.begin(), it) + 6;
-
-	std::string raw;
-
-	while (offset < iso.size()) {
-		char c = (char)iso[offset];
-
-		if (c == '\r' || c == '\n' || c == ';' || c == '\0')
-			break;
-
-		if (c != '\\' && c != '/')
-			raw += c;
-
-		offset++;
-	}
-
-	std::string serial;
-
-	for (char c : raw) {
-		if (isalnum((unsigned char)c))
-			serial += toupper((unsigned char)c);
-	}
+	std::string serial = extractSerialFromIso(iso);
 
 	//std::string serialPath = serial.substr(0, 4) + "-" + serial.substr(4, 5);
 

@@ -343,9 +343,6 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
         glVertexAttribIPointer(index, 1, GL_INT, 0, nullptr);
 
         // Uniforms
-        offsetUni = glGetUniformLocation(program, "offset");
-        setDrawingOffset(0, 0);
-
         drawingMinUni = glGetUniformLocation(program, "drawingAreaMin");
         glUniform2i(drawingMinUni, 0, 0);
 
@@ -390,16 +387,15 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
     }
 
     {
-        // Compile vertex shader first as,
-        // it's used with other shaders
+        /*// Compile vertex shader first as, it's used with other shaders
         // std::string postVertexSource   = preprocessShader(readFile("Shaders/bloomVertex.glsl"), "Shader");
-        /*std::string postVertexSource   = getShaderSource("../Shaders/bloomVertex.glsl");
+        std::string postVertexSource   = getShaderSource("../../Shaders/bloomVertex.glsl");
         postProcessVertexShader = compileShader(postVertexSource.c_str(), GL_VERTEX_SHADER);
 
         //std::string thresholdSource = preprocessShader(readFile("Shaders/bloom_threshold.frag"), "Shaders");
-        std::string thresholdSource = getShaderSource("../Shaders/bloom_threshold.frag");
+        std::string thresholdSource = getShaderSource("../../Shaders/bloom_threshold.frag");
         //std::string blurSource = preprocessShader(readFile("Shaders/bloom_blur.frag"), "Shaders");
-        std::string blurSource = getShaderSource("../Shaders/bloom_blur.frag");
+        std::string blurSource = getShaderSource("../../Shaders/bloom_blur.frag");
 
         bloomThresholdProgram = compileShader(thresholdSource.c_str(), GL_FRAGMENT_SHADER);
         blurProgram = compileShader(blurSource.c_str(), GL_FRAGMENT_SHADER);
@@ -408,7 +404,7 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
         blurProgram = linkProgram(postProcessVertexShader, blurProgram);
 
         //std::string postFragmentSource = preprocessShader(readFile("Shaders/bloomFragment.glsl"), "Shader");
-        std::string postFragmentSource = getShaderSource("../Shaders/bloomFragment.glsl");
+        std::string postFragmentSource = getShaderSource("../../Shaders/bloomFragment.glsl");
 
         postProcessFragmentShader = compileShader(postFragmentSource.c_str(), GL_FRAGMENT_SHADER);
         postProcessProgram = linkProgram(postProcessVertexShader, postProcessFragmentShader);*/
@@ -427,7 +423,8 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
             void main() {
                 vUV = mix(uUvMin, uUvMax, aUV);
                 gl_Position = vec4(aPos, 0.0, 1.0);
-            })";
+            }
+        )";
 
         const char *f = R"(
             #version 330 core
@@ -440,7 +437,7 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
             void main() {
                 fragColor = texture(screenTexture, vUV);
             }
-            )";
+        )";
 
         postProcessVertexShader   = compileShader(v, GL_VERTEX_SHADER);
         postProcessFragmentShader = compileShader(f, GL_FRAGMENT_SHADER);
@@ -477,7 +474,6 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
 }
 
 static bool isRendering = false;
-static bool useShaders  = false;
 void Emulator::Renderer::display(const bool displayEntireScreen) {
     if (isRendering)
         return;
@@ -485,19 +481,25 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
     isRendering = true;
 
     glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO[curTex]);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    //int winWidth = WIDTH, winHeight = HEIGHT;
-    //glfwGetFramebufferSize(window, &winWidth, &winHeight);
 
     glViewport(0, 0, curWidth, curHeight);
-    // glViewport(0, 0, winWidth, winHeight);
 
     // Render scene
-    // glEnable(GL_BLEND);
-    // glDisable(GL_BLEND);
     draw();
-    // glDisable(GL_BLEND);
+
+    const bool cropOutput = !displayEntireScreen && !renderVRAM;
+
+    const uint32_t displayX = std::clamp<uint32_t>(gpu.displayVramXStart, 0, WIDTH - 1);
+    const uint32_t displayY = std::clamp<uint32_t>(gpu.displayVramYStart, 0, HEIGHT - 1);
+    const uint32_t displayW = std::clamp<uint32_t>(gpu.hres.getResolution(), 1, WIDTH - displayX);
+
+    const uint32_t rawDisplayH = (gpu.vres == VerticalRes::Y480Lines) ? 480 : std::max<uint16_t>(1, gpu.displayLineEnd - gpu.displayLineStart);
+    const uint32_t displayH    = std::clamp<uint32_t>(rawDisplayH, 1, HEIGHT - displayY);
+
+    const float uvMinX = cropOutput ? static_cast<float>(displayX) / static_cast<float>(WIDTH) : 0.0f;
+    const float uvMaxX = cropOutput ? static_cast<float>(displayX + displayW) / static_cast<float>(WIDTH) : 1.0f;
+    const float uvMinY = cropOutput ? 1.0f - (static_cast<float>(displayY + displayH) / static_cast<float>(HEIGHT)) : 0.0f;
+    const float uvMaxY = cropOutput ? 1.0f - (static_cast<float>(displayY) / static_cast<float>(HEIGHT)) : 1.0f;
 
     if (!useShaders) {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -519,19 +521,6 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
             glBindTexture(GL_TEXTURE_2D, gpu.vram->getCurrentTexture());
 
         glUniform1i(glGetUniformLocation(postProcessProgram, "screenTexture"), 0);
-
-        const bool     cropOutput  = !displayEntireScreen && !renderVRAM;
-        const uint32_t displayX    = std::clamp<uint32_t>(gpu.displayVramXStart, 0, WIDTH - 1);
-        const uint32_t displayY    = std::clamp<uint32_t>(gpu.displayVramYStart, 0, HEIGHT - 1);
-        const uint32_t displayW    = std::clamp<uint32_t>(gpu.hres.getResolution(), 1, WIDTH - displayX);
-
-        const uint32_t rawDisplayH = (gpu.vres == VerticalRes::Y480Lines) ? 480 : std::max<uint16_t>(1, gpu.displayLineEnd - gpu.displayLineStart);
-        const uint32_t displayH    = std::clamp<uint32_t>(rawDisplayH, 1, HEIGHT - displayY);
-
-        const float uvMinX = cropOutput ? static_cast<float>(displayX) / static_cast<float>(WIDTH) : 0.0f;
-        const float uvMaxX = cropOutput ? static_cast<float>(displayX + displayW) / static_cast<float>(WIDTH) : 1.0f;
-        const float uvMinY = cropOutput ? 1.0f - (static_cast<float>(displayY + displayH) / static_cast<float>(HEIGHT)) : 0.0f;
-        const float uvMaxY = cropOutput ? 1.0f - (static_cast<float>(displayY) / static_cast<float>(HEIGHT)) : 1.0f;
 
         glUniform2f(glGetUniformLocation(postProcessProgram, "uUvMin"), uvMinX, uvMinY);
         glUniform2f(glGetUniformLocation(postProcessProgram, "uUvMax"), uvMaxX, uvMaxY);
@@ -598,13 +587,8 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // int winWidth = WIDTH, winHeight = HEIGHT;
-    // glfwGetFramebufferSize(window, &winWidth, &winHeight);
-
     // Render scene
-    //glViewport(0, 0, winWidth, winHeight);
-    glViewport(0, 0, WIDTH, HEIGHT);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glViewport(0, 0, curWidth, curHeight);
 
     glUseProgram(postProcessProgram);
     glBindVertexArray(quadVAO);
@@ -612,16 +596,10 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
     // Bind scene texture
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, sceneTex[curTex]);
-    // glGenerateMipmap(GL_TEXTURE_2D);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     // Bind bloom texture
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, bloomTexture[1]);
-    // glGenerateMipmap(GL_TEXTURE_2D);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     {
         // Set uniforms
@@ -630,7 +608,6 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
         glUniform2f(glGetUniformLocation(postProcessProgram, "uTextureSize"), WIDTH, HEIGHT);
         glUniform2f(glGetUniformLocation(postProcessProgram, "uOutputSize"), 3840.0f, 1920.0f);
 
-        // Sensible defaults for PS1-style rendering
         glUniform1f(glGetUniformLocation(postProcessProgram, "uKernelB"), kernelB);
         glUniform1f(glGetUniformLocation(postProcessProgram, "uKernelC"), kernelC);
         glUniform1f(glGetUniformLocation(postProcessProgram, "uSharpness"), sharpness);
@@ -651,6 +628,9 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
 
         glUniform1i(glGetUniformLocation(postProcessProgram, "uEnableBloom"), enableBloom ? 1 : 0);
         glUniform1i(glGetUniformLocation(postProcessProgram, "uEnableUpscaling"), enableUpscaling ? 1 : 0);
+
+        glUniform2f(glGetUniformLocation(postProcessProgram, "uUvMin"), uvMinX, uvMinY);
+        glUniform2f(glGetUniformLocation(postProcessProgram, "uUvMax"), uvMaxX, uvMaxY);
     }
 
     // Draw final quad
@@ -658,28 +638,11 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
 
     glBindVertexArray(0);
 
-    // glfwSwapBuffers(window);
-
     isRendering = false;
-
-    /*positions.endFrame();
-    colors.endFrame();
-    uvs.endFrame();
-    attributes.endFrame();*/
 }
 
 void Emulator::Renderer::renderFrame() {
-    /*uint32_t fbX = gpu.displayVramXStart;
-    uint32_t fbY = gpu.displayVramYStart;
-    uint32_t fbW = gpu.hres.getResolution();                  // 256/320/368/512/640
-    uint32_t fbH = (gpu.vres == VerticalRes::Y480Lines)
-             ? 480
-             : (gpu.display LineEnd - gpu.displayLineStart);*/
-
-    // gpu.vram->copyToTexture(0, 0, 1024, 512, sceneTex[curTex]);
-
     display(!cropToDisplayArea);
-    //printf("draws=%u\n", drawCalls);
 
     drawCalls = 0;
     curTex    = 0;
@@ -834,14 +797,6 @@ void Emulator::Renderer::draw() {
 
     glTextureBarrier();
     glDrawArrays(primitiveMode, static_cast<GLint>(bufferRegion * VERTEX_BUFFER_LEN), static_cast<GLsizei>(nVertices));
-    /*if (primitiveMode == GL_TRIANGLES && gpu.semiTransparencyEnabled) {
-        for (uint32_t i = 0; i + 2 < nVertices; i += 3) {
-            glTextureBarrier();
-            glDrawArrays(GL_TRIANGLES, static_cast<GLint>(i), 3);
-        }
-    } else {
-        glDrawArrays(primitiveMode, 0, static_cast<GLsizei>(nVertices));
-    }*/
 
     glBindVertexArray(0);
     glUseProgram(0);
@@ -854,64 +809,6 @@ void Emulator::Renderer::draw() {
         glDeleteSync(regionFences[bufferRegion]);
         regionFences[bufferRegion] = nullptr;
     }
-
-    /*glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO[curTex]);
-    glViewport(0, 0, WIDTH, HEIGHT);
-
-    glDisable(GL_BLEND);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_MULTISAMPLE);
-    glDisable(GL_LINE_SMOOTH);
-    glDisable(GL_POLYGON_SMOOTH);
-    glDisable(GL_DITHER);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-
-    glUseProgram(program);
-    glUniform1i(ditheringUni, gpu.dithering ? 1 : 0);
-    glUniform1i(maskBitUni, gpu.forceSetMaskBit ? 1 : 0);
-    glBindVertexArray(VAO);
-
-    positions.flush();
-    colors.flush();
-    uvs.flush();
-    attributes.flush();
-
-    glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, gpu.vram->getCurrentTexture());
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, sceneTex[curTex]);
-
-    for (uint32_t i = 0; i + 2 < nVertices; i += 3) {
-        glTextureBarrier();
-        glDrawArrays(GL_TRIANGLES, static_cast<GLint>(i), 3);
-    }
-
-    glBindVertexArray(0);
-    glUseProgram(0);*/
-
-    /*glDisable(GL_BLEND);
-
-    glUseProgram(program);
-    glUniform1i(ditheringUni, gpu.dithering ? 1 : 0);
-    glBindVertexArray(VAO);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, gpu.vram->getCurrentTexture());
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, sceneTex[curTex]);
-
-    for (uint32_t i = 0; i + 2 < nVertices; i += 3) {
-        glTextureBarrier();
-        glDrawArrays(GL_TRIANGLES, static_cast<GLint>(i), 3);
-    }
-
-    glBindVertexArray(0);
-    glUseProgram(0);*/
 }
 
 void Emulator::Renderer::clear() {
@@ -950,11 +847,11 @@ static void biasTriangleForGL(const Emulator::Gpu::Position in[3], Emulator::Gpu
 }
 
 static Emulator::Gpu::Color lerpColor(const Emulator::Gpu::Color& a, const Emulator::Gpu::Color& b, float t) {
-    return Emulator::Gpu::Color(
+    return {
         static_cast<GLubyte>(a.r + (b.r - a.r) * t),
         static_cast<GLubyte>(a.g + (b.g - a.g) * t),
         static_cast<GLubyte>(a.b + (b.b - a.b) * t)
-    );
+    };
 }
 
 static bool exceedsCullThreshold(const Emulator::Gpu::Position positions[], int count);
@@ -1033,6 +930,8 @@ void Emulator::Renderer::pushLine(Emulator::Gpu::Position positions[], Emulator:
 }
 
 static bool exceedsCullThreshold(const Emulator::Gpu::Position positions[], int count) {
+    return false;
+
     for (int i = 0; i < count; i++) {
         for (int j = i + 1; j < count; j++) {
             float dx = positions[i].x - positions[j].x;
@@ -1086,26 +985,6 @@ void Emulator::Renderer::pushTriangle(Emulator::Gpu::Position positions[], Emula
         this->attributes.set(vidx(nVertices), attributes);
         nVertices++;
     }
-
-    return;
-
-    /*drawDirectTriangle(gpu, positions, colors, uvs, attributes);
-
-    return;*/
-
-    for (int i = 0; i < 3; i++) {
-        this->positions.set(vidx(nVertices), positions[i]);
-
-        if (attributes.usesColor())
-            this->colors.set(vidx(nVertices), colors[i]);
-
-        if (attributes.useTextures())
-            this->uvs.set(vidx(nVertices), uvs[i]);
-
-        this->attributes.set(vidx(nVertices), attributes);
-
-        nVertices++;
-    }
 }
 
 void Emulator::Renderer::pushQuad(Emulator::Gpu::Position positions[], Emulator::Gpu::Color colors[],
@@ -1127,19 +1006,6 @@ void Emulator::Renderer::pushQuad(Emulator::Gpu::Position positions[], Emulator:
 
     setPrimitiveMode(GL_TRIANGLES);
 
-    /*Emulator::Gpu::Position p0[3] = {positions[1], positions[3], positions[2]};
-    Emulator::Gpu::Color c0[3] = {colors[1], colors[3], colors[2]};
-    Emulator::Gpu::UV u0[3] = {uvs[1], uvs[3], uvs[2]};
-
-    Emulator::Gpu::Position p1[3] = {positions[0], positions[1], positions[2]};
-    Emulator::Gpu::Color c1[3] = {colors[0], colors[1], colors[2]};
-    Emulator::Gpu::UV u1[3] = {uvs[0], uvs[1], uvs[2]};
-
-    drawDirectTriangle(gpu, p0, c0, u0, attributes);
-    drawDirectTriangle(gpu, p1, c1, u1, attributes);
-
-    return;*/
-
     constexpr int order[6] = {1, 3, 2, 0, 1, 2};
 
     for (int i: order) {
@@ -1156,62 +1022,6 @@ void Emulator::Renderer::pushQuad(Emulator::Gpu::Position positions[], Emulator:
         this->attributes.set(vidx(nVertices), attributes);
         nVertices++;
     }
-
-    return;
-
-    _rasterizer.drawQuad(positions, colors, uvs, attributes);
-    // displayVRam();
-
-    // First triangle
-    // [2, 3, 0]
-
-    this->positions.set(vidx(nVertices), positions[2]);
-    if (attributes.usesColor())
-        this->colors.set(vidx(nVertices), colors[2]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[2]);
-    this->attributes.set(vidx(nVertices), attributes);
-    nVertices++;
-
-    this->positions.set(vidx(nVertices), positions[3]);
-    if (attributes.usesColor())
-        this->colors.set(vidx(nVertices), colors[3]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[3]);
-    this->attributes.set(vidx(nVertices), attributes);
-    nVertices++;
-
-    this->positions.set(vidx(nVertices), positions[0]);
-    if (attributes.usesColor())
-        this->colors.set(vidx(nVertices), colors[0]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[0]);
-    this->attributes.set(vidx(nVertices), attributes);
-    nVertices++;
-
-    this->positions.set(vidx(nVertices), positions[3]);
-    if (attributes.usesColor())
-        this->colors.set(vidx(nVertices), colors[3]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[3]);
-    this->attributes.set(vidx(nVertices), attributes);
-    nVertices++;
-
-    this->positions.set(vidx(nVertices), positions[0]);
-    if (attributes.usesColor())
-        this->colors.set(vidx(nVertices), colors[0]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[0]);
-    this->attributes.set(vidx(nVertices), attributes);
-    nVertices++;
-
-    this->positions.set(vidx(nVertices), positions[1]);
-    if (attributes.usesColor())
-        this->colors.set(vidx(nVertices), colors[1]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[1]);
-    this->attributes.set(vidx(nVertices), attributes);
-    nVertices++;
 }
 
 void Emulator::Renderer::pushRectangle(Emulator::Gpu::Position positions[], Emulator::Gpu::Color colors[],
@@ -1242,73 +1052,23 @@ void Emulator::Renderer::pushRectangle(Emulator::Gpu::Position positions[], Emul
 
     setPrimitiveMode(GL_TRIANGLES);
 
-    /*int left = int(positions[0].x);
-    int top = int(positions[0].y);
-    int right = int(positions[3].x);
-    int bottom = int(positions[3].y);
-
-    if (right < left) {
-        std::swap(left, right);
-    }
-
-    if (bottom < top) {
-        std::swap(top, bottom);
-    }
-
-    left = std::max(left, clipLeft(gpu));
-    right = std::min(right, clipRight(gpu) + 1);
-    top = std::max(top, clipTop(gpu));
-    bottom = std::min(bottom, clipBottom(gpu) + 1);
-
-    const int baseX = int(positions[0].x);
-    const int baseY = int(positions[0].y);
-
-    for (int y = top; y < bottom; y++) {
-        for (int x = left; x < right; x++) {
-            uint16_t c;
-
-            if (attributes.useTextures()) {
-                Emulator::Gpu::UV uv = uvs[0];
-                uv.u += float(x - baseX);
-                uv.v += float(y - baseY);
-
-                c = sampleTexture(gpu, uv, attributes);
-
-                if ((c & 0x7FFF) == 0) {
-                    continue;
-                }
-            } else {
-                c = static_cast<uint16_t>(colors[0].toU32());
-            }
-
-            gpu.vram->writePixel(uint32_t(x), uint32_t(y), c);
-        }
-    }
-
-    return;*/
-
-    _rasterizer.drawRectangle(positions, colors, uvs, attributes);
-
     // First triangle
     // [0, 1, 2]
     this->positions.set(vidx(nVertices), positions[0]);
     this->colors.set(vidx(nVertices), colors[0]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[0]);
+    if (attributes.useTextures()) this->uvs.set(vidx(nVertices), uvs[0]);
     this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
     this->positions.set(vidx(nVertices), positions[1]);
     this->colors.set(vidx(nVertices), colors[1]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[1]);
+    if (attributes.useTextures()) this->uvs.set(vidx(nVertices), uvs[1]);
     this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
     this->positions.set(vidx(nVertices), positions[2]);
     this->colors.set(vidx(nVertices), colors[2]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[2]);
+    if (attributes.useTextures()) this->uvs.set(vidx(nVertices), uvs[2]);
     this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
@@ -1316,46 +1076,21 @@ void Emulator::Renderer::pushRectangle(Emulator::Gpu::Position positions[], Emul
     // [1, 2, 3]
     this->positions.set(vidx(nVertices), positions[1]);
     this->colors.set(vidx(nVertices), colors[1]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[1]);
+    if (attributes.useTextures()) this->uvs.set(vidx(nVertices), uvs[1]);
     this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
     this->positions.set(vidx(nVertices), positions[2]);
     this->colors.set(vidx(nVertices), colors[2]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[2]);
+    if (attributes.useTextures()) this->uvs.set(vidx(nVertices), uvs[2]);
     this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
 
     this->positions.set(vidx(nVertices), positions[3]);
     this->colors.set(vidx(nVertices), colors[3]);
-    if (attributes.useTextures())
-        this->uvs.set(vidx(nVertices), uvs[3]);
+    if (attributes.useTextures()) this->uvs.set(vidx(nVertices), uvs[3]);
     this->attributes.set(vidx(nVertices), attributes);
     nVertices++;
-}
-
-void Emulator::Renderer::setDrawingOffset(int16_t x, int16_t y) {
-    /**
-     * Because my renderer is still...
-     * isn't completed I need to manually do this,
-     * for every game as otherwise, it causes,
-     * the entire screen to constantly flicker
-     */
-
-    glUseProgram(program);
-
-    // int16_t f = 256;
-    // int16_t d = 128;
-
-    // glUniform2f(offsetUni, x, y);
-    glUniform2f(offsetUni, 0, 0);
-    // lUniform2i(offsetUni, 0, 256);
-    // glUniform2i(offsetUni, 0, 0); // GEX
-    // glUniform2i(offsetUni, 120, 160); // Pepsi man
-    // glUniform2i(offsetUni, 0, 0); // Ridge Racer
-    // glUniform2f(offsetUni, f, d); // Crash Bandicoot
 }
 
 void Emulator::Renderer::setDrawingArea(const uint16_t left, const uint16_t right, const uint16_t top,

@@ -109,6 +109,11 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.o: \
  /usr/include/bits/stdint-least.h /usr/include/c++/16/cstring \
  /usr/include/string.h /usr/include/strings.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/TrackBuilder.h \
+ /usr/include/c++/16/optional /usr/include/c++/16/exception \
+ /usr/include/c++/16/bits/exception_ptr.h \
+ /usr/include/c++/16/bits/cxxabi_init_exception.h \
+ /usr/include/c++/16/typeinfo /usr/include/c++/16/bits/nested_exception.h \
+ /usr/include/c++/16/bits/enable_special_members.h \
  /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Location.h \
  /usr/include/c++/16/algorithm /usr/include/c++/16/bits/stl_algo.h \
  /usr/include/c++/16/bits/algorithmfwd.h \
@@ -118,11 +123,8 @@ src/CMakeFiles/PS1Emulator.dir/Memory/CDROM/Disk.cpp.o: \
  /usr/include/c++/16/pstl/glue_algorithm_defs.h \
  /usr/include/c++/16/pstl/execution_defs.h /usr/include/c++/16/iostream \
  /usr/include/c++/16/ostream /usr/include/c++/16/bits/ostream.h \
- /usr/include/c++/16/ios /usr/include/c++/16/exception \
- /usr/include/c++/16/bits/exception_ptr.h \
- /usr/include/c++/16/bits/cxxabi_init_exception.h \
- /usr/include/c++/16/typeinfo /usr/include/c++/16/bits/nested_exception.h \
- /usr/include/c++/16/bits/ios_base.h /usr/include/c++/16/ext/atomicity.h \
+ /usr/include/c++/16/ios /usr/include/c++/16/bits/ios_base.h \
+ /usr/include/c++/16/ext/atomicity.h \
  /usr/include/c++/16/x86_64-redhat-linux/bits/gthr.h \
  /usr/include/c++/16/x86_64-redhat-linux/bits/gthr-default.h \
  /usr/include/pthread.h /usr/include/sched.h /usr/include/bits/sched.h \

@@ -37,7 +37,6 @@ namespace Emulator {
             void pushRectangle(Emulator::Gpu::Position positions[], Emulator::Gpu::Color colors[], Emulator::Gpu::UV uvs[], Emulator::Gpu::Attributes attributes);
             
         public:
-            void setDrawingOffset(int16_t x, int16_t y);
             void setDrawingArea(uint16_t left, uint16_t right, uint16_t top, uint16_t bottom) const;
             void setTextureWindow(uint8_t textureWindowXMask, uint8_t textureWindowYMask, uint8_t textureWindowXOffset, uint8_t textureWindowYOffset);
             void setSemiTransparencyMode(uint8_t semiTransparencyMode) const;
@@ -62,7 +61,7 @@ namespace Emulator {
 
         public:
             bool renderVRAM = false;
-            bool cropToDisplayArea = false;
+            bool cropToDisplayArea = true;
             
             // Shader parameters
             GLuint vertexShader;
@@ -94,11 +93,8 @@ namespace Emulator {
             GLuint postProcessFragmentShader;
             
             // Uniforms
-            
-            GLint offsetUni;
             GLint drawingMinUni;
             GLint drawingMaxUni;
-            //GLint textureDepthUni;
             GLint textureWindowUni;
             GLint semiTransparencyModeUni;
             GLint ditheringUni;
@@ -107,9 +103,6 @@ namespace Emulator {
 
             // Buffer contains the vertices positions
             Buffer<Gpu::Position> positions;
-            
-            // Buffer contains the lines positions
-            //Buffer<Gpu::Position> linePositions;
             
             // Buffer contains the vertices colors
             Buffer<Gpu::Color> colors;
@@ -153,7 +146,8 @@ namespace Emulator {
             bool enableAdaptiveSharpening = true;
             bool enableBloom = false;
             bool enableUpscaling = false;
-            
+            bool useShaders  = false;
+
         private:
             bool horizontal = true;
             

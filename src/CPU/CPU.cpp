@@ -452,78 +452,6 @@ void CPU::showDisassembler() {
 
     ImGui::Separator();
 
-    auto &h = disasmState.hang;
-
-    if (h.detected) {
-        ImGui::PushStyleColor(ImGuiCol_ChildBg, IM_COL32(40, 10, 10, 255));
-
-        ImGui::BeginChild("##hang_analysis", ImVec2(0, 220), true);
-
-        ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "HANG DETECTED");
-
-        ImGui::Separator();
-
-        ImGui::Text("Reason:");
-        ImGui::SameLine();
-        ImGui::TextColored(ImVec4(1, 1, 0.4f, 1), "%s", h.reason.c_str());
-
-            ImGui::Text("Details:");
-            ImGui::TextWrapped("%s", h.details.c_str());
-
-            if (!h.condition.empty()) {
-                ImGui::Text("Condition:");
-                ImGui::TextWrapped("%s", h.condition.c_str());
-            }
-
-            if (!h.waitingOn.empty()) {
-                ImGui::Text("Waiting On:");
-                ImGui::TextWrapped("%s", h.waitingOn.c_str());
-            }
-
-            if (!h.addressDetails.empty()) {
-                ImGui::Text("Address Details:");
-                ImGui::TextWrapped("%s", h.addressDetails.c_str());
-            }
-
-            ImGui::Text("Hotspot:");
-            ImGui::SameLine();
-            ImGui::Text("0x%08X", h.hotspot);
-
-            if (h.hasEffectiveAddress) {
-                ImGui::Text("Address:");
-                ImGui::SameLine();
-                ImGui::Text("0x%08X (%s)", h.effectiveAddress/*, describeAddress(h.effectiveAddress).c_str()*/);
-            }
-
-        if (h.repeatedTarget) {
-            ImGui::Text("Loop Target:");
-            ImGui::SameLine();
-            ImGui::Text("0x%08X", h.repeatedTarget);
-        }
-
-        ImGui::Text("Repeat Count:");
-        ImGui::SameLine();
-        ImGui::Text("%llu", h.repeatCount);
-
-        if (ImGui::Button("Jump To Hang")) {
-            disasmState.view_center = h.hotspot;
-            disasmState.follow_pc   = false;
-            disasmState.extraLinesAbove = 0;
-            disasmState.extraLinesBelow = 0;
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Break Here")) {
-            paused = true;
-            pc     = h.hotspot;
-        }
-
-        ImGui::EndChild();
-
-        ImGui::PopStyleColor();
-    }
-
     ImGui::InputText("Go to (hex)", disasmState.addrBuf, sizeof(disasmState.addrBuf),
                      ImGuiInputTextFlags_CharsHexadecimal);
 
@@ -608,14 +536,11 @@ void CPU::showDisassembler() {
                     continue;
             }
 
-            bool isPC      = addr == pc;
-            bool isHotspot = h.detected && addr == h.hotspot;
+            bool isPC = addr == pc;
 
             ImGui::PushID(static_cast<int>(addr));
 
-            if (isHotspot)
-                ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 80, 80, 255));
-            else if (isPC)
+            if (isPC)
                 ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 200, 80, 255));
 
             uint64_t hits = executionHitsFor(addr);
@@ -708,12 +633,6 @@ void CPU::showDisassembler() {
                 ImGui::TextColored(ImVec4(1, 0.5f, 0.3f, 1), "[%llu]", hits);
             }
 
-            if (isHotspot) {
-                ImGui::SameLine();
-
-                ImGui::TextColored(ImVec4(1, 0.2f, 0.2f, 1), "<HANG>");
-            }
-
             if (ImGui::IsItemHovered()) {
                 ImGui::BeginTooltip();
 
@@ -729,18 +648,10 @@ void CPU::showDisassembler() {
                     ImGui::Text("Edge Hits: %llu", eit->second);
                 }
 
-                if (isHotspot) {
-                    ImGui::Separator();
-
-                    ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "Likely Hang Location");
-
-                    ImGui::TextWrapped("%s", h.details.c_str());
-                }
-
                 ImGui::EndTooltip();
             }
 
-            if (isHotspot || isPC)
+            if (isPC)
                 ImGui::PopStyleColor();
 
             ImGui::PopID();
@@ -780,10 +691,7 @@ void CPU::showDisassembler() {
 
                     ImGui::TableSetColumnIndex(1);
 
-                    if (h.detected && it->pc == h.hotspot)
-                        ImGui::TextColored(ImVec4(1, 0.3f, 0.3f, 1), "%08X", it->pc);
-                    else
-                        ImGui::Text("%08X", it->pc);
+                    ImGui::Text("%08X", it->pc);
 
                     ImGui::TableSetColumnIndex(2);
                     ImGui::Text("%08X", it->target);
@@ -996,9 +904,6 @@ DisassembledInstruction CPU::disassemble(Instruction& inst, uint32_t address) {
     };
 
     auto appendLoadDetails = [&](uint8_t size, uint32_t effectiveAddr, uint32_t targetReg) {
-        result.memory_access = true;
-        result.reads_memory = true;
-
         appendDetail(regDetail(rs));
 
         std::optional<MemoryTraceEntry> mem = latestMemory(false, size);
@@ -1015,9 +920,6 @@ DisassembledInstruction CPU::disassemble(Instruction& inst, uint32_t address) {
     };
 
     auto appendStoreDetails = [&](uint8_t size, uint32_t effectiveAddr, uint32_t value) {
-        result.memory_access = true;
-        result.writes_memory = true;
-
         appendDetail(regDetail(rs));
         appendDetail(regDetail(rt));
 
@@ -1029,9 +931,6 @@ DisassembledInstruction CPU::disassemble(Instruction& inst, uint32_t address) {
     };
 
     auto appendCopStoreDetails = [&](uint8_t size, uint32_t effectiveAddr, uint32_t value) {
-        result.memory_access = true;
-        result.writes_memory = true;
-
         appendDetail(regDetail(rs));
 
         std::optional<MemoryTraceEntry> mem = latestMemory(true, size);
@@ -1538,7 +1437,6 @@ std::string CPU::getFunctionLabel(uint32_t addr) {
     std::string label = ss.str();
 
     labels[addr] = label;
-    disasmState.knownFunctions.insert(addr);
 
     return label;
 }
@@ -2572,8 +2470,9 @@ void CPU::opmtc0(Instruction& instruction) {
             break;
         }
         case 13: {
-            _cop0.cause &= ~0x300;
-            _cop0.cause |= v & 0x300;
+            // Only bits 8-9 are R/W
+            COP0::cause &= ~0x300;
+            COP0::cause |= v & 0x300;
 
             break;
         }
@@ -2738,18 +2637,18 @@ void CPU::exception(const Exception exception, uint32_t handlerOverride) {
     }*/
 
     // Shift bits [5:0] of 'SR' two places to the left
-    uint32_t mode = _cop0.sr & 0x3f;
+    uint32_t mode = _cop0.sr & 0x3F;
 
-    _cop0.sr &= ~0x3f;
-    _cop0.sr |= (mode << 2) & 0x3f;
+    _cop0.sr &= ~0x3F;
+    _cop0.sr |= (mode << 2) & 0x3F;
 
-    uint8_t IP = static_cast<uint8_t>(_cop0.cause >> 8) & 0xFF;
-    _cop0.cause = 0;
-    _cop0.cause |= (IP) << 8;
+    uint8_t IP = static_cast<uint8_t>(COP0::cause >> 8) & 0xFF;
+    COP0::cause = 0;
+    COP0::cause |= (IP) << 8;
 
     // Update 'CAUSE' register with the exception code (bits [6:2])
-    _cop0.cause &= ~0x7C;
-    _cop0.cause |= static_cast<uint32_t>(exception) << 2;
+    COP0::cause &= ~0x7C;
+    COP0::cause |= static_cast<uint32_t>(exception) << 2;
 
     /**
      * Been stuck at this issue for a while so I'm cheating:
@@ -2759,27 +2658,27 @@ void CPU::exception(const Exception exception, uint32_t handlerOverride) {
      *          occurred because of a coprocessor instuction for
      *          a coprocessor which wasn't enabled in SR.
      */
-    _cop0.cause &= ~(0x3u << 28);
+    COP0::cause &= ~(0x3U << 28);
 
     if (exception == CoprocessorError) {
         Instruction load{interconnect.loadInstruction(currentpc)};
         uint8_t coprocessorNumber = load.op & 0x3; // was .func nice
-        _cop0.cause |= static_cast<uint32_t>(coprocessorNumber) << 28;
+        COP0::cause |= static_cast<uint32_t>(coprocessorNumber) << 28;
     }
 
     if(delayJumpSlot) {
-        _cop0.cause |= (static_cast<uint32_t>(1) << (30));
+        COP0::cause |= (static_cast<uint32_t>(1) << (30));
     }
 
     if(delaySlot) {
         // When an exception occurs in a delay slot 'EPC' points
         // to the branch instruction and bit 31 of 'CAUSE' is set.
         _cop0.epc = currentpc - 4;
-        _cop0.cause |= (static_cast<uint32_t>(1) << (31));
+        COP0::cause |= (static_cast<uint32_t>(1) << (31));
     } else {
         // Save current instruction address in 'EPC'
         _cop0.epc = currentpc;
-        _cop0.cause &= ~(static_cast<uint32_t>(1) << 31);
+        COP0::cause &= ~(static_cast<uint32_t>(1) << 31);
     }
 
     // Determine the exception handler address based on the 'BEV' bit

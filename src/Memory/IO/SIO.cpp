@@ -7,7 +7,7 @@
 #include "../IRQ.h"
 #include "../../Utils/Bitwise.h"
 
-DigitalController Emulator::IO::SIO::_controllers[] = {};
+DigitalController Emulator::IO::SIO::_controllers[] = {0, 1};
 
 void Emulator::IO::SIO::step(uint32_t cycles) {
 	for(uint32_t port = 0; port < channels.size(); port++) {

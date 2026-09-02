@@ -138,7 +138,7 @@ void CDROM::handleSector() {
 			}
 		}
 
-		if (!mute && mode.cdda) {
+		if (/*!mute && */mode.cdda) {
 			if (rawSector.size() >= sync.size() && memcmp(rawSector.data(), sync.data(), sync.size()) == 0) {
 				printf("CDROM; Trying to read Data track as audio\n");
 			} else {
@@ -160,6 +160,7 @@ void CDROM::handleSector() {
 		// uint8_t minute = rawSector[12];
 		// uint8_t second = rawSector[13];
 		// uint8_t frame = rawSector[14];
+
 		uint8_t mode = _readSector.loadAt(15);
 
 		//   0-7 File Number    (00h..FFh) (for Audio/Video Interleave, see below)
@@ -194,13 +195,102 @@ void CDROM::handleSector() {
 
 		// Real Time (RT) && Audio
 		if ((submode >> 6 & 1) == 1 && (submode >> 2 & 1) == 1) {
-			uint8_t is37800Hz = (codinginfo >> 2 & 1);
-			uint8_t is8Bits = (codinginfo >> 4 & 1);
-			uint8_t isStereo = (codinginfo >> 5 & 1);
+			uint8_t isStereo = (codinginfo & 0x03) == 1;
+			uint8_t is18900Hz = (codinginfo >> 2 & 1);
+			uint8_t is8Bits = ((codinginfo >> 4) & 0x03) == 1;
 			uint8_t isEmphasis = (codinginfo >> 6 & 1);
 
 			if (this->mode.xaAdpcm && !mute) {
-				printf("Need to decode\n");
+				// TODO; handle filter
+				//assert(!this->mode.xaFilter);
+				if (this->mode.xaFilter) {
+					printf("Handle filter..\n");
+				}
+
+				//printf("Need to decode is18900Hz(%x) is8bits(%x) isstereo(%x) isemphasis(%x)\n", is18900Hz, is8Bits, isStereo, isEmphasis);
+				// Pink panther uses(18900Hz, 4bits, mono, Emphasis=normal)
+
+				uint8_t pos_xa_adpcm_table[5] = { 0, 60, 115,  98, 122 };
+				int8_t  neg_xa_adpcm_table[5] = { 0, 0 , -52, -55, -60 };
+
+				/**
+				 * Each sector consists of 12h(18) 128-byte portions (=900h bytes)
+				 * (the remaining 14h bytes of the sectors 914h-byte data region are 00h filled).
+				 */
+				uint8_t offset = 24; // 12+4+8 ;skip sync,header,subheader
+				auto src = rawSector.data() + offset;
+
+				std::vector<int16_t> left;
+				std::vector<int16_t> right;
+
+				//for (int block = 0; block < 18; block++) {
+					/**
+					 * 00h..03h Copy of below 4 bytes (at 04h..07h)
+  					 * 04h      Header for 1st Block/Mono, or 1st Block/Left
+  					 * 05h      Header for 2nd Block/Mono, or 1st Block/Right
+  					 * 06h      Header for 3rd Block/Mono, or 2nd Block/Left
+  					 * 07h      Header for 4th Block/Mono, or 2nd Block/Right
+  					 * 08h      Header for 5th Block/Mono, or 3rd Block/Left  ;\unknown/unused
+  					 * 09h      Header for 6th Block/Mono, or 3rd Block/Right ; for 8bit ADPCM
+  					 * 0Ah      Header for 7th Block/Mono, or 4th Block/Left  ; (maybe 0, or maybe
+  					 * 0Bh      Header for 8th Block/Mono, or 4th Block/Right ;/copy of above)
+  					 * 0Ch..0Fh Copy of above 4 bytes (at 08h..0Bh)
+					 */
+					auto decode_28_nibbles = [this, &pos_xa_adpcm_table, &neg_xa_adpcm_table](const uint8_t *data, const uint8_t blk, uint8_t nibble, std::vector<int16_t> &dst, int32_t &old, int32_t &older) {
+						/**
+						 * 0-3 Shift  (0..12) (0=Loudest) (13..15=Reserved/Same as 9)
+						 * 4-5 Filter (0..3) (only four filters, unlike SPU-ADPCM which has five)
+						 * 6-7 Unused (should be 0)
+						 */
+						auto shift = 12 - (data[4 + blk * 2 + nibble] & 0xF);
+						auto filter = (data[4+blk*2+nibble] & 0x30) >> 4;
+						//if (shift > 12) shift = 9; // 13..15 = same as 9
+
+						auto f0 = pos_xa_adpcm_table[filter];
+						auto f1 = neg_xa_adpcm_table[filter];
+
+						auto signed4bit = [](uint8_t nibble) -> int16_t {
+							return (nibble & 0x07) - (nibble & 0x08);
+						};
+
+						for (int j = 0; j < 28; j++) {
+							auto t = signed4bit((data[16+blk+j*4] >> (nibble*4)) & 0x0F);
+							auto sample = (t << shift) + ((old*f0 + older*f1+32) / 64);
+							sample = std::clamp(sample, -0x8000, 0x7FFF);
+
+							dst.push_back(static_cast<int16_t>(sample));
+
+							older = old;
+							old = sample;
+						}
+					};
+
+					for (int i = 0; i < 0x12; i++) {
+						auto data = src;
+
+						for (int blk = 0; blk < 4; blk++) {
+							if (isStereo) { // ;left-samples (LO-nibbles), plus right-samples (HI-nibbles)
+								decode_28_nibbles(data, blk, 0, left, oldLeft, olderLeft);
+								decode_28_nibbles(data, blk, 1, right, oldRight, olderRight);
+							} else { // ;first 28 samples (LO-nibbles), plus next 28 samples (HI-nibbles)
+								decode_28_nibbles(data, blk, 0, left, oldLeft, olderLeft);
+								decode_28_nibbles(data, blk, 1, left, oldLeft, olderLeft);
+							}
+						}
+
+						src += 128;
+					}
+
+					if (isStereo) {
+						for (size_t i = 0; i < left.size(); i++) {
+							audioSamples.emplace_back(left[i], right[i]);
+						}
+					} else {
+						for (size_t i = 0; i < left.size(); i++) {
+							audioSamples.emplace_back(left[i], left[i]);
+						}
+					}
+				//}
 			}
 		}
 	}
@@ -592,6 +682,7 @@ void CDROM::decodeAndExecute(uint8_t command) {
 	} else if (command == 0x04) {
 		// Forward - Command 04h --> INT3(stat) --> optional INT1(report bytes)
 		INT3();
+		printf("CMD; Forward\n");
 	}  else if(command == 0x06) {
 		// ReadN - Command 06h --> INT3(stat) --> INT1(stat) --> datablock
 		ReadN();
@@ -628,14 +719,14 @@ void CDROM::decodeAndExecute(uint8_t command) {
 				assert(false);
 				return;
 			}
-			
+
 			auto toBinary = [](uint8_t b) -> uint8_t {
 				int hi = (b >> 4) & 0xF;
 				int lo = b & 0xF;
-				
+
 				return hi * 10 + lo;
 			};
-			
+
 			int trackNo = 0;
 			if (parameters.size() == 1) {
 				trackNo = toBinary(getParamater());
@@ -646,9 +737,9 @@ void CDROM::decodeAndExecute(uint8_t command) {
 			 * then play starts at setloc position (if there was a pending unprocessed setloc)
 			 * or otherwise starts at the current location (eg. the last point seeked, or the current location of the current song; if it was already playing)
 			 */
-			
+
 			Location pos = Location::fromLBA(readLocation);
-			
+
 			// Start playing track n
 			if (trackNo > 0) {
 				int track = std::min(trackNo - 1, (int) _disk.tracks.size() - 1);
@@ -666,34 +757,35 @@ void CDROM::decodeAndExecute(uint8_t command) {
 
 			readLocation = pos.toLba();
 			_stats.setMode(Stats::Mode::Playing);
-			
+
 			INT(3);
 			addResponse(_stats._reg);
 	} else if (command == 0x11) {
 		auto toBcd = [](uint8_t b) -> uint8_t {
 			return ((b / 10) << 4) | (b % 10);
 		};
-		
-		int location = std::max(0, readLocation);
-		int track = -1;
-		int trackStart = 0;
-		
-		if (diskPresent && !_disk.tracks.empty()) {
-			for (int i = 0; i < _disk.tracks.size(); i++) {
-				int start = _disk.getTrackStart(i).toLba();
-				int end = (i + 1 < _disk.tracks.size()) ? _disk.getTrackStart(i + 1).toLba() : _disk.getSize().toLba();
-				
-				if (location >= start && location < end) {
-					track = i;
-					trackStart = start;
-					break;
+
+		auto crc16 = [](const uint8_t* data, size_t length) -> uint16_t {
+			uint16_t crc = 0;
+
+			for (size_t i = 0; i < length; i++) {
+				crc ^= (uint16_t) data[i] << 8;
+
+				for (int bit = 0; bit < 8; bit++) {
+					crc = (crc & 0x8000) ? (uint16_t) ((crc << 1) ^ 0x1021) : (uint16_t) (crc << 1);
 				}
 			}
-		}
-		
+
+			return crc;
+		};
+
+		int location = std::max(0, readLocation);
+		int track = _disk.getTrackPosition(Location::fromLBA(readLocation - 1));;
+		int trackStart = _disk.getTrackStart(track).toLba();
+
 		uint8_t trackNo = 0xFF;
 		int relativeLocation = 0;
-		
+
 		if (track >= 0) {
 			trackNo = toBcd(track + 1);
 			relativeLocation = location - trackStart;
@@ -701,19 +793,45 @@ void CDROM::decodeAndExecute(uint8_t command) {
 			trackNo = 0xAA;
 			relativeLocation = location - _disk.getSize().toLba();
 		}
-		
+
 		auto relative = Location::fromLBA(relativeLocation);
 		auto absolute = Location::fromLBA(location);
-		
+
+		bool audio = track >= 0 && _disk.isAudio(Location::fromLBA(location));
+		uint8_t controlAdr = ((audio ? 0x0 : 0x4) << 4) | 0x1;
+
+		uint8_t subQ[12] = {
+			controlAdr,
+			trackNo,
+			toBcd(1),
+			toBcd(relative.minutes),
+			toBcd(relative.seconds),
+			toBcd(relative.sectors),
+			0,
+			toBcd(absolute.minutes),
+			toBcd(absolute.seconds),
+			toBcd(absolute.sectors),
+			0,
+			0
+		};
+
+		uint16_t crc = ~crc16(subQ, 10);
+		subQ[10] = crc >> 8;
+		subQ[11] = crc & 0xFF;
+
+		uint16_t stored = ((uint16_t) subQ[10] << 8) | subQ[11];
+		bool valid = stored == (uint16_t) ~crc16(subQ, 10);
+		assert(valid);
+
 		INT(3, 1000);
-		addResponse(trackNo); // track
-		addResponse(1); // index
-		addResponse(toBcd(relative.minutes)); // minute (track)
-		addResponse(toBcd(relative.seconds)); // second (track)
-		addResponse(toBcd(relative.sectors)); // sector (track)
-		addResponse(toBcd(absolute.minutes)); // minute (disc)
-		addResponse(toBcd(absolute.seconds)); // second (disc)
-		addResponse(toBcd(absolute.sectors)); // sector (disc)
+		addResponse(subQ[1]); // track
+		addResponse(subQ[2]); // index
+		addResponse(subQ[3]); // minute (track)
+		addResponse(subQ[4]); // second (track)
+		addResponse(subQ[5]); // sector (track)
+		addResponse(subQ[7]); // minute (disc)
+		addResponse(subQ[8]); // second (disc)
+		addResponse(subQ[9]); // sector (disc)
 	} else if (command == 0x13) {
 		auto toBcd = [](uint8_t b) -> uint8_t {
 			return ((b / 10) << 4) | (b % 10);
@@ -791,13 +909,14 @@ void CDROM::decodeAndExecute(uint8_t command) {
 		INT(5);
 		addResponse(0x13);
 		addResponse(0x40);
+		printf("any?\n");
 	} else {
 		INT3();
 		
 		//assert(false);
-		if (command != 0x0D) {
+		//if (command != 0x0D) {
 			printf("Unhandled command %x\n", command);
-		}
+		//}
 	}
 	
 	/**
@@ -858,6 +977,7 @@ void CDROM::decodeAndExecuteSub() {
 		addResponse(0x11);
 		addResponse(0x40);
 	} else {
+		printf("CDROM; Unknown subcommand\n");
 		assert(false);
 	}
 }

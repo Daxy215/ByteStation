@@ -208,6 +208,12 @@ private:
 	uint8_t cdLeftToRight = 0x00;
 	uint8_t cdRightToLeft = 0x00;
 	uint8_t cdRightToRight = 0x80;
+
+	// TODO: Move
+	int32_t oldLeft = 0;
+	int32_t olderLeft = 0;
+	int32_t oldRight = 0;
+	int32_t olderRight = 0;
 	
 private:
 	Stats _stats;

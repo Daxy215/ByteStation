@@ -245,7 +245,16 @@ src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o: \
  /usr/include/c++/16/bits/uniform_int_dist.h \
  /usr/include/c++/16/bits/stl_tempbuf.h \
  /usr/include/c++/16/pstl/glue_algorithm_defs.h \
- /usr/include/c++/16/pstl/execution_defs.h /usr/include/c++/16/cassert \
+ /usr/include/c++/16/pstl/execution_defs.h /usr/include/c++/16/functional \
+ /usr/include/c++/16/bits/refwrap.h \
+ /usr/include/c++/16/bits/std_function.h /usr/include/c++/16/typeinfo \
+ /usr/include/c++/16/bits/functexcept.h /usr/include/c++/16/unordered_map \
+ /usr/include/c++/16/bits/unordered_map.h \
+ /usr/include/c++/16/bits/hashtable.h \
+ /usr/include/c++/16/bits/hashtable_policy.h \
+ /usr/include/c++/16/ext/aligned_buffer.h \
+ /usr/include/c++/16/bits/enable_special_members.h \
+ /usr/include/c++/16/bits/node_handle.h /usr/include/c++/16/cassert \
  /usr/include/assert.h /usr/include/c++/16/iostream \
  /usr/include/c++/16/ostream /usr/include/c++/16/bits/ostream.h \
  /usr/include/c++/16/ios /usr/include/c++/16/iosfwd \
@@ -253,7 +262,7 @@ src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o: \
  /usr/include/c++/16/cwchar /usr/include/c++/16/exception \
  /usr/include/c++/16/bits/exception_ptr.h \
  /usr/include/c++/16/bits/cxxabi_init_exception.h \
- /usr/include/c++/16/typeinfo /usr/include/c++/16/bits/nested_exception.h \
+ /usr/include/c++/16/bits/nested_exception.h \
  /usr/include/c++/16/bits/char_traits.h \
  /usr/include/c++/16/bits/localefwd.h \
  /usr/include/c++/16/x86_64-redhat-linux/bits/c++locale.h \
@@ -276,8 +285,7 @@ src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o: \
  /usr/include/bits/types/struct___jmp_buf_tag.h \
  /usr/include/c++/16/x86_64-redhat-linux/bits/atomic_word.h \
  /usr/include/sys/single_threaded.h \
- /usr/include/c++/16/bits/locale_classes.h \
- /usr/include/c++/16/bits/functexcept.h /usr/include/c++/16/string \
+ /usr/include/c++/16/bits/locale_classes.h /usr/include/c++/16/string \
  /usr/include/c++/16/bits/ostream_insert.h \
  /usr/include/c++/16/bits/cxxabi_forced.h \
  /usr/include/c++/16/bits/basic_string.h /usr/include/c++/16/string_view \
@@ -326,4 +334,17 @@ src/CMakeFiles/PS1Emulator.dir/SPU/SPU.cpp.o: \
  /usr/include/c++/16/tr1/riemann_zeta.tcc /usr/include/c++/16/sstream \
  /usr/include/c++/16/bits/sstream.tcc /usr/include/c++/16/chrono \
  /usr/include/c++/16/bits/chrono.h /usr/include/c++/16/ratio \
- /usr/include/c++/16/ctime /usr/include/c++/16/bits/parse_numbers.h
+ /usr/include/c++/16/ctime /usr/include/c++/16/bits/parse_numbers.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/IRQ.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/../CPU/COP/COP0.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/CDROM.h \
+ /usr/include/c++/16/queue /usr/include/c++/16/bits/stl_queue.h \
+ /usr/include/glm/ext/scalar_uint_sized.hpp \
+ /usr/include/glm/detail/setup.hpp /usr/include/glm/simd/platform.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Disk.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Sector.h \
+ /usr/include/c++/16/cstring \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/TrackBuilder.h \
+ /usr/include/c++/16/optional \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/Location.h \
+ /home/daxy/Documents/dev/PSXEmulator/src/Memory/CDROM/fifo.h

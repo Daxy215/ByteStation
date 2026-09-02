@@ -274,30 +274,6 @@ CPU/CPU.cpp.s:
 	cd /home/daxy/Documents/dev/PSXEmulator/release_build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/CPU/CPU.cpp.s
 .PHONY : CPU/CPU.cpp.s
 
-CPU/CPUTests.o: CPU/CPUTests.cpp.o
-.PHONY : CPU/CPUTests.o
-
-# target to build an object file
-CPU/CPUTests.cpp.o:
-	cd /home/daxy/Documents/dev/PSXEmulator/release_build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/CPU/CPUTests.cpp.o
-.PHONY : CPU/CPUTests.cpp.o
-
-CPU/CPUTests.i: CPU/CPUTests.cpp.i
-.PHONY : CPU/CPUTests.i
-
-# target to preprocess a source file
-CPU/CPUTests.cpp.i:
-	cd /home/daxy/Documents/dev/PSXEmulator/release_build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/CPU/CPUTests.cpp.i
-.PHONY : CPU/CPUTests.cpp.i
-
-CPU/CPUTests.s: CPU/CPUTests.cpp.s
-.PHONY : CPU/CPUTests.s
-
-# target to generate assembly for a file
-CPU/CPUTests.cpp.s:
-	cd /home/daxy/Documents/dev/PSXEmulator/release_build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/CPU/CPUTests.cpp.s
-.PHONY : CPU/CPUTests.cpp.s
-
 CPU/Instruction.o: CPU/Instruction.cpp.o
 .PHONY : CPU/Instruction.o
 
@@ -369,6 +345,30 @@ Core/Core.s: Core/Core.cpp.s
 Core/Core.cpp.s:
 	cd /home/daxy/Documents/dev/PSXEmulator/release_build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/Core/Core.cpp.s
 .PHONY : Core/Core.cpp.s
+
+Core/GameLibrary.o: Core/GameLibrary.cpp.o
+.PHONY : Core/GameLibrary.o
+
+# target to build an object file
+Core/GameLibrary.cpp.o:
+	cd /home/daxy/Documents/dev/PSXEmulator/release_build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/Core/GameLibrary.cpp.o
+.PHONY : Core/GameLibrary.cpp.o
+
+Core/GameLibrary.i: Core/GameLibrary.cpp.i
+.PHONY : Core/GameLibrary.i
+
+# target to preprocess a source file
+Core/GameLibrary.cpp.i:
+	cd /home/daxy/Documents/dev/PSXEmulator/release_build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/Core/GameLibrary.cpp.i
+.PHONY : Core/GameLibrary.cpp.i
+
+Core/GameLibrary.s: Core/GameLibrary.cpp.s
+.PHONY : Core/GameLibrary.s
+
+# target to generate assembly for a file
+Core/GameLibrary.cpp.s:
+	cd /home/daxy/Documents/dev/PSXEmulator/release_build && $(MAKE) $(MAKESILENT) -f src/CMakeFiles/PS1Emulator.dir/build.make src/CMakeFiles/PS1Emulator.dir/Core/GameLibrary.cpp.s
+.PHONY : Core/GameLibrary.cpp.s
 
 Core/config.o: Core/config.cpp.o
 .PHONY : Core/config.o
@@ -1309,9 +1309,6 @@ help:
 	@echo "... CPU/CPU.o"
 	@echo "... CPU/CPU.i"
 	@echo "... CPU/CPU.s"
-	@echo "... CPU/CPUTests.o"
-	@echo "... CPU/CPUTests.i"
-	@echo "... CPU/CPUTests.s"
 	@echo "... CPU/Instruction.o"
 	@echo "... CPU/Instruction.i"
 	@echo "... CPU/Instruction.s"
@@ -1321,6 +1318,9 @@ help:
 	@echo "... Core/Core.o"
 	@echo "... Core/Core.i"
 	@echo "... Core/Core.s"
+	@echo "... Core/GameLibrary.o"
+	@echo "... Core/GameLibrary.i"
+	@echo "... Core/GameLibrary.s"
 	@echo "... Core/config.o"
 	@echo "... Core/config.i"
 	@echo "... Core/config.s"

@@ -72,7 +72,6 @@ float cubicWeight(float x, float B, float C) {
     0.0;
 }
 
-// Modified bicubic sampling with adjustable radius
 vec4 textureCubic(sampler2D tex, vec2 uv, vec2 texSize) {
     vec2 coord = uv * texSize - 0.5;
     vec2 base = floor(coord);
@@ -97,7 +96,6 @@ vec4 textureCubic(sampler2D tex, vec2 uv, vec2 texSize) {
     return sum / max(wsum, 0.0001);
 }
 
-// Enhanced sharpening with edge detection
 vec3 sharpen(vec3 color, vec3 blurred, float strength, vec2 uv) {
     if(uEnableAdaptiveSharpening) {
         vec3 edge = abs(color - blurred);
@@ -116,12 +114,11 @@ vec3 applyBloom(vec3 color, vec2 uv) {
     return color + bloom;
 }
 
-// Modified CRT effects with halation
 vec3 crtEffects(vec3 color, vec2 uv) {
     // Halation effect
     vec3 blurred = textureLod(bloomTexture, uv, 2.0).rgb;
     color = mix(color, blurred, uHalation);
-    
+
     // Scanlines with phosphor simulation
     vec2 fragCoord = uv * uTextureSize * 2.0;
     float scanline = mix(1.0, abs(sin(fragCoord.y * 3.141592 * 1.5)), uScanline);

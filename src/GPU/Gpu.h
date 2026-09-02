@@ -238,10 +238,13 @@ namespace Emulator {
                      * 2 -> 16 bits
                      * 3 -> 16 bits?
                      */
-                    // TODO; Copy other parameters
                     int depth = ((page & 0x180) >> 7);
                     gpu.setTextureDepth(static_cast<Emulator::TextureDepth>(depth));
-                    
+
+                    // Was causing text not to show for mortal kombat
+                    gpu.pageBaseX = static_cast<uint8_t>(page & 0xF);
+                    gpu.pageBaseY = static_cast<uint8_t>((page >> 4) & 1);
+                    gpu.semiTransparency = static_cast<uint8_t>((page >> 5) & 3);
                     gpu.curAttribute.setTextureDepth(depth);
                     
                     float u = static_cast<float>((val) & 0xFF);

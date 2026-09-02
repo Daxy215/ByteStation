@@ -134,16 +134,18 @@ void Interconnect::dmaBlock(Port port) {
     Channel& channel = _dma.getChannel(port);
 
     int32_t increment = (channel.step == Increment) ? 4 : -4;
-    uint32_t addr = channel.base & /*0x00ffffff*/0x00fffffc;
+    uint32_t addr = channel.base/* & 0x00FFFFFF*/;
     
     // Transfer size in words
-    std::optional<uint32_t> remsz = channel.transferSize();
+    std::optional<uint32_t> transferSize = channel.transferSize();
 
-    if (!remsz.has_value()) {
+    if (!transferSize.has_value()) {
         return;
     }
 
-    while (remsz.value() > 0) {
+    uint32_t remsz = transferSize.value();
+
+    while (remsz > 0) {
         // Not sure what happens if the address is bogus,
         // Mednafen just makes addr this way, maybe that's,
         // how the hardware behaves (i.e. the RAM address,
@@ -180,7 +182,7 @@ void Interconnect::dmaBlock(Port port) {
             }
             case ToRam: {
                 uint32_t srcWord = 0;
-                
+
                 switch(port) {
                     case Otc:
                         // Clear ordering table
@@ -208,11 +210,6 @@ void Interconnect::dmaBlock(Port port) {
                         break;
                     case Port::CdRom: {
                         srcWord = 0;
-                        
-                        //srcWord |= psx_cdrom_read8(_cdrom, 2) <<  0;
-                        //srcWord |= psx_cdrom_read8(_cdrom, 2) <<  8;
-                        //srcWord |= psx_cdrom_read8(_cdrom, 2) << 16;
-                        //srcWord |= psx_cdrom_read8(_cdrom, 2) << 24;
                         
                         srcWord |= _cdrom.readByte() << 0;
                         srcWord |= _cdrom.readByte() << 8;
@@ -243,22 +240,20 @@ void Interconnect::dmaBlock(Port port) {
         }
         
         addr += increment;
-        remsz.value() -= 1;
+        remsz -= 1;
     }
 
-    channel.base = addr & 0x00ffffff;
+    channel.setBase(addr);
 
     if (channel.sync != LinkedList) {
         channel.blockCount = 0;
     }
-    
-    //channel.done(_dma, port);
 }
 
 void Interconnect::dmaLinkedList(Port port) {
     Channel& channel = _dma.getChannel(port);
     
-    uint32_t addr = channel.base & /*0x1FFFFC*/0x00FFFFFF;
+    uint32_t addr = channel.base;
     
     if(channel.direction == ToRam) {
         throw std::runtime_error("Invalid DMA direction for linked list mode");
@@ -271,6 +266,40 @@ void Interconnect::dmaLinkedList(Port port) {
     }
 
     while (true) {
+        uint32_t header = _ram.load<uint32_t>(addr);
+
+        uint32_t count = header >> 24;
+        uint32_t next  = header & 0x00FFFFFF;
+
+        uint32_t packetAddr = (addr + 4) & 0x00FFFFFF;
+
+        while (count > 0) {
+            uint32_t command = _ram.load<uint32_t>(packetAddr);
+            _gpu->gp0(command);
+
+            packetAddr = (packetAddr + 4) & 0x00FFFFFF;
+            --count;
+        }
+
+        channel.setBase(next);
+
+        // The end-of-table makrer is usually 0xFFFFFF but,
+        // mednafen only checks for the MSB so maybe that's what
+        // the harder does? Since this bit is not part of any,
+        // valid address it makes some sense. I'll have to test
+        // that at some point..
+        if (next & 0x00800000) {
+            if (next != 0x00FFFFFF) {
+                _dma.forceIrq = true;
+            }
+
+            break;
+        }
+
+        addr = next;
+    }
+
+    /*while (true) {
         uint32_t headerAddr = addr & 0x1FFFFC;
         uint32_t header = _ram.load<uint32_t>(headerAddr);
 
@@ -298,7 +327,7 @@ void Interconnect::dmaLinkedList(Port port) {
         }
 
         addr = next;
-    }
+    }*/
 
     // TODO; idk if this is correct but,
     // TODO; Tekken 3 is stuck in a loop here..
@@ -357,45 +386,45 @@ void Interconnect::setDmaReg(uint32_t offset, uint32_t val) {
     std::optional<Port> activePort = std::nullopt;
     
     switch (major) {
-    case 0: case 1: case 2: case 3: case 4: case 5: case 6: {
-            Port port = PortC::fromIndex(major);
-            Channel& channel = _dma.getChannel(port);
-            
+        case 0: case 1: case 2: case 3: case 4: case 5: case 6: {
+                Port port = PortC::fromIndex(major);
+                Channel& channel = _dma.getChannel(port);
+
+                switch (minor) {
+                    case 0:
+                        channel.setBase(val); // MADR
+                        break;
+                    case 4:
+                        channel.setBlockControl(val);
+                        break;
+                    case 8:
+                        channel.setControl(val);
+                        break;
+                    default:
+                        throw std::runtime_error("Unhandled DMA write " + std::to_string(offset) + " : " + std::to_string(val));
+                }
+
+                if(channel.active()) {
+                    activePort = port;
+                }
+
+                break;
+        }
+        case 7: {
             switch (minor) {
                 case 0:
-                    channel.setBase(val); // MADR
+                    _dma.setControl(val); // DPCR (0x1F8010F0)
                     break;
                 case 4:
-                    channel.setBlockControl(val);
-                    break;
-                case 8:
-                    channel.setControl(val);
+                    _dma.setInterrupt(val); // DICR (0x1F8010F4)
                     break;
                 default:
                     throw std::runtime_error("Unhandled DMA write " + std::to_string(offset) + " : " + std::to_string(val));
             }
-            
-            if(channel.active()) {
-                activePort = port;
-            }
-            
             break;
-    }
-    case 7: {
-        switch (minor) {
-            case 0:
-                _dma.setControl(val); // DPCR (0x1F8010F0)
-                break;
-            case 4:
-                _dma.setInterrupt(val); // DICR (0x1F8010F4)
-                break;
-            default:
-                throw std::runtime_error("Unhandled DMA write " + std::to_string(offset) + " : " + std::to_string(val));
         }
-        break;
-    }
-    default:
-        throw std::runtime_error("Unhandled DMA write " + std::to_string(offset) + " : " + std::to_string(val));
+        default:
+            throw std::runtime_error("Unhandled DMA write " + std::to_string(offset) + " : " + std::to_string(val));
     }
 
     if(activePort.has_value()) {

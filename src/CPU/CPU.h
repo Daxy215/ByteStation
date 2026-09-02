@@ -40,35 +40,12 @@ struct MemoryTraceEntry {
     bool write = false;
 };
 
-struct HangAnalysis {
-    bool detected = false;
-    bool hardLoop = false;
-    bool branchLoop = false;
-    bool memoryStall = false;
-    bool selfJump = false;
-    bool hasEffectiveAddress = false;
-    uint32_t hotspot = 0;
-    uint32_t repeatedTarget = 0;
-    uint32_t effectiveAddress = 0;
-    uint64_t repeatCount = 0;
-    uint64_t stallCycles = 0;
-    std::string reason;
-    std::string details;
-    std::string waitingOn;
-    std::string addressDetails;
-    std::string condition;
-    std::string loopBody;
-};
-
 struct DisassembledInstruction {
     std::string text;
     uint32_t opcode = 0;
     uint32_t target = 0;
     bool is_branch = false;
     bool branch_taken = false;
-    bool memory_access = false;
-    bool writes_memory = false;
-    bool reads_memory = false;
 };
 
 struct DisassemblerState {
@@ -78,14 +55,12 @@ struct DisassemblerState {
     uint32_t prev_pc = 0;
     int extraLinesAbove = 0;
     int extraLinesBelow = 0;
-    std::unordered_map<uint32_t, DisassembledInstruction> cache;
     char addrBuf[13] = {0};
     char filterBuf[64] = {0};
     int contextLines = 20;
     std::unordered_set<uint32_t> breakpoints;
     std::unordered_set<uint32_t> bookmarks;
     std::unordered_map<uint32_t, std::string> functionLabels;
-    std::unordered_set<uint32_t> knownFunctions;
     bool show_address = true;
     bool print_copied_lines_to_console = false;
     bool config_loaded = false;
@@ -96,21 +71,12 @@ struct DisassemblerState {
     std::unordered_map<uint32_t, uint64_t> executionHits;
     std::unordered_map<uint64_t, uint64_t> edgeHits;
     std::deque<MemoryTraceEntry> memoryTrace;
-    uint64_t stableEdge = 0;
-    uint64_t stableEdgeCycles = 0;
-
-    HangAnalysis hang;
 
     uint64_t totalCycles = 0;
-    uint32_t lastPC = 0;
-    uint32_t stablePC = 0;
-    uint64_t stableCycles = 0;
 
     static constexpr size_t MaxTrace = 8192;
     static constexpr size_t MaxMemoryTrace = 8192;
-    static constexpr size_t MaxDisassemblyCache = 4096;
     static constexpr uint64_t TraceSampleInterval = 16;
-    static constexpr uint64_t MemoryTraceSampleInterval = 4;
 };
 
 inline uint64_t makeEdge(uint32_t a, uint32_t b) {

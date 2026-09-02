@@ -7,7 +7,6 @@
 #include "imgui_impl_opengl3.h"
 
 #include "../CPU/CPU.h"
-#include "../CPU/CPUTests.h"
 #include "../CPU/R3000Tests.h"
 #include "../Memory/IO/SIO.h"
 
@@ -16,8 +15,12 @@
 #include "../GPU/Rendering/Renderer.h"
 #include "../Utils/FileSystem/FileManager.h"
 
+#include "GameLibrary.h"
+
 #include <algorithm>
+#include <cmath>
 #include <filesystem>
+#include <format>
 
 #include <GLFW/glfw3.h>
 
@@ -585,7 +588,7 @@ const uint32_t GPU_CYCLES_PER_SCANLINE_PAL = 3406;
 
 const uint32_t CYCLES_PER_FRAME_NTSC = uint64_t(SCANLINES_NTSC) * GPU_CYCLES_PER_SCANLINE_NTSC * PSX_CPU_CLOCK / GPU_CLOCK_NTSC;
 const uint32_t CYCLES_PER_FRAME_PAL = uint64_t(SCANLINES_PAL) * GPU_CYCLES_PER_SCANLINE_PAL * PSX_CPU_CLOCK / GPU_CLOCK_PAL;
-bool skipped = true;
+bool skipped = false;
 
 void runFrame() {
     uint32_t frameCycles = 0;
@@ -781,7 +784,152 @@ static void ShowFileBrowser(bool *p_open, CPU *cpu) {
         *p_open = false;
 }
 
-static bool show_file_browser = false;
+static bool  show_file_browser   = false;
+static bool  show_game_console   = true;
+static bool  game_running        = false;
+static bool  show_fps_counter    = false;
+static int   selected_game_index = 0;
+static float animated_game_index = 0.0f;
+
+static void LaunchGame(GameEntry &game, CPU *cpu, bool *out_game_running, bool *p_open) {
+    cpu->reset();
+    cpu->interconnect._cdrom.swapDisk(game.discPath);
+    *out_game_running = true;
+    *p_open           = false;
+}
+
+static void ShowGameConsole(bool *p_open, GameLibrary &library, CPU *cpu, bool *out_game_running) {
+    ImGuiViewport *viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
+                             ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus;
+
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.02f, 0.02f, 0.05f, 1.0f));
+    ImGui::Begin("Game Console", p_open, flags);
+    ImGui::PopStyleColor();
+
+    ImGui::TextColored(ImVec4(0.3f, 0.9f, 1.0f, 1.0f), "PS1 EMULATOR");
+    ImGui::Separator();
+
+    auto &games = library.games();
+
+    if (games.empty()) {
+        ImGui::TextDisabled("No games found in ROMS/");
+        ImGui::End();
+        return;
+    }
+
+    if (selected_game_index >= (int)games.size())
+        selected_game_index = (int)games.size() - 1;
+    if (selected_game_index < 0)
+        selected_game_index = 0;
+
+    if (ImGui::IsKeyPressed(ImGuiKey_LeftArrow))
+        selected_game_index = std::max(0, selected_game_index - 1);
+    if (ImGui::IsKeyPressed(ImGuiKey_RightArrow))
+        selected_game_index = std::min((int)games.size() - 1, selected_game_index + 1);
+
+    float easing = std::min(1.0f, ImGui::GetIO().DeltaTime * 12.0f);
+    animated_game_index += ((float)selected_game_index - animated_game_index) * easing;
+    if (std::fabs((float)selected_game_index - animated_game_index) < 0.001f)
+        animated_game_index = (float)selected_game_index;
+
+    constexpr float baseCardWidth  = 220.0f;
+    constexpr float baseCardHeight = 280.0f;
+    constexpr float cardSpacing    = 230.0f;
+    constexpr float minScale       = 0.55f;
+    constexpr float maxVisibleDelta = 4.5f;
+
+    ImVec2 avail          = ImGui::GetContentRegionAvail();
+    float  textBlockHeight = ImGui::GetTextLineHeightWithSpacing() * 2.0f + 12.0f;
+    float  carouselHeight  = baseCardHeight + textBlockHeight;
+    float  topPadding      = std::max(0.0f, (avail.y - carouselHeight) * 0.5f);
+
+    ImGui::Dummy(ImVec2(0.0f, topPadding));
+
+    ImVec2 regionMin = ImGui::GetCursorScreenPos();
+    ImGui::Dummy(ImVec2(avail.x, baseCardHeight));
+    ImVec2 regionMax = ImVec2(regionMin.x + avail.x, regionMin.y + baseCardHeight);
+
+    ImDrawList *drawList = ImGui::GetWindowDrawList();
+    drawList->PushClipRect(regionMin, regionMax, true);
+
+    float centerX     = regionMin.x + avail.x * 0.5f;
+    float cardCenterY = regionMin.y + baseCardHeight * 0.5f;
+
+    for (int i = 0; i < (int)games.size(); i++) {
+        float delta    = (float)i - animated_game_index;
+        float absDelta = std::fabs(delta);
+
+        if (absDelta > maxVisibleDelta)
+            continue;
+
+        GameEntry &game = games[i];
+
+        float scale = std::max(minScale, 1.0f - 0.18f * absDelta);
+        float alpha = std::max(0.2f, 1.0f - 0.28f * absDelta);
+
+        float w  = baseCardWidth * scale;
+        float h  = baseCardHeight * scale;
+        float cx = centerX + delta * cardSpacing;
+
+        ImVec2 tileMin(cx - w * 0.5f, cardCenterY - h * 0.5f);
+        ImVec2 tileMax(cx + w * 0.5f, cardCenterY + h * 0.5f);
+
+        bool hovered = ImGui::IsMouseHoveringRect(tileMin, tileMax);
+
+        if (hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+            selected_game_index = i;
+
+        if (hovered && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
+            selected_game_index = i;
+            LaunchGame(game, cpu, out_game_running, p_open);
+        }
+
+        ImU32 fillCol  = IM_COL32(20, 20, 30, (int)(alpha * 255));
+        ImU32 imageCol = IM_COL32(255, 255, 255, (int)(alpha * 255));
+
+        drawList->AddRectFilled(tileMin, tileMax, fillCol, 6.0f * scale);
+
+        if (game.coverTexture != 0) {
+            drawList->AddImage((ImTextureID)(intptr_t)game.coverTexture, tileMin, tileMax, ImVec2(0, 0),
+                                ImVec2(1, 1), imageCol);
+        } else {
+            drawList->AddText(ImGui::GetFont(), ImGui::GetFontSize() * scale,
+                               ImVec2(tileMin.x + 8.0f * scale, tileMin.y + 8.0f * scale),
+                               IM_COL32(200, 200, 200, (int)(alpha * 255)), game.title.c_str(), nullptr,
+                               w - 16.0f * scale);
+        }
+
+        bool   selected    = (i == selected_game_index);
+        ImU32  borderCol   = selected ? IM_COL32(80, 200, 255, 255) : IM_COL32(60, 60, 70, (int)(alpha * 255));
+        float  borderWidth = selected ? 3.0f : 1.0f;
+
+        drawList->AddRect(tileMin, tileMax, borderCol, 6.0f * scale, 0, borderWidth);
+    }
+
+    drawList->PopClipRect();
+
+    GameEntry &current = games[selected_game_index];
+
+    ImGui::Spacing();
+
+    ImVec2 titleSize = ImGui::CalcTextSize(current.title.c_str());
+    ImGui::SetCursorPosX(std::max(0.0f, (ImGui::GetWindowWidth() - titleSize.x) * 0.5f));
+    ImGui::TextUnformatted(current.title.c_str());
+
+    std::string serialText = current.serial.empty() ? "-" : current.serial;
+    ImVec2      serialSize = ImGui::CalcTextSize(serialText.c_str());
+    ImGui::SetCursorPosX(std::max(0.0f, (ImGui::GetWindowWidth() - serialSize.x) * 0.5f));
+    ImGui::TextDisabled("%s", serialText.c_str());
+
+    if (ImGui::IsKeyPressed(ImGuiKey_Enter) || ImGui::IsKeyPressed(ImGuiKey_KeypadEnter))
+        LaunchGame(current, cpu, out_game_running, p_open);
+
+    ImGui::End();
+}
 
 constexpr bool RunR3000SingleStepTests = false;
 
@@ -817,14 +965,18 @@ int main(int argc, char *argv[]) {
 
     cpu = std::make_unique<CPU>(Interconnect(gpu.get()));
 
+    GameLibrary gameLibrary;
+    gameLibrary.loadDatabase("../../Resources/ps1_gamedb.json");
+    gameLibrary.scan("../../ROMS");
+
     // TODO; For now, manually load in disc
-    //cpu->interconnect._cdrom.swapDisk("../ROMS/Run Crash/Desire_-_Run_Crash_(PSX).cue");
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Run Crash/Desire_-_Run_Crash_(PSX).cue");
 
     //cpu->interconnect._cdrom.swapDisk("../../ROMS/Crash Bandicoot (Europe, Australia)/Crash Bandicoot (Europe, Australia).cue");
     //cpu->interconnect._cdrom.swapDisk("../ROMS/Battle Arena Toshinden (Europe)/Battle Arena Toshinden (Europe).cue");
     //cpu->interconnect._cdrom.swapDisk("ROMS/Sonic Wings Special (Europe)/Sonic Wings Special (Europe)/Sonic Wings Special (Europe).cue");
     //cpu->interconnect._cdrom.swapDisk("../ROMS/Tetris X/Tetris X (Japan).cue");
-    cpu->interconnect._cdrom.swapDisk("../../ROMS/Ridge Racer (Europe)/Ridge Racer (Europe).cue");
+    //cpu->interconnect._cdrom.swapDisk("../../ROMS/Ridge Racer (Europe)/Ridge Racer (Europe).cue");
 
     // Uhh works somehow idek how BUT obviously GPU bug but I think it's actually GTE
     // It works until it calls 0x0D CDROM command then everything goes red and freezes
@@ -972,65 +1124,18 @@ int main(int argc, char *argv[]) {
         if (cpu->paused)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        //runFrame();
-
-        /*static bool f = true;
-
-        if (glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_PRESS && f) {
-            f                         = false;
-            gpu->renderer->renderVRAM = !gpu->renderer->renderVRAM;
-        }
-
-        if (glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_RELEASE) {
-            f = true;
-        }*/
-
-        /*if(glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_PRESS && loadNextTest) {
-            loadNextTest = false;
-
-            if(currentIndex + 1 < testPaths.size()) {
-                currentIndex++;
-
-                rest("BIOS/ps-22a.bin");
-                std::cerr << "Loaded test: " << testPaths[currentIndex] << "\n";
-            } else {
-                std::cerr << "All tests completed!\n";
-            }
-        }
-
-        if(glfwGetKey(gpu->renderer->window, GLFW_KEY_N) == GLFW_RELEASE) {
-            loadNextTest = true;
-        }*/
-
         cpu->showDisassembler();
 
-        /*static bool show = true;
-        if (ImGui::Begin("VRAM", &show)) {
-            ImGui::Image((ImTextureID)(intptr_t)gpu->vram->tex, ImVec2(1024, 512));
-        }
-        ImGui::End();*/
-
-        /*int winW, winH;
-        glfwGetFramebufferSize(gpu->renderer->window, &winW, &winH);
-
-        float x1 = (gpu->drawingAreaLeft   / 1024.0f) * winW;
-        float y1 = (gpu->drawingAreaTop    / 512.0f)  * winH;
-        float x2 = (gpu->drawingAreaRight  / 1024.0f) * winW;
-        float y2 = (gpu->drawingAreaBottom / 512.0f)  * winH;
-
-        ImGui::GetForegroundDrawList()->AddRect(
-            ImVec2(x1, y1),
-            ImVec2(x2, y2),
-            IM_COL32(255, 0, 0, 255),
-            0.0f,
-            0,
-            3.0f
-        );*/
+        gameLibrary.update();
 
         if (ImGui::BeginMainMenuBar()) {
             if (ImGui::BeginMenu("File")) {
                 if (ImGui::MenuItem("Open...")) {
                     show_file_browser = true;
+                }
+
+                if (ImGui::MenuItem("Game Library")) {
+                    show_game_console = true;
                 }
 
                 ImGui::EndMenu();
@@ -1046,17 +1151,28 @@ int main(int argc, char *argv[]) {
 
             if (ImGui::BeginMenu("Debug")) {
                 ImGui::MenuItem("Show Disassembler", nullptr, &cpu->disasmState.show);
+                ImGui::MenuItem("Show FPS Counter", nullptr, &show_fps_counter);
+
+                ImGui::EndMenu();
+            }
+
+            if (ImGui::BeginMenu("Audio")) {
+                ImGui::Checkbox("Enable Audio", &cpu->interconnect.spu.audioEnabled);
+                ImGui::SliderFloat("Master Volume", &cpu->interconnect.spu.masterVolume, 0.0f, 1.0f);
 
                 ImGui::EndMenu();
             }
 
             if (ImGui::BeginMenu("Post-Processing Settings")) {
+                ImGui::Checkbox("Enable shaders", &gpu->renderer->useShaders);
+
                 if (ImGui::BeginMenu("Bloom Settings")) {
+                    ImGui::Checkbox("Enable bloom", &gpu->renderer->enableBloom);
+
                     ImGui::SliderFloat("Bloom Threshold", &gpu->renderer->threshold, -5.0f, 5.0f);
                     ImGui::SliderFloat("Bloom Blur Radius", &gpu->renderer->blurRadius, 0.0f, 10.0f);
                     ImGui::SliderInt("Bloom Passes", &gpu->renderer->bloomPasses, 0, 50);
                     ImGui::SliderFloat("Bloom Intensity", &gpu->renderer->bloomIntensity, 0.0f, 5.0f);
-                    ImGui::Checkbox("Enable bloom", &gpu->renderer->enableBloom);
 
                     ImGui::EndMenu();
                 }
@@ -1105,6 +1221,10 @@ int main(int argc, char *argv[]) {
             ShowFileBrowser(&show_file_browser, cpu.get());
         }
 
+        if (show_game_console) {
+            ShowGameConsole(&show_game_console, gameLibrary, cpu.get(), &game_running);
+        }
+
         if (showVramViewer) {
             if (ImGui::Begin("VRAM", &showVramViewer)) {
                 constexpr float vramWidth  = 1024.0f;
@@ -1127,35 +1247,29 @@ int main(int argc, char *argv[]) {
             ImGui::End();
         }
 
-        /*if (ImGui::Begin("SPU Voices")) {
-            ImGui::Text("Allow CDROM audio: %d", cpu->interconnect.spu.spunct.CD_Audio_Enable);
-            ImGui::Separator();
+        if (game_running && show_fps_counter) {
+            std::string fpsLabel = "FPS: " + std::to_string((int)fps);
+            ImVec2      textSize = ImGui::CalcTextSize(fpsLabel.c_str());
 
-            for (int i = 0; i < 24; i++) {
-                ImGui::PushID(i);
+            ImGuiViewport *viewport = ImGui::GetMainViewport();
+            float          padding  = 10.0f;
+            ImGui::SetNextWindowPos(ImVec2(viewport->WorkPos.x + viewport->WorkSize.x - textSize.x - padding * 2.0f,
+                                            viewport->WorkPos.y + padding));
+            ImGui::SetNextWindowBgAlpha(0.0f);
 
-                bool muted = cpu->interconnect.spu.voices[i].muted;
-                if (ImGui::Checkbox("Mute", &muted)) {
-                    cpu->interconnect.spu.voices[i].muted = muted;
-                }
+            ImGuiWindowFlags fpsFlags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
+                                        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+                                        ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs;
 
-                float waveform[64];
-                int   sampleCount = 28;
-
-                for (int s = 0; s < sampleCount; s++) {
-                    waveform[s] = cpu->interconnect.spu.voices[i].decodedSamples[s];
-                }
-                ImGui::PlotLines("Waveform", waveform, sampleCount, 0, nullptr, -1.0f, 1.0f, ImVec2(0, 50));
-
-                ImGui::Separator();
-                ImGui::PopID();
-            }
+            ImGui::Begin("FPS Counter", nullptr, fpsFlags);
+            ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", fpsLabel.c_str());
+            ImGui::End();
         }
-        ImGui::End();*/
 
         ImGui::Render();
 
-        runFrame();
+        if (game_running)
+            runFrame();
 
         gpu->vram->endTransfer();
         gpu->renderer->renderFrame();

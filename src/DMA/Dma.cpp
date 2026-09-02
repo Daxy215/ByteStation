@@ -6,28 +6,6 @@
 #include "../Memory/IRQ.h"
 
 void Dma::step() {
-    /*for(int i = 0; i < 7; i++) {
-        Channel& channel = channels[i];
-        
-        if(channel.interruptPending) {
-            channel.interruptPending = false;
-            
-            auto prvIrq = irq();
-	        
-            auto mask = (1 << static_cast<size_t>(i));
-            auto en = channelIrqEn & mask;
-            channelIrqFlags |= en ? mask : 0;
-            
-            bool ir = irq();
-            
-            // Wtf was I doing??????????
-            if(prvIrq/* && irq()#1#) {
-                //interruptPending = true;
-                printf("");
-            }
-        }
-    }*/
-    
     if(interruptPending) {
         interruptPending = false;
         IRQ::trigger(IRQ::Interrupt::Dma);
@@ -47,9 +25,6 @@ uint32_t Dma::interrupt() {
     r |= (static_cast<uint32_t>(irqEn)) << 23;
     r |= (static_cast<uint32_t>(channelIrqFlags)) << 24;
     r |= (static_cast<uint32_t>(irqFlag)) << 31;
-    
-    //std::printf("[Dma::interrupt] Returning 0x%08X\n", r);
-    //std::cerr << "";
     
     return r;
 }

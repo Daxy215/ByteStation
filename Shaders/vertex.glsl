@@ -19,7 +19,6 @@ flat out ivec2 drawingAreaMinIn;
 flat out ivec2 drawingAreaMaxIn;
 //flat out uint textureAttr[4];
 
-uniform vec2 offset;
 uniform ivec2 drawingAreaMin;
 uniform ivec2 drawingAreaMax;
 uniform int pixelCenterMode;

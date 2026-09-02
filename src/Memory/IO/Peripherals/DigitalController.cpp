@@ -3,10 +3,11 @@
 
 #include "../SIO.h"
 
-DigitalController::DigitalController() : input(0) {
+DigitalController::DigitalController(uint8_t index) : INDEX(index), input(0) {
 }
 
 void DigitalController::step(uint32_t cycles) {
+
 }
 
 uint16_t DigitalController::load(uint32_t val) {

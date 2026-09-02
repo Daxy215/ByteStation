@@ -31,19 +31,19 @@ void Channel::setControl(uint32_t val) {
 	chop = ((val >> 8) & 1) != 0;
 	
 	switch ((val >> 9) & 3) {
-	case 0:
-		sync = Manual;
-		break;
-	case 1:
-		sync = Request;
-		break;
-	case 2:
-		sync = LinkedList;
-		break;
-	default:
-		throw std::runtime_error("Unknown DMA sync mode; " + std::to_string((val >> 9) & 3));
-		
-		break;
+		case 0:
+			sync = Manual;
+			break;
+		case 1:
+			sync = Request;
+			break;
+		case 2:
+			sync = LinkedList;
+			break;
+		default:
+			throw std::runtime_error("Unknown DMA sync mode; " + std::to_string((val >> 9) & 3));
+
+			break;
 	}
 	
 	chopDmaSz = static_cast<uint8_t>(((val >> 16) & 7));
@@ -68,7 +68,11 @@ void Channel::setBlockControl(uint32_t val) {
 }
 
 void Channel::setBase(uint32_t val) {
-	base = val & 0xFFFFFF;
+	/**
+	 * 0-23  Memory Address where the DMA will start reading from/writing to
+	 * 24-31 Not used (always zero)
+	 */
+	base = val & 0x00FFFFFF;
 }
 
 bool Channel::active() {
@@ -112,11 +116,6 @@ std::optional<uint32_t> Channel::transferSize() {
 void Channel::done(Dma& dma, Port port) {
 	enable = false;
 	trigger = false;
-	
-	/*if (dma.channelIrqEn & (1 << static_cast<size_t>(port))) {
-		dma.channelIrqFlags |= (1 << static_cast<size_t>(port));
-		dma.interruptPending = true;
-	}*/
 
     if (dma.channelIrqEn & (1u << static_cast<size_t>(port))) {
         dma.channelIrqFlags |= 1u << static_cast<size_t>(port);

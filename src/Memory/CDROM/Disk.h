@@ -14,9 +14,13 @@ public:
 	
 	std::vector<uint8_t> read(Location location);
 	bool isAudio(Location location);
-	
+
 	void set(const std::string& path);
-	
+
+public:
+	static std::string extractSerialFromIso(const std::vector<uint8_t>& iso);
+	static std::string readSerial(const std::string& path);
+
 public:
 	Location getSize();
 	Location getTrackStart(int i);

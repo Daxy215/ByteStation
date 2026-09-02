@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <deque>
+#include <vector>
 
 #include "Rendering/Renderer.h"
 #include "VRAM.h"
@@ -498,52 +499,9 @@ void Emulator::Gpu::gp0(uint32_t val) {
                         renderer->pushTriangle(positions, colors, uvs, curAttribute);
 
                     break;
-                    /*const bool gouraud         = fields["isGouraud"];
-                    const bool fourVerts       = fields["isFourVerts"];
-                    const bool textured  = fields["isTextured"];
-                    const bool rawTexture = textured && fields["isRawTexture"];
-
-                    const bool isTextured = textured;
-                    
-                    const uint8_t verticesCount = fourVerts ? 4 : 3;
-                    
-                    Color c0 = Color::fromGp0(in);
-                    Position positions[verticesCount];
-                    Color colors[verticesCount];
-                    UV uvs[verticesCount];
-                    
-                    uint8_t idx = 0;
-                    uint8_t stepping = 1 + gouraud + (isTextured ? 1 : 0);
-                    
-                    uint16_t clut = isTextured ? gp0Command.index(1 + 1) >> 16 : 0;
-                    uint16_t page = isTextured ? gp0Command.index(1 + stepping + 1) >> 16 : 0;
-                    
-                    for (int i = 1; i < gp0Command.len; i += stepping) {
-                        if (gouraud && i != 1) {
-                            // It says, if doing flat shading then,
-                            // there is no more colors to be sent per vertex
-                            colors[idx] = Color::fromGp0(gp0Command.index(i - 1));
-                        } else {
-                            colors[idx] = c0;
-                        }
-                        
-                        if (isTextured) {
-                            uvs[idx] = UV::fromGp0(gp0Command.index(i + 1), clut, page, *this);
-                        }
-                        
-                        positions[idx] = Position::fromGp0(gp0Command.index(i));
-                        
-                        idx++;
-                    }
-                    
-                    if (fourVerts) {
-                        renderer->pushQuad(positions, colors, uvs, curAttribute);
-                    } else {
-                        renderer->pushTriangle(positions, colors, uvs, curAttribute);
-                    }*/
                 }
                 case Gp0Mode::Line: {
-                    
+                    // TODO;
                     break;
                 }
                 case Gp0Mode::Rectangle: {
@@ -2218,52 +2176,33 @@ void Emulator::Gpu::gp0VramToVram(uint32_t val) const {
     uint32_t cords = gp0Command.index(1);
     uint32_t dests = gp0Command.index(2);
     uint32_t res = gp0Command.index(3);
-    
-    /*uint32_t srcX =  cords        & 0x3FF;
-    uint32_t srcY = (cords >> 16) & 0x1FF;
-    
-    uint32_t dstX =  dests        & 0x3FF;
-    uint32_t dstY = (dests >> 16) & 0x1FF;
-    
-    uint32_t w =  res        & 0x3FF;
-    uint32_t h = (res >> 16) & 0x1FF;
-    
-    int stepX = 1;
-    int stepY = 1;
-    
-    if (dstX > srcX) stepX = -1;
-    if (dstY > srcY) stepY = -1;
-    
-    int startX = (stepX > 0) ? 0 : w - 1;
-    int startY = (stepY > 0) ? 0 : h - 1;
-    
-    for (int y = startY; y >= 0 && y < (int)h; y += stepY){
-        for (int x = startX; x >= 0 && x < (int)w; x += stepX){
-            uint16_t c = vram->getPixel(srcX + x, srcY + y);
-            vram->writePixel(dstX + x, dstY + y, c);
-        }
-    }*/
-    
-    uint32_t srcX = (cords & 0xFFFF) & 0x3FF;
-    uint32_t srcY = ((cords & 0xFFFF0000) >> 16) & 0x1FF;
-    
-    uint32_t dstX = (dests & 0xFFFF) & 0x3FF;
-    uint32_t dstY = ((dests & 0xFFFF0000) >> 16) & 0x1FF;
-    
-    uint32_t width = (((res & 0xFFFF) - 1) & 0x3FF) + 1;
-    uint32_t height = ((((res & 0xFFFF0000) >> 16) - 1) & 0x1FF) + 1;
-    
-    bool dir = srcX < dstX;
-    
-    for(uint32_t y = 0; y < height; y++) {
-        for(uint32_t x = 0; x < width; x++) {
-            uint32_t posX = (!dir) ? x : width - 1 - x;
-            
-            uint16_t color = vram->getPixel((srcX + posX), (srcY + y));
-            vram->writePixel(dstX + posX, dstY + y, color);
+
+    uint16_t srcX = (cords & 0xFFFF);
+    uint16_t srcY = ((cords >> 16) & 0xFFFF);
+    uint16_t dstX = (dests & 0xFFFF);
+    uint16_t dstY = ((dests >> 16) & 0xFFFF);
+
+    uint32_t width  = (((res & 0xFFFF) - 1) & 0x3FF) + 1;
+    uint32_t height = ((((res >> 16) & 0xFFFF) - 1) & 0x1FF) + 1;
+
+    std::vector<uint16_t> buffer(static_cast<size_t>(width) * height);
+
+    for (uint32_t y = 0; y < height; y++) {
+        for (uint32_t x = 0; x < width; x++) {
+            auto posX = (srcX + x) & (vram->MAX_WIDTH - 1);
+            auto posY = (srcY + y) & (vram->MAX_HEIGHT - 1);
+            buffer[y * width + x] = vram->getPixel(posX, posY);
         }
     }
-    
+
+    for (uint32_t y = 0; y < height; y++) {
+        for (uint32_t x = 0; x < width; x++) {
+            auto posX = (dstX + x) & (vram->MAX_WIDTH - 1);
+            auto posY = (dstY + y) & (vram->MAX_HEIGHT - 1);
+            vram->writePixel(posX, posY, buffer[y * width + x]);
+        }
+    }
+
     if (!renderVRamToScreen) return;
     
     // TODO; VERIFY THIS
@@ -2381,8 +2320,7 @@ void Emulator::Gpu::gp1(uint32_t val) {
                 case 12:
                 case 13:
                 case 14:
-                case 15:
-                {
+                case 15: {
                     // It says nothing..? Should it reset last read?
                     break;
                 }
@@ -2483,7 +2421,7 @@ void Emulator::Gpu::gp1DisplayMode(uint32_t val) {
     // vmode = (val & 0x8) != 0 ? VMode::Pal : VMode::Ntsc;
 
     displayDepth = (val & 0x10) != 0 ? DisplayDepth::D24Bits : DisplayDepth::D15Bits;
-    
+
     interlaced = (val & 0x20) != 0;
     
     // (or, always 1 when GP1(08h).5=0)

@@ -15,7 +15,7 @@
 // Windows being gay
 typedef unsigned   uint32_t;
 
-//-#define LOG
+#define LOG
 
 Emulator::SPU::SPU () {
     if (SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
@@ -82,13 +82,26 @@ void Emulator::SPU::step(uint32_t cycles) {
         }
 
         auto writeData = [this, cdLeft, cdRight]() {
-            uint32_t idx = bufferIndex /*& 0x3FF*/;
+            uint32_t idx = bufferIndex & 0x1FF;
 
             writeToRAM16(0x0000 + idx, cdLeft);
             writeToRAM16(0x0200 + idx, cdRight);
-            writeToRAM16(0x0400 + idx, voices[1].oldSample); // TODO: Dont use oldSample..
-            writeToRAM16(0x0600 + idx, voices[3].oldSample); // TODO: Dont use oldSample..
+            writeToRAM16(0x0400 + idx, voices[1].currentSample);
+            writeToRAM16(0x0600 + idx, voices[3].currentSample);
         };
+
+        int32_t noiseStep = 4 + spunct.Noise_Freq_Step;
+        int32_t noiseShift = spunct.Noise_Freq_Shift;
+
+        noiseTimer -= noiseStep;
+
+        while (noiseTimer < 0) {
+            noiseTimer += 0x20000 >> noiseShift;
+
+            int32_t parity = ((noiseLevel >> 15) ^ (noiseLevel >> 12) ^ (noiseLevel >> 11) ^ (noiseLevel >> 10) ^ 1) & 1;
+
+            noiseLevel = static_cast<int16_t>((noiseLevel << 1) | parity);
+        }
         
         for (int i = 0; i < VOICE_COUNT; i++) {
             Voice &voice = voices[i];
@@ -102,14 +115,14 @@ void Emulator::SPU::step(uint32_t cycles) {
              * Reveb
              * Reset of the Voices
              */
-            if (i == 1) {
+            /*if (i == 1) {
                 writeData();
-            }
+            }*/
 
             if (voice.adsr.state == ADSR::Off)
                 continue;
             
-            voice.step(i, i > 0 ? voices[i - 1].oldSample : 0, *this);
+            voice.step(i, i > 0 ? voices[i - 1].currentSample : 0, *this);
 
             if (voice.muted)
                 continue;
@@ -126,10 +139,21 @@ void Emulator::SPU::step(uint32_t cycles) {
         left = (left * static_cast<int16_t>(mainValLeft)) >> 15;
         right = (right * static_cast<int16_t>(mainValRight)) >> 15;
 
+        if (!audioEnabled) {
+            left  = 0;
+            right = 0;
+        } else {
+            left  = static_cast<int32_t>(left  * masterVolume);
+            right = static_cast<int32_t>(right * masterVolume);
+        }
+
         audioBuffer[audioIndex++] = static_cast<int16_t>(std::clamp<int32_t>(left,  -32768, 32767));
         audioBuffer[audioIndex++] = static_cast<int16_t>(std::clamp<int32_t>(right, -32768, 32767));
 
-        bufferIndex = (bufferIndex + 2) & 0x3FF;
+        writeData();
+
+        bufferIndex = (bufferIndex + 1) & 0x1FF;
+        status.Capture_Buffer_Half = (bufferIndex >= 0x100) ? 1 : 0;
 
         if (audioIndex >= AUDIO_BUFFER_SIZE) {
             if (device != 0) {
@@ -145,61 +169,59 @@ void Emulator::SPU::step(uint32_t cycles) {
 void Emulator::SPU::stepTransfer() {
     uint8_t mode = (spunct.Sound_RAM_Transfer) & 0x3;
 
-    if (mode != 1 || buffer.empty()) {
+    if ((mode != 1 && mode != 2) || buffer.empty()) {
         status.Data_Transfer_Busy_Flag = 0;
+
         return;
     }
 
     status.Data_Transfer_Busy_Flag = 1;
 
-    const uint8_t type = (transferControl >> 1) & 0x7;
+    while (!buffer.empty()) {
+        const uint8_t type = (transferControl >> 1) & 0x7;
 
-    uint16_t poppedData;
-    buffer.pop(poppedData);
+        uint16_t poppedData;
+        buffer.pop(poppedData);
 
-    static uint16_t cachedData = 0;
-    static uint32_t index = 0;
+        switch (type) {
+            case 2: // Normal
+                transferCache = poppedData;
 
-    switch (type) {
-        case 2: // Normal
-            cachedData = poppedData;
+                break;
 
-            break;
+            case 3: { // Rep2
+                if ((transferIndex & 1) == 0) transferCache = poppedData;
+                transferIndex = (transferIndex + 1) & 1;
 
-        case 3: { // Rep2
-            if ((index & 1) == 0) cachedData = poppedData;
-            index = (index + 1) & 1;
+                break;
+            }
 
-            break;
+            case 4: { // Rep4
+                if ((transferIndex & 3) == 0) transferCache = poppedData;
+                transferIndex = (transferIndex + 1) & 3;
+
+                break;
+            }
+
+            case 5: { // Rep8
+                if ((transferIndex & 7) == 7) transferCache = poppedData;
+                transferIndex = (transferIndex + 1) & 7;
+
+                break;
+            }
+
+            default: { // Fill
+                transferCache = poppedData;
+
+                break;
+            }
         }
 
-        case 4: { // Rep4
-            if ((index & 3) == 0) cachedData = poppedData;
-            index = (index + 1) & 3;
+        uint32_t ramIdx = (currentAddress >> 1) & 0x3FFFF;
+        writeToRAM16(ramIdx, transferCache);
 
-            break;
-        }
-
-        case 5: { // Rep8
-            if ((index & 7) == 7) cachedData = poppedData;
-
-            index = (index + 1) & 7;
-
-            break;
-        }
-
-        default: { // Fill
-            cachedData = poppedData;
-
-            break;
-        }
+        currentAddress = (currentAddress + 2) & 0x7FFFF;
     }
-
-    // TODO: IRQ?
-    uint32_t ramIdx = (currentAddress >> 1) & 0x3FFFF;
-    writeToRAM16(ramIdx, cachedData);
-
-    currentAddress = (currentAddress + 2) & 0x7FFFF;
 }
 
 uint32_t Emulator::SPU::load(uint32_t addr) {
@@ -305,12 +327,12 @@ uint32_t Emulator::SPU::handleVoiceLoad(const uint32_t addr) {
     switch (offset) {
         case 0x00: {
             // 1F801C00h+N*10h - Voice 0..23 Volume Left
-            return voices[voiceIndex].adsr.volLeft;
+            return voices[voiceIndex].adsr.volLeft.reg;
         }
 
         case 0x02: {
             // 1F801C02h+N*10h - Voice 0..23 Volume Right
-            return voices[voiceIndex].adsr.volRight;
+            return voices[voiceIndex].adsr.volRight.reg;
         }
 
         case 0x04: {
@@ -364,12 +386,12 @@ void Emulator::SPU::handleVoiceStore(uint32_t addr, uint32_t val) {
     switch(offset) {
         case 0x00: 
             // 1F801C00h+N*10h - Voice 0..23 Volume Left
-            voices[voiceIndex].adsr.volLeft  = val;
+            voices[voiceIndex].adsr.volLeft.write(val & 0xFFFF);
             
             break;
         case 0x02:
             // 1F801C02h+N*10h - Voice 0..23 Volume Right
-            voices[voiceIndex].adsr.volRight = val;
+            voices[voiceIndex].adsr.volRight.write(val & 0xFFFF);
             
             break;
         case 0x04:
@@ -524,8 +546,10 @@ uint32_t Emulator::SPU::handleFlagsLoad(uint32_t addr) {
         case 0x1F801D8A: return (KON >> 16) & 0xFF;
         case 0x1f801D8C: return KOFF & 0xFFFF;
         case 0x1f801D8E: return (KOFF >> 16) & 0xFF;
-        case 0x1f801d98: return EON & 0xFFFF;
+        case 0x1f801D98: return EON & 0xFFFF;
         case 0x1F801D9A: return (EON >> 16) & 0xFF;
+        case 0x1F801D9C: return ENDX & 0xFFFF;
+        case 0x1F801D9E: return (ENDX >> 16) & 0xFF;
         default: {
             #ifdef LOG
                 std::cerr << "Unhandled Voice Flags Load from SPU register; " << std::hex << (addr) << "\n";
@@ -546,7 +570,7 @@ void Emulator::SPU::handleFlagsStore(uint32_t addr, uint32_t val) {
         case 0x1F801D88: { // low 16
             for(int i = 0; i < 16; i++) {
                 if(spunct.SPU_Enable && (v >> i) & 1) {
-                    voices[i].triggerKeyOn(curCycles, *this);
+                    voices[i].triggerKeyOn(i, curCycles, *this);
                 }
             }
 
@@ -557,7 +581,7 @@ void Emulator::SPU::handleFlagsStore(uint32_t addr, uint32_t val) {
         case 0x1F801D8A: { // high 16
             for(int i = 0; i < 8; i++) {
                 if(spunct.SPU_Enable && (v >> i) & 1) {
-                    voices[i + 16].triggerKeyOn(curCycles, *this);
+                    voices[i + 16].triggerKeyOn(i + 16, curCycles, *this);
                 }
             }
 
@@ -633,7 +657,10 @@ void Emulator::SPU::handleFlagsStore(uint32_t addr, uint32_t val) {
 
             break;
         }
-        
+        case 0x1F801D9C:
+        case 0x1F801D9E: {
+            break;
+        }
         default: {
             #ifdef LOG
                 std::cerr << "Unhandled flags store from SPU register; "
@@ -734,7 +761,7 @@ void Emulator::SPU::handleControlStore(uint32_t addr, uint32_t val) {
         }
         
         case 0x1F801DA8: {
-            buffer.push(val);
+            buffer.push(static_cast<uint16_t>(val & 0xFFFF));
 
             break;
         }
@@ -805,7 +832,7 @@ void Emulator::SPU::handleControlStore(uint32_t addr, uint32_t val) {
 
             transferControl = val;
 
-            assert(val == 4);
+            //assert(val == 4);
 
             /**
              * 15-4   Unknown/no effect?                       (should be zero)
@@ -864,16 +891,24 @@ void Emulator::SPU::handleVoiceInternalStore(uint32_t addr, uint32_t val) {
 }
 
 void Emulator::SPU::writeToRAM8(uint32_t addr, uint8_t val) {
-    soundRAM[addr & 0x3FFFF] = val;
+    uint32_t idx = (addr >> 1) & 0x3FFFF;
 
-    if (spunct.IRQ9_Enable && addr == irqAddress * 8) {
+    if (addr & 1) {
+        soundRAM[idx] = (soundRAM[idx] & 0x00FF) | (val << 8);
+    } else {
+        soundRAM[idx] = (soundRAM[idx] & 0xFF00) | val;
+    }
+
+    if (spunct.IRQ9_Enable && idx == static_cast<uint32_t>(irqAddress) * 4) {
         status.IRQ9_Flag = true;
         IRQ::trigger(IRQ::Interrupt::SPU);
     }
 }
 
 uint8_t Emulator::SPU::readFromRAM8(uint32_t addr) {
-    return soundRAM[addr & 0x3FFFF];
+    uint32_t idx = (addr >> 1) & 0x3FFFF;
+
+    return (addr & 1) ? (soundRAM[idx] >> 8) & 0xFF : soundRAM[idx] & 0xFF;
 }
 
 void Emulator::SPU::writeToRAM16(uint32_t addr, uint16_t val) {
@@ -881,7 +916,7 @@ void Emulator::SPU::writeToRAM16(uint32_t addr, uint16_t val) {
 
     soundRAM[idx] = val;
 
-    if (spunct.IRQ9_Enable && addr == irqAddress * 8) {
+    if (spunct.IRQ9_Enable && addr == irqAddress * 4) {
         status.IRQ9_Flag = true;
         IRQ::trigger(IRQ::Interrupt::SPU);
     }
