@@ -60,16 +60,16 @@ list(APPEND SOURCES
 
 add_definitions(-DGLEW_STATIC)
 
-add_executable(PS1Emulator ${SOURCES})
+add_executable(ByteStation ${SOURCES})
 
-target_link_libraries(PS1Emulator PRIVATE
+target_link_libraries(ByteStation PRIVATE
         ${OPENGL_LIBRARIES}
         glfw
         SDL2::SDL2
         GLEW::GLEW
 )
 
-target_include_directories(PS1Emulator PRIVATE
+target_include_directories(ByteStation PRIVATE
     ${CMAKE_SOURCE_DIR}/src/CPU/COP/Stolen/gte
 )
 
@@ -77,7 +77,7 @@ set(LIBS_DIR "${CMAKE_SOURCE_DIR}/../libs")
 set(NLOHMANN_PATH ${LIBS_DIR}/nlohmann)
 add_library(nlohmann INTERFACE)
 target_include_directories(nlohmann INTERFACE ${NLOHMANN_PATH})
-target_link_libraries(PS1Emulator PRIVATE nlohmann)
+target_link_libraries(ByteStation PRIVATE nlohmann)
 
 #include_directories(${CMAKE_SOURCE_DIR}/src)
 #include_directories(${OPENGL_INCLUDE_DIRS})
@@ -142,7 +142,7 @@ target_link_libraries(PS1Emulator PRIVATE nlohmann)
 #add_library(nlohmann INTERFACE)
 #target_include_directories(nlohmann INTERFACE ${NLOHMANN_PATH})
 #
-#add_executable(PS1Emulator ${SOURCES}
+#add_executable(ByteStation ${SOURCES}
 #        # I am lazy :D
 #        Memory/MDEC/MDEC.cpp
 #        Memory/MDEC/MDEC.h)
@@ -153,7 +153,7 @@ target_link_libraries(PS1Emulator PRIVATE nlohmann)
 ##set(IPP_INCLUDE_DIR /opt/intel/oneapi/2025.3/include)
 ##set(IPP_LIB_DIR     /opt/intel/oneapi/2025.3/lib)
 #
-#target_link_libraries(PS1Emulator
+#target_link_libraries(ByteStation
 #        ${OPENGL_LIBRARIES}
 #        glfw
 #        SDL2::SDL2
@@ -165,7 +165,7 @@ target_link_libraries(PS1Emulator PRIVATE nlohmann)
 #        #${IPP_LIB_DIR}/libippcc.so
 #)
 #
-#target_include_directories(PS1Emulator PRIVATE
+#target_include_directories(ByteStation PRIVATE
 #    ${IPP_INCLUDE_DIR}
 #    ${CMAKE_SOURCE_DIR}/../libs/imgui-1.91.9b/
 #    ${CMAKE_SOURCE_DIR}/../libs/imgui-1.91.9b/backends

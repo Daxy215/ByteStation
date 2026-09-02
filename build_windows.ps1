@@ -4,7 +4,7 @@ param(
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $BuildDir  = Join-Path $ScriptDir "release_build"
-$Exe       = Join-Path $BuildDir "src\Release\PS1Emulator.exe"
+$Exe       = Join-Path $BuildDir "src\Release\ByteStation.exe"
 
 if (-not $env:VCPKG_ROOT) {
     Write-Error "VCPKG_ROOT is not set. Install vcpkg and set VCPKG_ROOT to its install path."
@@ -20,5 +20,5 @@ if ($f) {
 
 cmake --build $BuildDir --config Release
 
-Write-Host "Running PS1Emulator..."
+Write-Host "Running ByteStation..."
 & $Exe

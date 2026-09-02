@@ -4,7 +4,7 @@ set -e
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_DIR="$SCRIPT_DIR/release_build"
-EXE="$BUILD_DIR/src/PS1Emulator"
+EXE="$BUILD_DIR/src/ByteStation"
 
 if [[ "$1" == "-f" ]]; then
     echo "Full build"
@@ -15,5 +15,5 @@ fi
 
 cmake --build "$BUILD_DIR" --config Release
 
-echo "Running PS1Emulator..."
+echo "Running ByteStation..."
 "$EXE"

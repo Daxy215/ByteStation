@@ -132,9 +132,42 @@ cd ByteStation
 
 ## Running
 
+Run the built executable directly (`release_build/src/ByteStation` on Linux, `release_build\src\Release\ByteStation.exe` on Windows), or just use the build script for your platform, which runs it after building:
+
 ```bash
-# TODO: ..
+./build_release.sh      # Linux
 ```
+
+```powershell
+./build_windows.ps1     # Windows
+```
+
+### Games
+
+Place each game in its own folder under `ROMS/`, with the game's `.cue`/`.bin` inside it, e.g.:
+
+```
+ROMS/
+  GameA/
+    GamA.cue
+    GameA.bin
+```
+
+ByteStation scans `ROMS/` on startup and lists detected games in the Game Console. Use the Left/Right arrow keys or click to browse, and double-click/press Enter to launch. You can also load a single `.exe`, `.cue` or `.bin` file directly via **File > Open...**.
+
+Use the **Rest** button in the menu bar to stop the current game and return to the Game Console.
+
+### Controls
+
+| Key                      | Action                             |
+| ------------------------ | ----------------------------------- |
+| Enter                    | Start                               |
+| Backspace                | Select                              |
+| Arrow keys               | D-Pad                               |
+| Z / X / A / S            | Cross / Circle / Square / Triangle  |
+| Q / E                    | L1 / R1                             |
+| 1 / 2                    | L2 / R2                             |
+| Left Shift / Right Shift | L3 / R3                             |
 
 You will need a legally obtained PlayStation BIOS and game image.
 
