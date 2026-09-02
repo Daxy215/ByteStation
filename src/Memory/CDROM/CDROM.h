@@ -95,6 +95,15 @@ class CDROM {
 			
 		}
 	};
+
+	struct Filter {
+		uint32_t file = 0;
+		uint32_t channel = 0;
+
+		Filter(const uint32_t file, uint32_t channel) : file(file), channel(channel) {
+
+		}
+	};
 	
 public:
 	CDROM();
@@ -183,6 +192,8 @@ private:
 	uint32_t cycles = 0;
 	
 	uint32_t scexCounter = 0;
+
+	Filter filter = {0, 0};
 	
 private:
 	/**

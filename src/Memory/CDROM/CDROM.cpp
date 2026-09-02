@@ -77,6 +77,9 @@ uint32_t CDROM::cyclesUntilNextInterrupt() const {
 void CDROM::handleSector() {
 	if(!_stats.read && !_stats.play)
 		return;
+
+	if (_stats.read && !interrupts.is_empty())
+		return;
 	
 	/**
 	 * Mode2/Form1 (CD-XA)
@@ -163,14 +166,14 @@ void CDROM::handleSector() {
 
 		uint8_t mode = _readSector.loadAt(15);
 
-		//   0-7 File Number    (00h..FFh) (for Audio/Video Interleave, see below)
+		// 0-7 File Number    (00h..FFh) (for Audio/Video Interleave, see below)
 		uint8_t file = _readSector.loadAt(16);
 
 		/*
 		 * 0-4 Channel Number (00h..1Fh) (for Audio/Video Interleave, see below)
 		 * 5-7 Should be always zero
 		 */
-		uint8_t channel = _readSector.loadAt(17);
+		uint8_t channel = _readSector.loadAt(17) & 0x0F;
 
 		/**
 		 * 0   End of Record (EOR) (all Volume Descriptors, and all sectors with EOF)
@@ -196,15 +199,17 @@ void CDROM::handleSector() {
 		// Real Time (RT) && Audio
 		if ((submode >> 6 & 1) == 1 && (submode >> 2 & 1) == 1) {
 			uint8_t isStereo = (codinginfo & 0x03) == 1;
-			uint8_t is18900Hz = (codinginfo >> 2 & 1);
+			/*uint8_t is18900Hz = (codinginfo >> 2 & 1);
 			uint8_t is8Bits = ((codinginfo >> 4) & 0x03) == 1;
-			uint8_t isEmphasis = (codinginfo >> 6 & 1);
+			uint8_t isEmphasis = (codinginfo >> 6 & 1);*/
 
 			if (this->mode.xaAdpcm && !mute) {
 				// TODO; handle filter
 				//assert(!this->mode.xaFilter);
 				if (this->mode.xaFilter) {
-					printf("Handle filter..\n");
+					if (this->filter.file != file || this->filter.channel != channel) {
+						return;
+					}
 				}
 
 				//printf("Need to decode is18900Hz(%x) is8bits(%x) isstereo(%x) isemphasis(%x)\n", is18900Hz, is8Bits, isStereo, isEmphasis);
@@ -294,11 +299,6 @@ void CDROM::handleSector() {
 			}
 		}
 	}
-
-	//assert((submode >> 5 & 1) == 0); // Form1
-	//assert(mode == 2);
-	
-	// TODO;
 }
 
 void CDROM::queueCdAudioSector(const std::vector<uint8_t> &sector) {
@@ -904,7 +904,12 @@ void CDROM::decodeAndExecute(uint8_t command) {
 		// Demute - Command 0Ch --> INT3(stat)
 		mute = false;
 		INT3();
-	} else if (command == 0x50 || command == 0x51 || command == 0x52 || command == 0x53 || command == 0x54 ||
+	} else if (command == 0x0D) {
+		// Setfilter - Command 0Dh,file,channel --> INT3(stat)
+		filter = {getParamater(), getParamater()};
+
+		INT3();
+	}  else if (command == 0x50 || command == 0x51 || command == 0x52 || command == 0x53 || command == 0x54 ||
 	           command == 0x55 || command == 0x56 || command == 0x57) {
 		INT(5);
 		addResponse(0x13);
@@ -912,11 +917,7 @@ void CDROM::decodeAndExecute(uint8_t command) {
 		printf("any?\n");
 	} else {
 		INT3();
-		
-		//assert(false);
-		//if (command != 0x0D) {
-			printf("Unhandled command %x\n", command);
-		//}
+		printf("Unhandled command %x\n", command);
 	}
 	
 	/**
