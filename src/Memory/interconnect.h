@@ -641,6 +641,7 @@ public:
         scheduler.reset();
         _hardwareTickScheduled = false;
         _spuTickScheduled = false;
+        _sioPendingCycles = 0;
     }
     
 private:
@@ -691,6 +692,7 @@ public:
     bool _vblankPending = false;
     uint64_t _lastHardwareTickCycle = 0;
     uint64_t _lastSpuTickCycle = 0;
+    uint32_t _sioPendingCycles = 0;
 
     static constexpr uint32_t SPU_TICK_CYCLES = 768;
 };

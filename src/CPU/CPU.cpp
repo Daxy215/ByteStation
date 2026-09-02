@@ -48,11 +48,11 @@ int CPU::executeNextInstruction() {
     } else if (disasmState.suppress_breakpoint_once) {
         disasmState.suppress_breakpoint_once = false;
 
-        if (!stepping && disasmState.breakpoints.count(currentpc)) {
+        if (!stepping && !disasmState.breakpoints.empty() && disasmState.breakpoints.count(currentpc)) {
             paused = true;
             return 0;
         }
-    } else if (!stepping && disasmState.breakpoints.count(currentpc)) {
+    } else if (!stepping && !disasmState.breakpoints.empty() && disasmState.breakpoints.count(currentpc)) {
         paused = true;
         return 0;
     }

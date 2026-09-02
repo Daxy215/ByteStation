@@ -25,7 +25,13 @@ bool Interconnect::step(uint32_t cycles) {
     scheduler.addCycles(cycles);
 
     _dma.step();
-    _sio.step(cycles);
+
+    _sioPendingCycles += cycles;
+
+    if (_sioPendingCycles >= _sio.cyclesUntilNextEvent()) {
+        _sio.step(_sioPendingCycles);
+        _sioPendingCycles = 0;
+    }
 
     return _vblankPending;
 }

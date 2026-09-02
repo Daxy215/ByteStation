@@ -11,6 +11,12 @@ DigitalController Emulator::IO::SIO::_controllers[] = {0, 1};
 
 void Emulator::IO::SIO::step(uint32_t cycles) {
 	for(uint32_t port = 0; port < channels.size(); port++) {
+		auto& channel = channels[port];
+
+		if(!channel.txActive && !channel.txHoldingFull && channel.dsrTimer == 0) {
+			continue;
+		}
+
 		stepBaud(port, cycles);
 		stepChannel(port, cycles);
 		evaluateIrq(port);
@@ -82,6 +88,8 @@ uint32_t Emulator::IO::SIO::cyclesUntilNextEvent() const {
 	for(const auto& channel : channels) {
 		if(channel.txActive)
 			next = std::min<uint32_t>(next, static_cast<uint32_t>(channel.txCycles));
+		else if(channel.txHoldingFull)
+			next = 0;
 
 		if(channel.dsrTimer > 0)
 			next = std::min(next, channel.dsrTimer);

@@ -168,6 +168,52 @@ void Emulator::IO::Timer::step(uint32_t cpuCycles, uint32_t dotTicks) {
 }
 
 void Emulator::IO::Timer::finishTick(uint32_t ticks) {
+    if (ticks == 0)
+        return;
+
+    const bool everyTickIsTarget = (target == 0);
+
+    if (!mode.resetType && !(everyTickIsTarget && mode.interruptTarget)) {
+        if (resetPending) {
+            counter = 0;
+            resetPending = false;
+        }
+
+        const uint64_t start = counter;
+        const uint64_t total = start + ticks;
+
+        const uint64_t wraps = total / 0x10000;
+        counter = static_cast<uint32_t>(total % 0x10000);
+
+        if (wraps > 0) {
+            mode.hasWrapped = true;
+
+            if (mode.interruptWrap) {
+                for (uint64_t i = 0; i < wraps; i++)
+                    requestIRQ();
+            }
+        }
+
+        if (everyTickIsTarget) {
+            mode.reachedTarget = true;
+        } else {
+            const uint64_t firstHit = ((static_cast<uint64_t>(target) + 0x10000 - start - 1) % 0x10000) + 1;
+
+            if (firstHit <= ticks) {
+                const uint64_t hits = 1 + (ticks - firstHit) / 0x10000;
+
+                mode.reachedTarget = true;
+
+                if (mode.interruptTarget) {
+                    for (uint64_t i = 0; i < hits; i++)
+                        requestIRQ();
+                }
+            }
+        }
+
+        return;
+    }
+
     while (ticks--) {
         if (resetPending) {
             counter = 0;
