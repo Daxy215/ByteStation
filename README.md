@@ -110,12 +110,46 @@ ByteStation is therefore also a learning project: implementing the hardware, inv
 
 ## Building
 
+### Requirements
+
+* CMake 3.10+
+* A C++17 compiler
+* OpenGL 4.2+
+
 ### Linux
+
+Install the system dependencies:
+
+```bash
+# Fedora
+sudo dnf install cmake gcc-c++ glfw-devel glew-devel SDL2-devel
+
+# Debian/Ubuntu
+sudo apt install cmake g++ libglfw3-dev libglew-dev libsdl2-dev
+
+# Arch
+sudo pacman -S cmake gcc glfw-x11 glew sdl2
+```
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/Daxy215/ByteStation.git
 cd ByteStation
+```
 
+`glm` and `nlohmann/json` aren't fetched via CMake — vendor them into `libs/` once:
+
+```bash
+git clone --depth 1 https://github.com/g-truc/glm.git libs/glm
+
+mkdir -p libs/nlohmann/nlohmann
+curl -L -o libs/nlohmann/nlohmann/json.hpp https://github.com/nlohmann/json/releases/latest/download/json.hpp
+```
+
+Then build:
+
+```bash
 ./build_release.sh
 ```
 
@@ -123,10 +157,25 @@ cd ByteStation
 
 Requires [vcpkg](https://github.com/microsoft/vcpkg) with `glfw3`, `sdl2` and `glew` installed, and `VCPKG_ROOT` set to your vcpkg install path.
 
+Clone the repository:
+
 ```powershell
 git clone https://github.com/Daxy215/ByteStation.git
 cd ByteStation
+```
 
+`glm` and `nlohmann/json` aren't fetched via CMake — vendor them into `libs/` once:
+
+```powershell
+git clone --depth 1 https://github.com/g-truc/glm.git libs/glm
+
+New-Item -ItemType Directory -Force libs/nlohmann/nlohmann
+Invoke-WebRequest -OutFile libs/nlohmann/nlohmann/json.hpp https://github.com/nlohmann/json/releases/latest/download/json.hpp
+```
+
+Then build:
+
+```powershell
 ./build_windows.ps1 -f
 ```
 
@@ -156,6 +205,8 @@ ROMS/
 ByteStation scans `ROMS/` on startup and lists detected games in the Game Console. Use the Left/Right arrow keys or click to browse, and double-click/press Enter to launch. You can also load a single `.exe`, `.cue` or `.bin` file directly via **File > Open...**.
 
 Use the **Rest** button in the menu bar to stop the current game and return to the Game Console.
+
+Memory card saves are stored in `MemoryCard/`.
 
 ### Controls
 
