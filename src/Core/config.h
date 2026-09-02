@@ -18,4 +18,5 @@ class Config {
         std::vector<uint32_t> breakpoints;
         std::vector<uint32_t> bookmarks;
         bool printDisassemblyCopiesToConsole = false;
+        std::string biosPath;
 };

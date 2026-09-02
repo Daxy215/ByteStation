@@ -60,18 +60,13 @@ public:
         
     }
     
-    Interconnect(Emulator::Gpu* gpu/*, Emulator::SPU spu*/)
-        : memControl{}, _gpu(gpu), _spu(new spu::SPU()), scheduler(this)
+    Interconnect(Emulator::Gpu* gpu, const std::string& biosPath/*, Emulator::SPU spu*/)
+        : memControl{}, _gpu(gpu), _spu(new spu::SPU()), scheduler(this), _biosPath(biosPath)
     /*, spu(spu)*/ {
         _ram = Ram();
 
-        // TODO;
-        _bios = Bios("../../BIOS/ps-22a.bin");
-        //_bios = Bios("../../BIOS/openbios.bin");
-        //_bios = Bios("../BIOS/openbios2.bin");
-        //_bios = Bios("../BIOS/openbios-fastboot.bin");
-        //_bios = Bios("../BIOS/openbios-unirom.bin");
-        
+        _bios = Bios(_biosPath);
+
         _dma = Dma();
         
         if (false) {
@@ -638,8 +633,7 @@ public:
         for(auto& i : icache)
             i = {};
 
-        // TODO;
-        _bios.reset("../../BIOS/ps-22a.bin");
+        _bios.reset(_biosPath);
         _dma.reset();
         _gpu->reset();
         //spu.reset();
@@ -689,6 +683,8 @@ public:
     Emulator::SPU spu;
 
     Scheduler scheduler;
+
+    std::string _biosPath;
 
     bool _hardwareTickScheduled = false;
     bool _spuTickScheduled = false;

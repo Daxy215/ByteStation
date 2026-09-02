@@ -21,12 +21,13 @@ void Config::Load() {
     breakpoints.clear();
     bookmarks.clear();
     printDisassemblyCopiesToConsole = false;
+    biosPath.clear();
 
     std::ifstream file(GetConfigPath());
     if (!file.is_open()) {
         return;
     }
-    
+
     json j;
     try {
         file >> j;
@@ -38,10 +39,12 @@ void Config::Load() {
             bookmarks = j["bookmarks"].get<std::vector<uint32_t>>();
 
         printDisassemblyCopiesToConsole = j.value("printDisassemblyCopiesToConsole", false);
+        biosPath = j.value("biosPath", std::string());
     } catch (const json::exception&) {
         breakpoints.clear();
         bookmarks.clear();
         printDisassemblyCopiesToConsole = false;
+        biosPath.clear();
     }
 }
 
@@ -51,6 +54,7 @@ void Config::Save() {
     j["breakpoints"] = breakpoints;
     j["bookmarks"] = bookmarks;
     j["printDisassemblyCopiesToConsole"] = printDisassemblyCopiesToConsole;
+    j["biosPath"] = biosPath;
 
     std::ofstream file(GetConfigPath());
     file << j.dump(4);

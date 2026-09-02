@@ -110,11 +110,24 @@ ByteStation is therefore also a learning project: implementing the hardware, inv
 
 ## Building
 
+### Linux
+
 ```bash
 git clone https://github.com/Daxy215/ByteStation.git
 cd ByteStation
 
 ./build_release.sh
+```
+
+### Windows
+
+Requires [vcpkg](https://github.com/microsoft/vcpkg) with `glfw3`, `sdl2` and `glew` installed, and `VCPKG_ROOT` set to your vcpkg install path.
+
+```powershell
+git clone https://github.com/Daxy215/ByteStation.git
+cd ByteStation
+
+./build_windows.ps1 -f
 ```
 
 ## Running

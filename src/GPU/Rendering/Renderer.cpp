@@ -257,7 +257,7 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
     int mx, my;
     glfwGetMonitorPos(monitor, &mx, &my);
 
-    window = glfwCreateWindow(WIDTH, HEIGHT, "PSX", nullptr, nullptr);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "ByteStation", nullptr, nullptr);
     glfwSetWindowPos(window, mx + 100, my + 100);
 
     if (window == nullptr) {

@@ -1,4 +1,5 @@
 #include <chrono>
+#include <functional>
 #include <iostream>
 #include <thread>
 
@@ -16,6 +17,7 @@
 #include "../Utils/FileSystem/FileManager.h"
 
 #include "GameLibrary.h"
+#include "config.h"
 
 #include <algorithm>
 #include <cmath>
@@ -85,13 +87,6 @@
     * I found out that I had a bug somewhere else
 
  * sub instruction -> Was using wrappingadd instead of wrappingsub..
- */
-
-/**
- * Where I got the BIOS from:
- * https://myrient.erista.me/files/Redump/Sony%20-%20PlayStation%20-%20BIOS%20Images/
- *
- * Needed the ps-22a which is the SCPH-1001 version.
  */
 
 /** IMPORTANT INFORMATION
@@ -665,7 +660,7 @@ struct FileInfo {
         bool        is_directory;
 };
 
-static void ShowFileBrowser(bool *p_open, CPU *cpu) {
+static void ShowFileBrowser(bool *p_open, const std::function<void(const std::string &)> &onFileSelected) {
     static std::string           current_dir;
     static std::vector<FileInfo> files;
     static std::string           selected_path;
@@ -752,18 +747,7 @@ static void ShowFileBrowser(bool *p_open, CPU *cpu) {
                         current_dir = f.path;
                         refresh();
                     } else {
-                        fs::path p(f.path);
-                        auto     extension = p.extension();
-
-                        cpu->reset();
-
-                        if (extension == ".exe") {
-                            handleLoadExe(f.path);
-                            *p_open = false;
-                        } else if (extension == ".cue" || extension == ".bin") {
-                            cpu->interconnect._cdrom.swapDisk(f.path);
-                            *p_open = false;
-                        }
+                        onFileSelected(f.path);
                     }
                 }
             }
@@ -792,10 +776,13 @@ static int   selected_game_index = 0;
 static float animated_game_index = 0.0f;
 
 static void LaunchGame(GameEntry &game, CPU *cpu, bool *out_game_running, bool *p_open) {
+    skipped = false;
     cpu->reset();
     cpu->interconnect._cdrom.swapDisk(game.discPath);
     *out_game_running = true;
     *p_open           = false;
+
+    glfwSetWindowTitle(gpu->renderer->window, ("ByteStation - " + game.title).c_str());
 }
 
 static void ShowGameConsole(bool *p_open, GameLibrary &library, CPU *cpu, bool *out_game_running) {
@@ -810,7 +797,7 @@ static void ShowGameConsole(bool *p_open, GameLibrary &library, CPU *cpu, bool *
     ImGui::Begin("Game Console", p_open, flags);
     ImGui::PopStyleColor();
 
-    ImGui::TextColored(ImVec4(0.3f, 0.9f, 1.0f, 1.0f), "PS1 EMULATOR");
+    ImGui::TextColored(ImVec4(0.3f, 0.9f, 1.0f, 1.0f), "ByteStation");
     ImGui::Separator();
 
     auto &games = library.games();
@@ -963,7 +950,88 @@ int main(int argc, char *argv[]) {
      */
     gpu = std::make_unique<Emulator::Gpu>();
 
-    cpu = std::make_unique<CPU>(Interconnect(gpu.get()));
+    glfwSetKeyCallback(gpu->renderer->window, Emulator::IO::SIO::keyCallback);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(gpu->renderer->window, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
+    Config &config = Config::Get();
+    config.Load();
+
+    auto tryLoadBios = [&](const std::string &path) {
+        try {
+            cpu = std::make_unique<CPU>(Interconnect(gpu.get(), path));
+            return true;
+        } catch (const std::exception &e) {
+            std::cerr << "Failed to load BIOS: " << e.what() << "\n";
+            cpu.reset();
+            return false;
+        }
+    };
+
+    if (config.biosPath.empty() || !tryLoadBios(config.biosPath)) {
+        bool        show_bios_browser = true;
+        std::string biosError         = config.biosPath.empty()
+                                                 ? "No PlayStation BIOS has been selected yet."
+                                                 : "Could not load the PlayStation BIOS from \"" + config.biosPath + "\".";
+
+        while (!cpu && !glfwWindowShouldClose(gpu->renderer->window)) {
+            glfwPollEvents();
+
+            ImGui_ImplOpenGL3_NewFrame();
+            ImGui_ImplGlfw_NewFrame();
+            ImGui::NewFrame();
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            ImGuiViewport   *viewport = ImGui::GetMainViewport();
+            ImGuiWindowFlags flags    = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
+                                        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus;
+
+            ImGui::SetNextWindowPos(viewport->WorkPos);
+            ImGui::SetNextWindowSize(viewport->WorkSize);
+
+            ImGui::Begin("ByteStation", nullptr, flags);
+
+            ImGui::TextColored(ImVec4(0.3f, 0.9f, 1.0f, 1.0f), "ByteStation");
+            ImGui::Separator();
+            ImGui::TextWrapped("%s", biosError.c_str());
+            ImGui::TextWrapped("Locate a valid PlayStation BIOS file to continue.");
+            ImGui::Spacing();
+
+            if (show_bios_browser) {
+                ShowFileBrowser(&show_bios_browser, [&](const std::string &path) {
+                    if (tryLoadBios(path)) {
+                        config.biosPath = path;
+                        config.Save();
+                    } else {
+                        biosError         = "Failed to load BIOS from \"" + path + "\". Please choose a valid BIOS file.";
+                        show_bios_browser = true;
+                    }
+                });
+            } else if (ImGui::Button("Locate BIOS...")) {
+                show_bios_browser = true;
+            }
+
+            ImGui::End();
+
+            ImGui::Render();
+            ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+            glfwSwapBuffers(gpu->renderer->window);
+        }
+
+        if (!cpu) {
+            glfwDestroyWindow(gpu->renderer->window);
+            glfwTerminate();
+
+            return 0;
+        }
+    }
 
     GameLibrary gameLibrary;
     gameLibrary.loadDatabase("../../Resources/ps1_gamedb.json");
@@ -1030,15 +1098,6 @@ int main(int argc, char *argv[]) {
 
     //CpuInstructionTests::runAll();
 
-    glfwSetKeyCallback(gpu->renderer->window, Emulator::IO::SIO::keyCallback);
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO &io = ImGui::GetIO();
-    ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(gpu->renderer->window, true);
-    ImGui_ImplOpenGL3_Init("#version 130");
-
     double                                fps       = 0.0;
     int                                   frames    = 0;
     double                                frameTime = 0;
@@ -1069,24 +1128,6 @@ int main(int argc, char *argv[]) {
             unprocessedTime = UPDATE_CAP * 4;
         }
 
-        /*while (unprocessedTime >= UPDATE_CAP) {
-            unprocessedTime -= UPDATE_CAP;
-            render = true;
-
-            if (frameTime >= 1.0) {
-                frameTime = 0;
-                fps       = frames;
-                frames    = 0;
-
-                int width, height;
-                glfwGetFramebufferSize(gpu->renderer->window, &width, &height);
-                glViewport(0, 0, width, height);
-
-                std::cerr << "FPS: " << std::to_string(fps) << " - " << std::to_string(gpu->frames) << "\n";
-
-                gpu->frames = 0;
-            }
-        }*/
         if (unprocessedTime >= UPDATE_CAP) {
             unprocessedTime -= UPDATE_CAP;
             render = true;
@@ -1100,8 +1141,6 @@ int main(int argc, char *argv[]) {
             int width, height;
             glfwGetFramebufferSize(gpu->renderer->window, &width, &height);
             glViewport(0, 0, width, height);
-
-            //std::cerr << "FPS: " << std::to_string(fps) << " - " << std::to_string(gpu->frames) << "\n";
 
             gpu->frames = 0;
         }
@@ -1212,13 +1251,32 @@ int main(int argc, char *argv[]) {
 
             if (ImGui::MenuItem("Rest")) {
                 rest("");
+
+                game_running       = false;
+                show_game_console  = true;
+                glfwSetWindowTitle(gpu->renderer->window, "ByteStation");
             }
 
             ImGui::EndMainMenuBar();
         }
 
         if (show_file_browser) {
-            ShowFileBrowser(&show_file_browser, cpu.get());
+            ShowFileBrowser(&show_file_browser, [&](const std::string &path) {
+                fs::path p(path);
+                auto     extension = p.extension();
+
+                cpu->reset();
+
+                if (extension == ".exe") {
+                    handleLoadExe(path);
+                    glfwSetWindowTitle(gpu->renderer->window, ("ByteStation - " + p.stem().string()).c_str());
+                    show_file_browser = false;
+                } else if (extension == ".cue" || extension == ".bin") {
+                    cpu->interconnect._cdrom.swapDisk(path);
+                    glfwSetWindowTitle(gpu->renderer->window, ("ByteStation - " + p.stem().string()).c_str());
+                    show_file_browser = false;
+                }
+            });
         }
 
         if (show_game_console) {

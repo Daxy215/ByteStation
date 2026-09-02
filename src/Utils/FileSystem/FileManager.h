@@ -6,12 +6,22 @@
 #include <iostream>
 #include <filesystem>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 namespace Emulator {
 	namespace Utils {
 		class FileManager {
 		public:
 			static std::filesystem::path exeDir() {
+#ifdef _WIN32
+				wchar_t buffer[MAX_PATH];
+				GetModuleFileNameW(nullptr, buffer, MAX_PATH);
+				return std::filesystem::path(buffer).parent_path();
+#else
 				return std::filesystem::canonical("/proc/self/exe").parent_path();
+#endif
 			}
 			
 			static std::filesystem::path resolvePath(const std::string& path) {

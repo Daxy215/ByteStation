@@ -1,5 +1,0 @@
-/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/edit_cache.dir
-/home/daxy/Documents/dev/PSXEmulator/release_build/CMakeFiles/rebuild_cache.dir
-/home/daxy/Documents/dev/PSXEmulator/release_build/src/CMakeFiles/PS1Emulator.dir
-/home/daxy/Documents/dev/PSXEmulator/release_build/src/CMakeFiles/edit_cache.dir
-/home/daxy/Documents/dev/PSXEmulator/release_build/src/CMakeFiles/rebuild_cache.dir

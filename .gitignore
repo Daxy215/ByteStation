@@ -12,6 +12,7 @@ ROMS/
 # build output
 /build
 /build-debug
+/release_build
 /CMakeCache.txt
 /CMakeFiles
 /cmake_install.cmake
@@ -23,6 +24,9 @@ ROMS/
 
 # vendored deps (fetch separately, not tracked)
 /libs/
+
+# generated game covers/database cache
+/Resources/
 
 # IDE / editor state
 .idea/

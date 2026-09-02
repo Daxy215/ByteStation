@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Define the name of the project
-project(PS1Emulator)
+project(ByteStation)
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)

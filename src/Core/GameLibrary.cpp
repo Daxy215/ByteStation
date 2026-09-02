@@ -6,8 +6,12 @@
 #include <fstream>
 #include <thread>
 
+#ifdef _WIN32
+#include <windows.h>
+#else
 #include <sys/wait.h>
 #include <unistd.h>
+#endif
 
 #include <nlohmann/json.hpp>
 
@@ -22,6 +26,28 @@
 using json = nlohmann::json;
 
 static bool downloadFile(const std::string& url, const std::string& outPath) {
+#ifdef _WIN32
+	std::string commandLine = "curl.exe -fsSL -o \"" + outPath + "\" \"" + url + "\"";
+
+	STARTUPINFOA startupInfo{};
+	startupInfo.cb = sizeof(startupInfo);
+
+	PROCESS_INFORMATION processInfo{};
+
+	if (!CreateProcessA(nullptr, commandLine.data(), nullptr, nullptr, FALSE, CREATE_NO_WINDOW,
+	                     nullptr, nullptr, &startupInfo, &processInfo))
+		return false;
+
+	WaitForSingleObject(processInfo.hProcess, INFINITE);
+
+	DWORD exitCode = 1;
+	GetExitCodeProcess(processInfo.hProcess, &exitCode);
+
+	CloseHandle(processInfo.hProcess);
+	CloseHandle(processInfo.hThread);
+
+	return exitCode == 0;
+#else
 	pid_t pid = fork();
 
 	if (pid == 0) {
@@ -38,6 +64,7 @@ static bool downloadFile(const std::string& url, const std::string& outPath) {
 	waitpid(pid, &status, 0);
 
 	return WIFEXITED(status) && WEXITSTATUS(status) == 0;
+#endif
 }
 
 static GLuint uploadCoverTexture(const std::string& path) {
