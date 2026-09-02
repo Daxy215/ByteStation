@@ -918,6 +918,30 @@ static void ShowGameConsole(bool *p_open, GameLibrary &library, CPU *cpu, bool *
     ImGui::End();
 }
 
+static void DropCallback(GLFWwindow *window, int count, const char **paths) {
+    if (count <= 0 || !cpu)
+        return;
+
+    fs::path p(paths[0]);
+    auto     extension = p.extension();
+
+    cpu->reset();
+
+    if (extension == ".exe") {
+        handleLoadExe(paths[0]);
+    } else if (extension == ".cue" || extension == ".bin") {
+        cpu->interconnect._cdrom.swapDisk(paths[0]);
+    } else {
+        return;
+    }
+
+    game_running      = true;
+    show_game_console = false;
+    show_file_browser = false;
+
+    glfwSetWindowTitle(window, ("ByteStation - " + p.stem().string()).c_str());
+}
+
 constexpr bool RunR3000SingleStepTests = false;
 
 int main(int argc, char *argv[]) {
@@ -951,6 +975,7 @@ int main(int argc, char *argv[]) {
     gpu = std::make_unique<Emulator::Gpu>();
 
     glfwSetKeyCallback(gpu->renderer->window, Emulator::IO::SIO::keyCallback);
+    glfwSetDropCallback(gpu->renderer->window, DropCallback);
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -961,6 +986,32 @@ int main(int argc, char *argv[]) {
 
     Config &config = Config::Get();
     config.Load();
+
+    if (config.hasPostProcessing) {
+        auto &renderer = *gpu->renderer;
+
+        renderer.useShaders               = config.ppUseShaders;
+        renderer.enableBloom              = config.ppEnableBloom;
+        renderer.threshold                = config.ppThreshold;
+        renderer.blurRadius               = config.ppBlurRadius;
+        renderer.bloomPasses              = config.ppBloomPasses;
+        renderer.bloomIntensity           = config.ppBloomIntensity;
+        renderer.enableUpscaling          = config.ppEnableUpscaling;
+        renderer.sampleRadius             = config.ppSampleRadius;
+        renderer.lodBias                  = config.ppLodBias;
+        renderer.kernelB                  = config.ppKernelB;
+        renderer.kernelC                  = config.ppKernelC;
+        renderer.sharpness                = config.ppSharpness;
+        renderer.edgeThreshold            = config.ppEdgeThreshold;
+        renderer.enableAdaptiveSharpening = config.ppEnableAdaptiveSharpening;
+        renderer.contrast                 = config.ppContrast;
+        renderer.saturation               = config.ppSaturation;
+        renderer.gamma                    = config.ppGamma;
+        renderer.scanline                 = config.ppScanline;
+        renderer.halation                 = config.ppHalation;
+        renderer.ditherStrength           = config.ppDitherStrength;
+        renderer.noiseStrength            = config.ppNoiseStrength;
+    }
 
     auto tryLoadBios = [&](const std::string &path) {
         try {
@@ -1031,6 +1082,11 @@ int main(int argc, char *argv[]) {
 
             return 0;
         }
+    }
+
+    if (config.hasAudio) {
+        cpu->interconnect.spu.audioEnabled = config.audioEnabled;
+        cpu->interconnect.spu.masterVolume = config.audioMasterVolume;
     }
 
     GameLibrary gameLibrary;
@@ -1109,6 +1165,28 @@ int main(int argc, char *argv[]) {
     bool render         = false;
     bool showVramViewer = false;
 
+    bool fullscreen     = false;
+    int  windowedX      = 0;
+    int  windowedY      = 0;
+    int  windowedWidth  = 0;
+    int  windowedHeight = 0;
+
+    auto toggleFullscreen = [&]() {
+        fullscreen = !fullscreen;
+
+        if (fullscreen) {
+            glfwGetWindowPos(gpu->renderer->window, &windowedX, &windowedY);
+            glfwGetWindowSize(gpu->renderer->window, &windowedWidth, &windowedHeight);
+
+            GLFWmonitor       *monitor = glfwGetPrimaryMonitor();
+            const GLFWvidmode *mode    = glfwGetVideoMode(monitor);
+
+            glfwSetWindowMonitor(gpu->renderer->window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+        } else {
+            glfwSetWindowMonitor(gpu->renderer->window, nullptr, windowedX, windowedY, windowedWidth, windowedHeight, 0);
+        }
+    };
+
     glfwSwapInterval(0);
 
     while (!glfwWindowShouldClose(gpu->renderer->window)) {
@@ -1160,6 +1238,9 @@ int main(int argc, char *argv[]) {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        if (ImGui::IsKeyPressed(ImGuiKey_F11))
+            toggleFullscreen();
+
         if (cpu->paused)
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -1175,6 +1256,10 @@ int main(int argc, char *argv[]) {
 
                 if (ImGui::MenuItem("Game Library")) {
                     show_game_console = true;
+                }
+
+                if (ImGui::MenuItem("Fullscreen", "F11", fullscreen)) {
+                    toggleFullscreen();
                 }
 
                 ImGui::EndMenu();
@@ -1336,6 +1421,39 @@ int main(int argc, char *argv[]) {
         glfwSwapBuffers(gpu->renderer->window);
 
         frames++;
+    }
+
+    {
+        auto &renderer = *gpu->renderer;
+
+        config.hasPostProcessing          = true;
+        config.ppUseShaders               = renderer.useShaders;
+        config.ppEnableBloom              = renderer.enableBloom;
+        config.ppThreshold                = renderer.threshold;
+        config.ppBlurRadius               = renderer.blurRadius;
+        config.ppBloomPasses              = renderer.bloomPasses;
+        config.ppBloomIntensity           = renderer.bloomIntensity;
+        config.ppEnableUpscaling          = renderer.enableUpscaling;
+        config.ppSampleRadius             = renderer.sampleRadius;
+        config.ppLodBias                  = renderer.lodBias;
+        config.ppKernelB                  = renderer.kernelB;
+        config.ppKernelC                  = renderer.kernelC;
+        config.ppSharpness                = renderer.sharpness;
+        config.ppEdgeThreshold            = renderer.edgeThreshold;
+        config.ppEnableAdaptiveSharpening = renderer.enableAdaptiveSharpening;
+        config.ppContrast                 = renderer.contrast;
+        config.ppSaturation               = renderer.saturation;
+        config.ppGamma                    = renderer.gamma;
+        config.ppScanline                 = renderer.scanline;
+        config.ppHalation                 = renderer.halation;
+        config.ppDitherStrength           = renderer.ditherStrength;
+        config.ppNoiseStrength            = renderer.noiseStrength;
+
+        config.hasAudio          = true;
+        config.audioEnabled      = cpu->interconnect.spu.audioEnabled;
+        config.audioMasterVolume = cpu->interconnect.spu.masterVolume;
+
+        config.Save();
     }
 
     glfwDestroyWindow(gpu->renderer->window);
