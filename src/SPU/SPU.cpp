@@ -546,6 +546,8 @@ uint32_t Emulator::SPU::handleFlagsLoad(uint32_t addr) {
         case 0x1F801D8A: return (KON >> 16) & 0xFF;
         case 0x1f801D8C: return KOFF & 0xFFFF;
         case 0x1f801D8E: return (KOFF >> 16) & 0xFF;
+        case 0x1F801D94: return NON & 0xFFFF;
+        case 0x1F801D96: return (NON >> 16) & 0xFF;
         case 0x1f801D98: return EON & 0xFFFF;
         case 0x1F801D9A: return (EON >> 16) & 0xFF;
         case 0x1F801D9C: return ENDX & 0xFFFF;
