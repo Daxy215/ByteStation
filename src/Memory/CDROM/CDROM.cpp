@@ -204,8 +204,6 @@ void CDROM::handleSector() {
 			uint8_t isEmphasis = (codinginfo >> 6 & 1);*/
 
 			if (this->mode.xaAdpcm && !mute) {
-				// TODO; handle filter
-				//assert(!this->mode.xaFilter);
 				if (this->mode.xaFilter) {
 					if (this->filter.file != file || this->filter.channel != channel) {
 						return;
@@ -669,10 +667,7 @@ void CDROM::decodeAndExecute(uint8_t command) {
 	//assert(!pending);
 	
 	interrupts.clear();
-	
-	//printf("CMD: %x\n", command);
-	//std::cerr << "\n";
-	
+
 	if(command == 0x01) {
 		//   01h Getstat      -               INT3(stat)
 		GetStat();
@@ -692,7 +687,19 @@ void CDROM::decodeAndExecute(uint8_t command) {
 	} else if(command == 0x09) {
 		// Pause - Command 09h --> INT3(stat) --> INT2(stat)
 		Pause();
-	} else if(command == 0x0E) {
+	} else if(command == 0x10) {
+        // GetlocL - Command 10h --> INT3(amm,ass,asect,mode,file,channel,sm,ci)
+        
+        INT(3);
+        addResponse(_readSector.loadAt(12)); // minute (track)
+        addResponse(_readSector.loadAt(13)); // second (track)
+        addResponse(_readSector.loadAt(14)); // sector (track)
+        addResponse(_readSector.loadAt(15)); // mode
+        addResponse(_readSector.loadAt(16)); // file
+        addResponse(_readSector.loadAt(17)); // channel TODO; Is 0x0F needed?
+        addResponse(_readSector.loadAt(18)); // sm
+        addResponse(_readSector.loadAt(19)); // si
+    } else if(command == 0x0E) {
 		// Setmode - Command 0Eh,mode --> INT3(stat)
 		SetMode();
 	} else if(command == 0x0A) {
@@ -761,6 +768,7 @@ void CDROM::decodeAndExecute(uint8_t command) {
 			INT(3);
 			addResponse(_stats._reg);
 	} else if (command == 0x11) {
+        // GetlocP - Command 11h - INT3(track,index,mm,ss,sect,amm,ass,asect)
 		auto toBcd = [](uint8_t b) -> uint8_t {
 			return ((b / 10) << 4) | (b % 10);
 		};
