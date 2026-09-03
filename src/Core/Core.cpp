@@ -337,6 +337,9 @@ struct Exe {
 
 std::unique_ptr<Emulator::Gpu> gpu;
 std::unique_ptr<CPU>           cpu;
+bool                            skipped = false;
+bool                            pendingExeInject = false;
+std::vector<uint8_t>           pendingExeData;
 
 /*std::vector<std::string> testPaths;
 int currentIndex = 0;
@@ -530,16 +533,12 @@ void handleLoadExe(std::string path) {
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase15/gpu-raster-phase15.ps-exe"); // TODO;
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase16/gpu-raster-phase16.ps-exe"); // TODO;
     //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase17/gpu-raster-phase17.ps-exe"); // TODO;
-    std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase18/gpu-raster-phase18.ps-exe"); // TODO;
-    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase19/gpu-raster-phase19.ps-exe"); // TODO;
-    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/pcsx-redux-tests/tests/gpu-raster-phase20/gpu-raster-phase20.ps-exe"); // TODO;
+    pendingExeData   = Emulator::Utils::FileManager::loadFile(path);
+    pendingExeInject = true;
+    skipped          = false;
+}
 
-    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/psx-hardware-tests-master/_ps-exe/irq_reg.psexe");
-    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/Tests/psx-hardware-tests-master/_ps-exe/timer1_hs_count.psexe");
-
-    // https://chenthread.asie.pl/fromage/
-    //std::vector<uint8_t> data = Emulator::Utils::FileManager::loadFile("../../ROMS/boot.exe");
-
+void injectExe(const std::vector<uint8_t> &data) {
     Exe exe;
     memcpy(&exe, data.data(), sizeof(exe));
 
@@ -556,12 +555,12 @@ void handleLoadExe(std::string path) {
     cpu->nextpc = exe.pc0 + 4;
     // cpu->currentpc = cpu->pc;
 
+    cpu->set_reg(31, 1);
     cpu->set_reg(28, exe.gp0);
 
-    if (exe.sAddr != 0) {
-        cpu->set_reg(29, exe.sAddr + exe.sSize);
-        cpu->set_reg(30, exe.sAddr + exe.sSize);
-    }
+    uint32_t sp = exe.sAddr != 0 ? exe.sAddr + exe.sSize : 0x801FFFF0;
+    cpu->set_reg(29, sp);
+    cpu->set_reg(30, sp);
 
     cpu->branchSlot = false;
 }
@@ -583,7 +582,6 @@ const uint32_t GPU_CYCLES_PER_SCANLINE_PAL = 3406;
 
 const uint32_t CYCLES_PER_FRAME_NTSC = uint64_t(SCANLINES_NTSC) * GPU_CYCLES_PER_SCANLINE_NTSC * PSX_CPU_CLOCK / GPU_CLOCK_NTSC;
 const uint32_t CYCLES_PER_FRAME_PAL = uint64_t(SCANLINES_PAL) * GPU_CYCLES_PER_SCANLINE_PAL * PSX_CPU_CLOCK / GPU_CLOCK_PAL;
-bool skipped = false;
 
 void runFrame() {
     uint32_t frameCycles = 0;
@@ -633,7 +631,13 @@ void runFrame() {
         }
 
         if (cpu->pc == 0x80030000) {
-            if (!skipped) {
+            if (pendingExeInject) {
+                pendingExeInject = false;
+                skipped          = true;
+
+                injectExe(pendingExeData);
+                pendingExeData.clear();
+            } else if (!skipped) {
                 skipped = true;
 
                 printf("Skipping bootrom\n");
@@ -927,11 +931,12 @@ static void DropCallback(GLFWwindow *window, int count, const char **paths) {
 
     cpu->reset();
 
-    if (extension == ".exe") {
+    if (extension == ".exe" || extension == ".psexe" || extension == ".ps-exe") {
         handleLoadExe(paths[0]);
     } else if (extension == ".cue" || extension == ".bin") {
         cpu->interconnect._cdrom.swapDisk(paths[0]);
     } else {
+        printf("Unknown extension type: %s\n", extension.c_str());
         return;
     }
 
@@ -1352,14 +1357,18 @@ int main(int argc, char *argv[]) {
 
                 cpu->reset();
 
-                if (extension == ".exe") {
+                if (extension == ".exe" || extension == ".psexe" || extension == ".ps-exe") {
                     handleLoadExe(path);
                     glfwSetWindowTitle(gpu->renderer->window, ("ByteStation - " + p.stem().string()).c_str());
                     show_file_browser = false;
+                    game_running      = true;
+                    show_game_console = false;
                 } else if (extension == ".cue" || extension == ".bin") {
                     cpu->interconnect._cdrom.swapDisk(path);
                     glfwSetWindowTitle(gpu->renderer->window, ("ByteStation - " + p.stem().string()).c_str());
                     show_file_browser = false;
+                    game_running      = true;
+                    show_game_console = false;
                 }
             });
         }
