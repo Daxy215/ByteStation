@@ -104,6 +104,12 @@ class CDROM {
 
 		}
 	};
+
+	struct XaAdpcmResampler {
+		int32_t ringBuf[32] = {};
+		uint8_t p = 0;
+		uint8_t sixStep = 6;
+	};
 	
 public:
 	CDROM();
@@ -127,9 +133,10 @@ public:
 	void decodeAndExecuteSub();
 
 private:
-	bool isEmpty();	
-	void queueCdAudioSector(const std::vector<uint8_t>& sector);
+	bool isEmpty();
+	void queueCdAudioSector(const std::vector<uint8_t>& sector) const;
 	void applyPendingVolume();
+	static void resampleXaAdpcmSample(int16_t sample, XaAdpcmResampler &state, std::vector<int16_t> &out);
 	
 private:
 	// CDROM Commands
@@ -225,6 +232,9 @@ private:
 	int32_t olderLeft = 0;
 	int32_t oldRight = 0;
 	int32_t olderRight = 0;
+
+	XaAdpcmResampler leftResampler;
+	XaAdpcmResampler rightResampler;
 	
 private:
 	Stats _stats;

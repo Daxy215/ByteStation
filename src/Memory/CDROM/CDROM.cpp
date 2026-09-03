@@ -284,14 +284,23 @@ void CDROM::handleSector() {
 						src += 128;
 					}
 
+					std::vector<int16_t> leftOut;
+					std::vector<int16_t> rightOut;
+
 					if (isStereo) {
 						for (size_t i = 0; i < left.size(); i++) {
-							audioSamples.emplace_back(left[i], right[i]);
+							resampleXaAdpcmSample(left[i], leftResampler, leftOut);
+							resampleXaAdpcmSample(right[i], rightResampler, rightOut);
 						}
 					} else {
 						for (size_t i = 0; i < left.size(); i++) {
-							audioSamples.emplace_back(left[i], left[i]);
+							resampleXaAdpcmSample(left[i], leftResampler, leftOut);
+							resampleXaAdpcmSample(left[i], rightResampler, rightOut);
 						}
+					}
+
+					for (size_t i = 0; i < leftOut.size(); i++) {
+						audioSamples.emplace_back(leftOut[i], rightOut[i]);
 					}
 				//}
 			}
@@ -299,7 +308,59 @@ void CDROM::handleSector() {
 	}
 }
 
-void CDROM::queueCdAudioSector(const std::vector<uint8_t> &sector) {
+void CDROM::resampleXaAdpcmSample(int16_t sample, XaAdpcmResampler &state, std::vector<int16_t> &out) {
+	int32_t zigzagTable[29][7] = {
+		{  0x0000,  0x0000,  0x0000,  0x0000, -0x0001,  0x0002, -0x0005 },
+		{  0x0000,  0x0000,  0x0000, -0x0001,  0x0003, -0x0008,  0x0011 },
+		{  0x0000,  0x0000, -0x0001,  0x0003, -0x0008,  0x0010, -0x0023 },
+		{  0x0000, -0x0002,  0x0003, -0x0008,  0x0011, -0x0023,  0x0046 },
+		{  0x0000,  0x0000, -0x0002,  0x0006, -0x0010,  0x002B, -0x0017 },
+		{ -0x0002,  0x0003, -0x0005,  0x0005,  0x000A,  0x001A, -0x0044 },
+		{  0x000A, -0x0013,  0x001F, -0x001B,  0x006B, -0x00EB,  0x015B },
+		{ -0x0022,  0x003C, -0x004A,  0x00A6, -0x016D,  0x027B, -0x0347 },
+		{  0x0041, -0x004B,  0x00B3, -0x01A8,  0x0350, -0x0548,  0x080E },
+		{ -0x0054,  0x00A2, -0x0192,  0x0372, -0x0623,  0x0AFA, -0x1249 },
+		{  0x0034, -0x00E3,  0x02B1, -0x05BF,  0x0BCD, -0x16FA,  0x3C07 },
+		{  0x0009,  0x0132, -0x039E,  0x09B8, -0x1780,  0x53E0,  0x53E0 },
+		{ -0x010A, -0x0043,  0x04F8, -0x11B4,  0x6794,  0x3C07, -0x16FA },
+		{  0x0400, -0x0267, -0x05A6,  0x74BB,  0x234C, -0x1249,  0x0AFA },
+		{ -0x0A78,  0x0C9D,  0x7939,  0x0C9D, -0x0A78,  0x080E, -0x0548 },
+		{  0x234C,  0x74BB, -0x05A6, -0x0267,  0x0400, -0x0347,  0x027B },
+		{  0x6794, -0x11B4,  0x04F8, -0x0043, -0x010A,  0x015B, -0x00EB },
+		{ -0x1780,  0x09B8, -0x039E,  0x0132,  0x0009, -0x0044,  0x001A },
+		{  0x0BCD, -0x05BF,  0x02B1, -0x00E3,  0x0034, -0x0017,  0x002B },
+		{ -0x0623,  0x0372, -0x0192,  0x00A2, -0x0054,  0x0046, -0x0023 },
+		{  0x0350, -0x01A8,  0x00B3, -0x004B,  0x0041, -0x0023,  0x0010 },
+		{ -0x016D,  0x00A6, -0x004A,  0x003C, -0x0022,  0x0011, -0x0008 },
+		{  0x006B, -0x001B,  0x001F, -0x0013,  0x000A, -0x0005,  0x0002 },
+		{  0x000A,  0x0005, -0x0005,  0x0003, -0x0001,  0x0000,  0x0000 },
+		{ -0x0010,  0x0006, -0x0002,  0x0000,  0x0000,  0x0000,  0x0000 },
+		{  0x0011, -0x0008,  0x0003, -0x0002,  0x0001,  0x0000,  0x0000 },
+		{ -0x0008,  0x0003, -0x0001,  0x0000,  0x0000,  0x0000,  0x0000 },
+		{  0x0003, -0x0001,  0x0000,  0x0000,  0x0000,  0x0000,  0x0000 },
+		{ -0x0001,  0x0000,  0x0000,  0x0000,  0x0000,  0x0000,  0x0000 },
+	};
+
+	state.ringBuf[state.p & 0x1F] = sample;
+	state.p++;
+	state.sixStep--;
+
+	if (state.sixStep == 0) {
+		state.sixStep = 6;
+
+		for (int table = 0; table < 7; table++) {
+			int32_t sum = 0;
+
+			for (int i = 1; i <= 29; i++) {
+				sum += (state.ringBuf[(state.p - i) & 0x1F] * zigzagTable[i - 1][table]) / 0x8000;
+			}
+
+			out.push_back(static_cast<int16_t>(std::clamp(sum, -0x8000, 0x7FFF)));
+		}
+	}
+}
+
+void CDROM::queueCdAudioSector(const std::vector<uint8_t> &sector) const {
 	size_t offset = 0;
 
 	static const uint8_t sync[12] = {0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00};
@@ -344,7 +405,7 @@ uint8_t CDROM::load(uint32_t addr) {
 		stat |= (_index) << 0;
 		
 		// 2 ADPBUSY XA-ADPCM fifo empty  (0=Empty) ;set when playing XA-ADPCM sound
-		stat |= 0 << 2;
+		stat |= (audioSamples.empty() ? 0 : 1) << 2;
 		
 		// 3 PRMEMPT Parameter fifo empty (1=Empty) ;triggered before writing 1st byte
 		stat |= (parameters.empty() ? 1 : 0) << 3;
@@ -355,7 +416,6 @@ uint8_t CDROM::load(uint32_t addr) {
 		// 5 RSLRRDY Response fifo empty  (0=Empty) ;triggered after reading LAST byte
 		bool responseFifo = interrupts.is_empty() || interrupts.peek().responses.is_empty();
 		stat |= (!responseFifo) << 5;
-		//stat |= (responses.empty() ? 0 : 1) << 5;
 		
 		// 6 DRQSTS  Data fifo empty      (0=Empty) ;triggered after reading LAST byte
 		stat |= (!isBufferEmpty) << 6;
@@ -689,7 +749,7 @@ void CDROM::decodeAndExecute(uint8_t command) {
 		Pause();
 	} else if(command == 0x10) {
         // GetlocL - Command 10h --> INT3(amm,ass,asect,mode,file,channel,sm,ci)
-        
+
         INT(3);
         addResponse(_readSector.loadAt(12)); // minute (track)
         addResponse(_readSector.loadAt(13)); // second (track)
@@ -718,55 +778,55 @@ void CDROM::decodeAndExecute(uint8_t command) {
 		// ReadS - Command 1Bh --> INT3(stat) --> INT1(stat) --> datablock
 		ReadS();
 	} else if (command == 0x03) {
-			// Too many args
-			if (parameters.size() > 1) {
-				INT(5);
-				addResponse(0x01);
-				addResponse(0x20);
-				assert(false);
-				return;
-			}
+        // Too many args
+        if (parameters.size() > 1) {
+            INT(5);
+            addResponse(0x01);
+            addResponse(0x20);
+            assert(false);
+            return;
+        }
 
-			auto toBinary = [](uint8_t b) -> uint8_t {
-				int hi = (b >> 4) & 0xF;
-				int lo = b & 0xF;
+        auto toBinary = [](uint8_t b) -> uint8_t {
+            int hi = (b >> 4) & 0xF;
+            int lo = b & 0xF;
 
-				return hi * 10 + lo;
-			};
+            return hi * 10 + lo;
+        };
 
-			int trackNo = 0;
-			if (parameters.size() == 1) {
-				trackNo = toBinary(getParamater());
-			}
+        int trackNo = 0;
+        if (parameters.size() == 1) {
+            trackNo = toBinary(getParamater());
+        }
 
-			/*
-			 * If no parameters where given, or it is a 0,
-			 * then play starts at setloc position (if there was a pending unprocessed setloc)
-			 * or otherwise starts at the current location (eg. the last point seeked, or the current location of the current song; if it was already playing)
-			 */
+        /*
+         * If no parameters where given, or it is a 0,
+         * then play starts at setloc position (if there was a pending unprocessed setloc)
+         * or otherwise starts at the current location (eg. the last point seeked, or the current location of the current song; if it was already playing)
+         */
 
-			Location pos = Location::fromLBA(readLocation);
+        Location pos = Location::fromLBA(readLocation);
 
-			// Start playing track n
-			if (trackNo > 0) {
-				int track = std::min(trackNo - 1, (int) _disk.tracks.size() - 1);
-				pos = _disk.getTrackStart(track);
-			} else {
-				if (seekLocation != 0) {
-					pos = Location::fromLBA(seekLocation); // Nice was readLocaiton :}
-					seekLocation = 0;
-				}
+        // Start playing track n
+        if (trackNo > 0) {
+            int track = std::min(trackNo - 1, (int) _disk.tracks.size() - 1);
+            pos = _disk.getTrackStart(track);
+        } else {
+            if (seekLocation != 0) {
+                pos = Location::fromLBA(seekLocation); // Nice was readLocaiton :}
+                seekLocation = 0;
+            }
 
-				//pos = _disk.getTrackStart(0);
+            //pos = _disk.getTrackStart(0);
 
-				// TODO: Check audio status, if stop then ig pos = track(0).start?
-			}
+            // TODO: Check audio status, if stop then ig pos = track(0).start?
+        }
 
-			readLocation = pos.toLba();
-			_stats.setMode(Stats::Mode::Playing);
+        readLocation = pos.toLba();
+        _stats.setMode(Stats::Mode::Playing);
 
-			INT(3);
-			addResponse(_stats._reg);
+        INT(3);
+        addResponse(_stats._reg);
 	} else if (command == 0x11) {
         // GetlocP - Command 11h - INT3(track,index,mm,ss,sect,amm,ass,asect)
 		auto toBcd = [](uint8_t b) -> uint8_t {

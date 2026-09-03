@@ -280,6 +280,7 @@ void Interconnect::dmaLinkedList(Port port) {
         throw std::runtime_error("Attempted linked list DMA on port " + std::to_string(static_cast<uint8_t>(port)));
     }
 
+    std::unordered_set<uint32_t> addrs;
     while (true) {
         uint32_t header = _ram.load<uint32_t>(addr);
 
@@ -310,6 +311,13 @@ void Interconnect::dmaLinkedList(Port port) {
 
             break;
         }
+
+        if (addrs.find(addr) != addrs.end()) {
+            printf("beeeeeeeeeh\n");
+            break;
+        }
+
+        addrs.insert(addr);
 
         addr = next;
     }
