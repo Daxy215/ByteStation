@@ -231,7 +231,16 @@ void Interconnect::dmaBlock(Port port) {
                         
                         srcWord = mdec.load(0);
                         //srcWord = 0x7C007C00;
-                        
+
+                        break;
+                    }
+                    case Spu: {
+                        srcWord = 0;
+
+                        // TODO: Confirm
+                        srcWord |= spu.load(0x1F801DA8) << 0;
+                        srcWord |= spu.load(0x1F801DA8) << 16;
+
                         break;
                     }
                     default:
