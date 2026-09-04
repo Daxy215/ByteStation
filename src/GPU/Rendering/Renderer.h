@@ -58,10 +58,12 @@ namespace Emulator {
             
             void setupScreenQuad();
             void setPrimitiveMode(GLenum mode);
+            void resizeFramebuffers();
 
         public:
             bool renderVRAM = false;
             bool cropToDisplayArea = true;
+            int internalScale = 1;
             
             // Shader parameters
             GLuint vertexShader;
@@ -83,6 +85,9 @@ namespace Emulator {
             GLuint bloomTexture[2];
             GLuint quadVAO;
             GLuint quadVBO;
+
+            GLuint readbackFBO;
+            GLuint readbackTex;
             
             // Bloom
             GLuint bloomThresholdProgram;
@@ -100,6 +105,7 @@ namespace Emulator {
             GLint ditheringUni;
             GLint maskBitUni;
             GLint checkMaskUni;
+            GLint internalScaleUni;
 
             // Buffer contains the vertices positions
             Buffer<Gpu::Position> positions;
@@ -141,14 +147,15 @@ namespace Emulator {
             float saturation = 1.2f;
             float halation = 0.15f;
             
-            int sampleRadius = 2;
-            
             bool enableAdaptiveSharpening = true;
             bool enableBloom = false;
             bool enableUpscaling = false;
+            bool enableColorAdjustments = false;
+            bool enableCrtEffects = false;
             bool useShaders  = false;
 
         private:
+            int lastInternalScale = 1;
             bool horizontal = true;
             
             glm::vec2 drawingArea;

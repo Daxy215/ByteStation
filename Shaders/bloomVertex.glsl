@@ -9,6 +9,6 @@ uniform vec2 uUvMin;
 uniform vec2 uUvMax;
 
 void main() {
-    vUV = mix(uUvMin, uUvMax, aUV);
+    TexCoords = mix(uUvMin, uUvMax, aTexCoords);
     gl_Position = vec4(aPos, 0.0, 1.0);
 }

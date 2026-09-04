@@ -105,7 +105,9 @@ enum Exception {
 class CPU {
     public:
         CPU() : currentpc(0), nextpc(pc + 4), regs() {}
-        CPU(Interconnect interconnect) : currentpc(0), nextpc(pc + 4), regs{}, interconnect(std::move(interconnect)) {}
+        CPU(Interconnect interconnect) : currentpc(0), nextpc(pc + 4), regs{}, interconnect(std::move(interconnect)) {
+            this->interconnect.scheduler.rebind(&this->interconnect);
+        }
         
         int executeNextInstruction();
         inline int decodeAndExecute(Instruction& instruction) {

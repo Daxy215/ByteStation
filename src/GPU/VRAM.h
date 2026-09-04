@@ -61,6 +61,7 @@ namespace Emulator {
             
         public:
             GLuint tex15, tex24;
+            GLuint blitSrcFBO, blitDstFBO;
             //GLuint pbo;
             GLuint pbo24, pbo15;
             

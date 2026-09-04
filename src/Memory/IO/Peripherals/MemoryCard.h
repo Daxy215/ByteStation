@@ -47,7 +47,7 @@ public:
 	void reset();
 
 private:
-	void save();
+	void save() const;
 	void load();
 	
 private:

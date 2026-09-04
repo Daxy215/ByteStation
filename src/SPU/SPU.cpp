@@ -46,6 +46,7 @@ Emulator::SPU::SPU () {
 
 static uint32_t curCycles = 0;
 static const int AUDIO_BUFFER_SIZE = 28 * 2 * 4;//1024 * 2;
+static const uint32_t AUDIO_MAX_QUEUED_BYTES = 44100 * 2 * sizeof(int16_t) / 8;
 int16_t audioBuffer[AUDIO_BUFFER_SIZE];
 int audioIndex = 0;
 
@@ -157,10 +158,14 @@ void Emulator::SPU::step(uint32_t cycles) {
 
         if (audioIndex >= AUDIO_BUFFER_SIZE) {
             if (device != 0) {
+                if (SDL_GetQueuedAudioSize(device) > AUDIO_MAX_QUEUED_BYTES) {
+                    SDL_ClearQueuedAudio(device);
+                }
+
                 SDL_QueueAudio(device, audioBuffer, sizeof(audioBuffer));
                 queuedBufferCount++;
             }
-            
+
             audioIndex = 0;
         }
     }
@@ -638,11 +643,13 @@ void Emulator::SPU::handleFlagsStore(uint32_t addr, uint32_t val) {
         
         // 1F801D94h - Noise mode enable (NON)
         case 0x1F801D94: { // low 16
+            // Handled in step()
             NON = (NON & 0xFFFF0000) | v;
 
             break;
         }
         case 0x1F801D96: { // high 16
+            // Handled in step()
             NON = (NON & 0x0000FFFF) | (v << 16);
 
             break;
@@ -746,7 +753,8 @@ uint32_t Emulator::SPU::handleControlLoad(uint32_t addr) {
 void Emulator::SPU::handleControlStore(uint32_t addr, uint32_t val) {
     switch(addr) {
         case 0x1F801DA2: {
-            // ??
+            //   1F801DA2h spu   mBASE   base    Reverb Work Area Start Address in Sound RAM
+            // TODO;
             break;
         }
         case 0x1F801DA4: {
@@ -793,13 +801,6 @@ void Emulator::SPU::handleControlStore(uint32_t addr, uint32_t val) {
             
             break;
         }
-        
-        /*case 0x1f801DB0: {
-            // 1F801DB0h - CD Audio Input Volume (for normal CD-DA, and compressed XA-ADPCM)
-            cdInputVol = val;
-            
-            break;
-        }*/
 
         case 0x1F801DB0: {
             cdInputVolLeft = static_cast<int16_t>(val & 0xFFFF);

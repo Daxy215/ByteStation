@@ -10,6 +10,8 @@
 #include "CDROM.h"
 #include "../../Utils/FileSystem/FileManager.h"
 
+std::string Disk::GAME_NAME = "Default";
+
 static uint32_t readLe32(const uint8_t* p) {
 	return static_cast<uint32_t>(p[0]) | (static_cast<uint32_t>(p[1]) << 8) |
 	       (static_cast<uint32_t>(p[2]) << 16) | (static_cast<uint32_t>(p[3]) << 24);
@@ -91,41 +93,6 @@ static std::string readSystemCnfViaIso9660(std::ifstream& file) {
 }
 
 Disk::Disk() = default;
-
-/*std::vector<uint8_t> Disk::read(Location location) {
-	auto buffer = std::vector<uint8_t>(Sector::RAW_BUFFER, 0);
-	
-	int pos = getTrackPosition(location);
-	
-	if(pos == -1) {
-		printf("Failed to load disk");
-		return {};
-	}
-
-	uint32_t begin = (getTrackBegin(pos) + tracks[pos].pregap).toLba();
-	uint32_t loc = location.toLba();
-
-    if (loc < begin) {
-        return buffer;
-    }
-
-    auto f = fopen(tracks[pos].filePath.c_str(), "rb");
-    if (!f) {
-        std::printf("Unable to load file %s\n", tracks[pos].filePath.c_str());
-        return {};
-    }
-
-	auto seek = location - (getTrackBegin(pos) + tracks[pos].pregap);
-
-    //long offset = tracks[pos].fileDataOffset + (long)(tracks[pos].trackIndex + (loc - begin)) * tracks[pos].modeType;
-	long offset = 0 + seek.toLba() * Sector::RAW_BUFFER;
-
-    fseek(f, offset, SEEK_SET);
-    fread(buffer.data(), 1, std::min<size_t>(tracks[pos].modeType, buffer.size()), f);
-    fclose(f);
-
-	return buffer;
-}*/
 
 std::vector<uint8_t> Disk::read(Location location) {
 	auto buffer = std::vector<uint8_t>(Sector::RAW_BUFFER, 0);
@@ -258,7 +225,16 @@ void Disk::set(const std::string& path) {
 	tracks.clear();
 	tracks = _builder.parseFile(path);
 
-	// Will try to load in the images for a HUD
+	if (GAME_NAME.empty()) {
+		std::string gameNamePath = tracks[0].filePath;
+
+		if (!gameNamePath.empty() && (gameNamePath.back() == '/' || gameNamePath.back() == '\\'))
+			gameNamePath.pop_back();
+
+		GAME_NAME = gameNamePath.substr(gameNamePath.find_last_of("/\\") + 1);
+	}
+
+	/*// Will try to load in the images for a HUD
 	Track curTrack = tracks[0]; // TODO: For now just assume it's always in track 0 (game data)
 
 	// Read entire file data
@@ -287,7 +263,7 @@ void Disk::set(const std::string& path) {
 		iso.insert(iso.end(), sector + 24, sector + 24 + 2048);
 	}
 
-	std::string serial = extractSerialFromIso(iso);
+	std::string serial = extractSerialFromIso(iso);*/
 
 	//std::string serialPath = serial.substr(0, 4) + "-" + serial.substr(4, 5);
 

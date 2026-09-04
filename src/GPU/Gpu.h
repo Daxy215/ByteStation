@@ -338,7 +338,7 @@ namespace Emulator {
                 void setSemiTransparencyMode(int d) {
                     _reg = (_reg & ~(0x3u << 7)) | ((uint32_t(d) & 0x3u) << 7);
                 }
-                
+
                 int isSemiTransparent() const { return (_reg >> 0) & 0x1; }
                 int blendTexture()      const { return (_reg >> 1) & 0x1; }
                 TextureMode textureMode() const { return TextureMode((_reg >> 2) & 0x7u); }

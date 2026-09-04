@@ -35,5 +35,6 @@ private:
 	TrackBuilder _builder;
 	
 public:
+	static std::string GAME_NAME;
 	std::vector<Track> tracks;
 };

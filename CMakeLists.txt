@@ -11,6 +11,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 cmake_policy(SET CMP0072 NEW)  # Prefer GLVND over legacy
 set(OpenGL_GL_PREFERENCE GLVND)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT ipo_supported)
+    if(ipo_supported)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    endif()
+endif()
+
 #set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 find_package(OpenGL REQUIRED)

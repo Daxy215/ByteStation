@@ -7,17 +7,20 @@
 
 #include "../CPU/CPU.h"
 
+static void hardwareTickTrampoline(Interconnect* interconnect) { interconnect->hardwareTick(); }
+static void spuTickTrampoline(Interconnect* interconnect) { interconnect->spuTick(); }
+
 bool Interconnect::step(uint32_t cycles) {
     if (!_hardwareTickScheduled) {
         _hardwareTickScheduled = true;
         _lastHardwareTickCycle = scheduler.currentCycle();
-        scheduler.scheduleEvent([this] { hardwareTick(); }, 1);
+        scheduler.scheduleEvent(&hardwareTickTrampoline, 1);
     }
 
     if (!_spuTickScheduled) {
         _spuTickScheduled = true;
         _lastSpuTickCycle = scheduler.currentCycle();
-        scheduler.scheduleEvent([this] { spuTick(); }, SPU_TICK_CYCLES);
+        scheduler.scheduleEvent(&spuTickTrampoline, SPU_TICK_CYCLES);
     }
 
     _vblankPending = false;
@@ -61,7 +64,7 @@ void Interconnect::hardwareTick() {
     uint32_t next = std::min({_cdrom.cyclesUntilNextInterrupt(), _gpu->cpuCyclesUntilNextCRTCEvent(), _timers.cyclesUntilNextEvent()});
     next = std::max(next, 1u);
 
-    scheduler.scheduleEvent([this] { hardwareTick(); }, next);
+    scheduler.scheduleEvent(&hardwareTickTrampoline, next);
 }
 
 void Interconnect::spuTick() {
@@ -72,7 +75,7 @@ void Interconnect::spuTick() {
 
     _lastSpuTickCycle = now;
 
-    scheduler.scheduleEvent([this] { spuTick(); }, SPU_TICK_CYCLES);
+    scheduler.scheduleEvent(&spuTickTrampoline, SPU_TICK_CYCLES);
 }
 
 uint32_t Interconnect::dmaReg(uint32_t offset) {

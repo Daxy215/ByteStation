@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "../../../Utils/FileSystem/FileManager.h"
+#include "Memory/CDROM/Disk.h"
 
 MemoryCard::MemoryCard() : data(128 * 1024) {
 	load();
@@ -47,7 +48,6 @@ uint16_t MemoryCard::handle(uint32_t val) {
 			} else {
 				_interrupt = false;
 				return 0;
-				//assert(false);
 			}
 			
 			state = 0;
@@ -171,6 +171,7 @@ uint8_t MemoryCard::handleWrite(uint8_t val) {
 		data[(sendAddress * 128) + n] = val;
 		checksum ^= val;
 		state++;
+
 		return 0;
 	}
 	
@@ -205,6 +206,7 @@ uint8_t MemoryCard::handleWrite(uint8_t val) {
 				sendAddress &= 0x3FF;
 				_flag.error = 1;
 				_stats = BadSector;
+				printf("Memcard; Bad sector\n");
 			}
 			
 			return 0;
@@ -216,6 +218,7 @@ uint8_t MemoryCard::handleWrite(uint8_t val) {
 			if(checksum != val) {
 				_flag.error = 1;
 				_stats = BadChecksum;
+				printf("Memcard; Bad Checksum\n");
 			}
 			
 			return 0;
@@ -247,8 +250,13 @@ void MemoryCard::reset() {
 	state = 0;
 }
 
-void MemoryCard::save() {
-	const std::string path = "MemoryCard/MemSave01.bin";
+void MemoryCard::save() const {
+	if (_flag.error == 1) {
+		printf("Memcard; Not saving due to an error\n");
+		return;
+	}
+
+	const std::string path = "MemoryCard/" + Disk::GAME_NAME + "/MemSave01.bin";
 	
 	std::filesystem::path resolvedPath = Emulator::Utils::FileManager::resolvePath(path);
 	
@@ -265,11 +273,11 @@ void MemoryCard::save() {
 	stream.write(reinterpret_cast<const char*>(data.data()), data.size());
 	stream.close();
 	
-	std::cerr << "Saving to " << path << " was successful(I think)\n";
+	std::cerr << "Saving to " << path << " was successful\n";
 }
 
 void MemoryCard::load() {
-	const std::string path = "MemoryCard/MemSave01.bin";
+	const std::string path = "MemoryCard/" + Disk::GAME_NAME + "/MemSave01.bin";
 	
 	std::ifstream stream(Emulator::Utils::FileManager::resolvePath(path), std::ios::binary);
 	

@@ -1,27 +1,34 @@
 #include "Scheduler.h"
 
-#include <algorithm>
-
 void Scheduler::scheduleEvent(EventFunc eventFunc, uint64_t cyclesFromNow) {
     uint64_t cycle = _currentCycle + cyclesFromNow;
 
-    _events.push_back({cycle, std::move(eventFunc)});
+    _events[_eventCount++] = {cycle, eventFunc};
 
-    _nextEventCycle = std::min(_nextEventCycle, cycle);
+    if (cycle < _nextEventCycle)
+        _nextEventCycle = cycle;
 }
 
 void Scheduler::catchUp() {
-    while (!_events.empty()) {
-        auto it = std::min_element(_events.begin(), _events.end(),
-            [](const Event& a, const Event& b) { return a.cycle < b.cycle; });
+    while (_eventCount > 0) {
+        size_t minIndex = 0;
 
-        if (it->cycle > _currentCycle)
+        for (size_t i = 1; i < _eventCount; i++) {
+            if (_events[i].cycle < _events[minIndex].cycle)
+                minIndex = i;
+        }
+
+        if (_events[minIndex].cycle > _currentCycle)
             break;
 
-        EventFunc eventFunc = std::move(it->eventFunc);
-        _events.erase(it);
+        EventFunc eventFunc = _events[minIndex].eventFunc;
 
-        eventFunc();
+        for (size_t i = minIndex; i + 1 < _eventCount; i++)
+            _events[i] = _events[i + 1];
+
+        _eventCount--;
+
+        eventFunc(_interconnect);
     }
 
     recomputeNextEvent();
@@ -32,7 +39,7 @@ void Scheduler::forceRecompute() {
 }
 
 void Scheduler::reset() {
-    _events.clear();
+    _eventCount = 0;
     _currentCycle = 0;
     _nextEventCycle = 0;
 }
@@ -40,8 +47,13 @@ void Scheduler::reset() {
 void Scheduler::recomputeNextEvent() {
     uint64_t next = _currentCycle + MAX_SLICE;
 
-    for (const auto& event : _events)
-        next = std::min(next, event.cycle);
+    for (size_t i = 0; i < _eventCount; i++) {
+        if (_events[i].cycle < next)
+            next = _events[i].cycle;
+    }
 
-    _nextEventCycle = std::max(next, _currentCycle + 1);
+    if (next <= _currentCycle)
+        next = _currentCycle + 1;
+
+    _nextEventCycle = next;
 }

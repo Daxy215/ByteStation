@@ -53,11 +53,6 @@ file(GLOB_RECURSE SOURCES
         ${CMAKE_SOURCE_DIR}/libs/imgui-1.91.9b/backends/imgui_impl_opengl3.cpp
 )
 
-# Its being gay
-list(APPEND SOURCES
-        ${CMAKE_SOURCE_DIR}/src/GPU/GPUTests.cpp
-)
-
 add_definitions(-DGLEW_STATIC)
 
 add_executable(ByteStation ${SOURCES})
@@ -78,6 +73,11 @@ set(NLOHMANN_PATH ${LIBS_DIR}/nlohmann)
 add_library(nlohmann INTERFACE)
 target_include_directories(nlohmann INTERFACE ${NLOHMANN_PATH})
 target_link_libraries(ByteStation PRIVATE nlohmann)
+
+set(CEREAL_PATH ${LIBS_DIR}/cereal)
+add_library(cereal INTERFACE)
+target_include_directories(cereal INTERFACE ${CEREAL_PATH})
+target_link_libraries(ByteStation PRIVATE cereal)
 
 #include_directories(${CMAKE_SOURCE_DIR}/src)
 #include_directories(${OPENGL_INCLUDE_DIRS})

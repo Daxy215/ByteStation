@@ -26,8 +26,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include "GPU/GPUTests.h"
-
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) && !defined(IMGUI_DISABLE_WIN32_FUNCTIONS)
 #pragma comment(lib, "legacy_stdio_definitions")
 #endif
@@ -567,7 +565,7 @@ void injectExe(const std::vector<uint8_t> &data) {
 
 void rest(const std::string &biosPath) { cpu->reset(); }
 
-static int x    = 0;
+static int x = 0;
 
 const uint32_t PSX_CPU_CLOCK = 33868800;
 
@@ -782,6 +780,7 @@ static float animated_game_index = 0.0f;
 static void LaunchGame(GameEntry &game, CPU *cpu, bool *out_game_running, bool *p_open) {
     skipped = false;
     cpu->reset();
+    Disk::GAME_NAME = game.title;
     cpu->interconnect._cdrom.swapDisk(game.discPath);
     *out_game_running = true;
     *p_open           = false;
@@ -931,6 +930,7 @@ static void DropCallback(GLFWwindow *window, int count, const char **paths) {
 
     cpu->reset();
 
+    // TODO: Use launch game
     if (extension == ".exe" || extension == ".psexe" || extension == ".ps-exe") {
         handleLoadExe(paths[0]);
     } else if (extension == ".cue" || extension == ".bin") {
@@ -1002,16 +1002,17 @@ int main(int argc, char *argv[]) {
         renderer.bloomPasses              = config.ppBloomPasses;
         renderer.bloomIntensity           = config.ppBloomIntensity;
         renderer.enableUpscaling          = config.ppEnableUpscaling;
-        renderer.sampleRadius             = config.ppSampleRadius;
         renderer.lodBias                  = config.ppLodBias;
         renderer.kernelB                  = config.ppKernelB;
         renderer.kernelC                  = config.ppKernelC;
         renderer.sharpness                = config.ppSharpness;
         renderer.edgeThreshold            = config.ppEdgeThreshold;
         renderer.enableAdaptiveSharpening = config.ppEnableAdaptiveSharpening;
+        renderer.enableColorAdjustments   = config.ppEnableColorAdjustments;
         renderer.contrast                 = config.ppContrast;
         renderer.saturation               = config.ppSaturation;
         renderer.gamma                    = config.ppGamma;
+        renderer.enableCrtEffects         = config.ppEnableCrtEffects;
         renderer.scanline                 = config.ppScanline;
         renderer.halation                 = config.ppHalation;
         renderer.ditherStrength           = config.ppDitherStrength;
@@ -1030,10 +1031,8 @@ int main(int argc, char *argv[]) {
     };
 
     if (config.biosPath.empty() || !tryLoadBios(config.biosPath)) {
-        bool        show_bios_browser = true;
-        std::string biosError         = config.biosPath.empty()
-                                                 ? "No PlayStation BIOS has been selected yet."
-                                                 : "Could not load the PlayStation BIOS from \"" + config.biosPath + "\".";
+        bool show_bios_browser = true;
+        std::string biosError = config.biosPath.empty() ? "No PlayStation BIOS has been selected yet." : "Could not load the PlayStation BIOS from \"" + config.biosPath + "\".";
 
         while (!cpu && !glfwWindowShouldClose(gpu->renderer->window)) {
             glfwPollEvents();
@@ -1275,6 +1274,25 @@ int main(int argc, char *argv[]) {
                 ImGui::MenuItem("Main Window: Display Area Only", nullptr, &gpu->renderer->cropToDisplayArea);
                 ImGui::MenuItem("Main Window: Full VRAM Debug", "N", &gpu->renderer->renderVRAM);
 
+                if (ImGui::BeginMenu("Internal Resolution")) {
+                    if (ImGui::MenuItem("1x (Native)", nullptr, gpu->renderer->internalScale == 1))
+                        gpu->renderer->internalScale = 1;
+
+                    if (ImGui::MenuItem("2x", nullptr, gpu->renderer->internalScale == 2))
+                        gpu->renderer->internalScale = 2;
+
+                    if (ImGui::MenuItem("4x", nullptr, gpu->renderer->internalScale == 4))
+                        gpu->renderer->internalScale = 4;
+
+                    if (ImGui::MenuItem("8x", nullptr, gpu->renderer->internalScale == 8))
+                        gpu->renderer->internalScale = 8;
+
+                    if (ImGui::MenuItem("16x", nullptr, gpu->renderer->internalScale == 16))
+                        gpu->renderer->internalScale = 16;
+
+                    ImGui::EndMenu();
+                }
+
                 ImGui::EndMenu();
             }
 
@@ -1308,7 +1326,6 @@ int main(int argc, char *argv[]) {
 
                 if (ImGui::BeginMenu("Upscaling Quality")) {
                     ImGui::Checkbox("Enable Upscaling", &gpu->renderer->enableUpscaling);
-                    ImGui::SliderInt("Sample Radius", &gpu->renderer->sampleRadius, 1, 16);
                     ImGui::SliderFloat("LOD Bias", &gpu->renderer->lodBias, -1.0f, 1.0f);
                     ImGui::SliderFloat("Kernel B", &gpu->renderer->kernelB, -1.0f, 1.0f);
                     ImGui::SliderFloat("Kernel C", &gpu->renderer->kernelC, -1.0f, 1.0f);
@@ -1320,6 +1337,8 @@ int main(int argc, char *argv[]) {
                 }
 
                 if (ImGui::BeginMenu("Color Adjustments")) {
+                    ImGui::Checkbox("Enable Color Adjustments", &gpu->renderer->enableColorAdjustments);
+
                     ImGui::SliderFloat("Contrast", &gpu->renderer->contrast, 0.5f, 2.0f);
                     ImGui::SliderFloat("Saturation", &gpu->renderer->saturation, 0.0f, 2.0f);
                     ImGui::SliderFloat("Gamma", &gpu->renderer->gamma, 0.1f, 5.0f);
@@ -1328,6 +1347,8 @@ int main(int argc, char *argv[]) {
                 }
 
                 if (ImGui::BeginMenu("CRT Effects")) {
+                    ImGui::Checkbox("Enable CRT Effects", &gpu->renderer->enableCrtEffects);
+
                     ImGui::SliderFloat("Scanline", &gpu->renderer->scanline, 0.0f, 1.0f);
                     ImGui::SliderFloat("Halation", &gpu->renderer->halation, 0.0f, 0.3f);
                     ImGui::SliderFloat("Dither Strength", &gpu->renderer->ditherStrength, 0.0f, 0.02f);
@@ -1443,16 +1464,17 @@ int main(int argc, char *argv[]) {
         config.ppBloomPasses              = renderer.bloomPasses;
         config.ppBloomIntensity           = renderer.bloomIntensity;
         config.ppEnableUpscaling          = renderer.enableUpscaling;
-        config.ppSampleRadius             = renderer.sampleRadius;
         config.ppLodBias                  = renderer.lodBias;
         config.ppKernelB                  = renderer.kernelB;
         config.ppKernelC                  = renderer.kernelC;
         config.ppSharpness                = renderer.sharpness;
         config.ppEdgeThreshold            = renderer.edgeThreshold;
         config.ppEnableAdaptiveSharpening = renderer.enableAdaptiveSharpening;
+        config.ppEnableColorAdjustments   = renderer.enableColorAdjustments;
         config.ppContrast                 = renderer.contrast;
         config.ppSaturation               = renderer.saturation;
         config.ppGamma                    = renderer.gamma;
+        config.ppEnableCrtEffects         = renderer.enableCrtEffects;
         config.ppScanline                 = renderer.scanline;
         config.ppHalation                 = renderer.halation;
         config.ppDitherStrength           = renderer.ditherStrength;

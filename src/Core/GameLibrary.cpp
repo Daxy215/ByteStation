@@ -195,7 +195,7 @@ void GameLibrary::requestCover(GameEntry& entry) {
 		return;
 	}
 
-	std::string url      = "https://raw.githubusercontent.com/xlenore/psx-covers/main/covers/default/" + dashedSerial(entry.serial) + ".jpg";
+	std::string url = "https://raw.githubusercontent.com/xlenore/psx-covers/main/covers/default/" + dashedSerial(entry.serial) + ".jpg";
 	std::string finalPath = entry.coverCachePath;
 	std::error_code ec;
 	std::filesystem::create_directories(cachePath.parent_path(), ec);

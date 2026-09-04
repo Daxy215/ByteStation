@@ -53,13 +53,10 @@ uint32_t MDEC::load(uint32_t addr) {
         }
         
         if (outputIndex >= output.size()) {
-            //printf("OUT OF2 BOUNDS! MODE; %d %d times. Data left; %lu\n", status.DataOutputDepth, amount++, (output.size() - outputIndex));
             output.clear();
             outputIndex = 0;
         }
-        
-        //return 0x7C007C00; // BLUE
-        //return 0x001F001F; // RED
+
         return v;
     } else if (addr == 4) {
         // 1F801824h - MDEC1 - MDEC Status Register (R)
@@ -74,19 +71,14 @@ uint32_t MDEC::load(uint32_t addr) {
         
         // (0=Ready, 1=Busy receiving or processing parameters)
         status.CommandBusy      = !output.empty();
-        //printf("RETURND; %x\n", status.reg);
         
         return status.reg;
     }
-    
-    assert(false);
     
     return 0;
 }
 
 void MDEC::store(uint32_t addr, uint32_t val) {
-    //printf("MDEC::store %x - %x\n", addr, val);
-    
     if (addr < 4) {
         // 1F801820h - MDEC0 - MDEC Command/Parameter Register (W)
         if (paramCount != 0) {
@@ -122,13 +114,6 @@ void MDEC::store(uint32_t addr, uint32_t val) {
         }
         
         if (control.ResetMDEC) {
-            // Reset MDEC (0=No change, 1=Abort any command, and set status=80040000h)
-            /*status.reg = 0x80040000;
-            
-            // Abort command
-            outputIndex = 0;
-            command.reg = 0;
-            paramCount = 0;*/
             reset();
         }
     } else {
@@ -271,14 +256,6 @@ void MDEC::handleCommandProcessing(uint32_t val) {
             table[zigzag[zz + 1]] = (val >>  8) & 0xFF;
             table[zigzag[zz + 2]] = (val >> 16) & 0xFF;
             table[zigzag[zz + 3]] = (val >> 24) & 0xFF;
-            /*table[zagzig[zz + 0]] = (val      ) & 0xFF;
-            table[zagzig[zz + 1]] = (val >>  8) & 0xFF;
-            table[zagzig[zz + 2]] = (val >> 16) & 0xFF;
-            table[zagzig[zz + 3]] = (val >> 24) & 0xFF;*/
-            /*table[zz + 0] = (val      ) & 0xFF;
-            table[zz + 1] = (val >>  8) & 0xFF;
-            table[zz + 2] = (val >> 16) & 0xFF;
-            table[zz + 3] = (val >> 24) & 0xFF;*/
             
             counter++;
             
@@ -299,10 +276,7 @@ void MDEC::handleCommandProcessing(uint32_t val) {
              * 30FB 89BE 7641 CF04 CF04 7641 89BE 30FB
              * 18F8 B8E3 6A6D 8275 7D8A 9592 471C E707
              */
-            
-            /*for (int i = 0; i < 2; i++) {
-                scaleTable[counter * 2 + i] = val >> (i * 16);
-            }*/
+
             scaleTable[counter++] = static_cast<int16_t>(val & 0xFFFFFFFF);
             scaleTable[counter++] = static_cast<int16_t>((val >> 16) & 0xFFFFFFFF);
             
@@ -340,7 +314,6 @@ void MDEC::decodeBlocks() {
     while (src != input.end()) {
         auto block = decodeMarcoBlocks(src);
         if (!block.has_value()) {
-            //printf("Block %d failed to decode!\n", blockCount);
             continue;
         }
 
@@ -359,7 +332,6 @@ std::array<RGB, 256> p;
 std::optional<MDEC::DCTBlock> MDEC::decodeMarcoBlocks(std::vector<uint16_t>::iterator &src) {
     DCTBlock block;
     block.data.clear();
-    //block.data.resize(256);
     
     p.fill({0,0,0});
     
@@ -446,6 +418,7 @@ T extend_sign(uint64_t n) {
     
     T val = n & mask;
     if (sign) val |= ~mask;
+
     return val;
 }
 
@@ -498,98 +471,6 @@ bool MDEC::rl_decode_block(std::array<int16_t, 64> &blk, std::vector<uint16_t>::
     return true;
 }
 
-/*bool MDEC::rl_decode_block(std::array<uint16_t, 64> &blk, std::vector<uint16_t>::iterator &src, const std::array<uint8_t, 64> &qt) {
-    blk.fill(0);
-    
-    uint16_t n, k = 0;
-    uint16_t q_scale = 0;
-    uint16_t val = 0;
-    
-    auto signext10 = [](uint16_t x) -> int16_t {
-        return (x & 0x200) ? (int16_t)(x | 0xFC00) : (int16_t)(x & 0x03FF);
-    };
-    
-    // First value is DCT
-    
-    skip:
-        if (src == input.end()) return false;
-        
-        // To avoid confusion
-        n = *src;
-        ++src;
-        
-        // Skip padding
-        if (n == 0xFE00)
-            goto skip;
-        
-        q_scale = (n >> 10) & 0x3F; // Contains scale value (not 'skip' value)
-        
-        // calc first value (without q_scale/8) (?)
-        // https://fgiesen.wordpress.com/2024/10/23/zero-or-sign-extend/
-        // https://www.geeksforgeeks.org/c/sign-extend-a-nine-bit-number-in-c/
-        DCT dct = DCT(n);
-        val = signext10(dct.DC);
-        
-        val = (val * qt[0]) / 8;
-    
-    // TODO; Uhh this is wrong
-    while (true) {
-        lop:
-            if (q_scale == 0) {
-                // Breh
-                val = n & 0x3FF; // 10 bits
-                if (val & 0x200) val |= ~0x3FF; // If signbit sent, extend
-                
-                val = val * 2;
-            }
-            
-            val = std::min(0x3FF, std::max(-0x400, static_cast<int>(val)));
-            
-            // Used for 'fast_idct_core' only
-            //val = val * scaleZag[i];
-            
-            // Store entry normally
-            if (q_scale > 0) {
-                blk[zagzig[k]] = val;
-            }
-            
-            // Store entry special, no zigzag
-            else if (q_scale == 0) {
-                blk[k] = val;    
-            }
-            
-            if (src == input.end()) return false;
-            n = *src;
-            ++src;
-            
-            // get next entry (or FE00h end code)
-            if (n == 0xFE00)
-                break;
-            
-            // Breh x2
-            k = k + ((n >> 10) & 0x3F) + 1; // Skip zerofilled entries
-            if (k >= 64)
-                break;
-            
-            val = n & 0x3FF; // 10 bits
-            if (val & 0x200) val |= ~0x3FF; // If signbit sent, extend
-            
-            val = (val * qt[k] * q_scale) / 8;
-        
-        // ;should end with n=FE00h (that sets k>63)
-        if (k <= 63) {
-            goto lop;
-        }
-    }
-    
-    real_idct_core(blk.data());
-    
-    // return (with "src" address advanced)
-    //src++;
-    
-    return true;
-}*/
-
 void MDEC::fast_idct_core(int16_t *blk) {
     
 }
@@ -623,124 +504,7 @@ void MDEC::real_idct_core(std::array<int16_t, 64> &blk) const {
     }
 }
 
-/*void MDEC::yuv_to_rgb(DCTBlock& block, uint16_t xx, uint16_t yy, std::array<int16_t, 64> &blk) {
-    uint32_t* out = block.data.data();
-    
-    for (int y = 0; y < 8; y++) {
-        for (int x = 0; x < 8; x++) {
-            int px = xx + x;
-            int py = yy + y;
-            
-            int uv_x = (xx >> 1) + (x >> 1);
-            int uv_y = (yy >> 1) + (y >> 1);
-            
-            int Y  = blk[y * 8 + x];
-            int Cb = Cbblk[uv_y * 8 + uv_x];
-            int Cr = Crblk[uv_y * 8 + uv_x];
-            
-            int R = Y + ((1436 * Cr + 512) >> 10);
-            int G = Y - ((352 * Cb + 731 * Cr + 512) >> 10);
-            int B = Y + ((1815 * Cb + 512) >> 10);
-            
-            R = std::clamp(R + 128, 0, 255);
-            G = std::clamp(G + 128, 0, 255);
-            B = std::clamp(B + 128, 0, 255);
-            
-            int pixel_index = py * 16 + px;
-            
-            if (command.DataOutputDepth == 2) {
-                // 24-bit mode: pack BGR into sequential bytes
-                // Every 4 pixels = 12 bytes = 3 words
-                int word_base = (pixel_index / 4) * 3;
-                int pixel_in_group = pixel_index % 4;
-                
-                switch (pixel_in_group) {
-                    case 0: // Bytes 0,1,2 of word 0
-                        out[word_base + 0] = (out[word_base + 0] & 0xFF000000) |
-                                              B | (G << 8) | (R << 16);
-                        break;
-                    case 1: // Byte 3 of word 0, bytes 0,1 of word 1
-                        out[word_base + 0] = (out[word_base + 0] & 0x00FFFFFF) | (B << 24);
-                        out[word_base + 1] = (out[word_base + 1] & 0xFFFF0000) |
-                                              G | (R << 8);
-                        break;
-                    case 2: // Bytes 2,3 of word 1, byte 0 of word 2
-                        out[word_base + 1] = (out[word_base + 1] & 0x0000FFFF) |
-                                              (B << 16) | (G << 24);
-
-                        out[word_base + 2] = (out[word_base + 2] & 0xFFFFFF00) | R;
-
-                        break;
-                    case 3: // Bytes 1,2,3 of word 2
-                        out[word_base + 2] = (out[word_base + 2] & 0x000000FF) |
-                                              (B << 8) | (G << 16) | (R << 24);
-
-                        break;
-                }
-            } else {
-                // 15-bit mode: convert to RGB555 format
-                uint16_t color = 
-                    ((R >> 3) << 0) |
-                    ((G >> 3) << 5) |
-                    ((B >> 3) << 10);
-                
-                int word_index = pixel_index / 2;
-                int pixel_half = pixel_index % 2;
-                
-                if (pixel_half == 0) {
-                    out[word_index] = (out[word_index] & 0xFFFF0000) | color;
-                } else {
-                    out[word_index] = (out[word_index] & 0x0000FFFF) | (color << 16);
-                }
-            }
-        }
-    }
-}*/
-
 void MDEC::yuv_to_rgb(DCTBlock& block, uint16_t xx, uint16_t yy, std::array<int16_t, 64> &blk) {
-    /*for (int y = 0; y < 8; y++) {
-        for (int x = 0; x < 8; x++) {
-            // int idxY = y * 2 + x;
-            // int cx = x / 2;
-            // int cy = y / 2;
-            // int idxC = cy * 8 + cx;
-            int idxY = y * 8 + x;
-            
-            int cx = (xx + x) / 2;
-            int cy = (yy + y) / 2;
-            int idxC = cy * 8 + cx;
-            
-            int16_t Y = blk[idxY] + 128;
-            int16_t Cb = Cbblk[idxC];
-            int16_t Cr = Crblk[idxC];
-            
-            int R = Y + static_cast<int>(1.402 * Cr);
-            int G = Y - static_cast<int>(0.344136 * Cb + 0.714136 * Cr);
-            int B = Y + static_cast<int>(1.772 * Cb);
-            
-            uint8_t r = clamp(R , 0, 255);
-            uint8_t g = clamp(G, 0, 255);
-            uint8_t b = clamp(B, 0, 255);
-            
-            uint16_t rgb =
-                ((b >> 3) << 10) |
-                ((g >> 3) << 5)  |
-                 (r >> 3);
-            
-            // if (command.DataOutputDepth == 2) {
-            //     block.data[(yy + y) * 16 + (xx + x)] = 
-            //         (r) | (g << 8) | (b << 16) | (0xFF << 24);
-            // } else {
-            //     uint16_t rgb = ((b >> 3) << 10) | ((g >> 3) << 5) | (r >> 3);
-            //     block.data[(yy + y) * 16 + (xx + x)] = rgb;
-            // }
-            block.data[(yy + y) * 16 + (xx + x)] = rgb;
-            //block.data[(yy + y) * 16 + (xx + x)] = (b << 16) | (g << 8) | r;
-        }
-    }*/
-    
-    //return;
-    
     for (int y = 0; y < 8; y++) {
         for (int x = 0; x < 8; x++) {
             int px = xx + x;
@@ -748,23 +512,14 @@ void MDEC::yuv_to_rgb(DCTBlock& block, uint16_t xx, uint16_t yy, std::array<int1
             
             int uv_x = (xx + x) >> 1;
             int uv_y = (yy + y) >> 1;
-            //int uv_x = (xx >> 1) + (x >> 1);
-            //int uv_y = (yy >> 1) + (y >> 1);
             
             int16_t Y = blk[y * 8 + x];
             const int16_t Cb = Cbblk[uv_y * 8 + uv_x];
             const int16_t Cr = Crblk[uv_y * 8 + uv_x];
-            
-            /*int R = y + ((1436 * Cr) >> 10);
-            int G = y - ((352 * Cb + 731 * Cr) >> 10);
-            int B = y + ((1815 * Cb) >> 10);*/
+
             int R = Y + ((1436 * Cr + 512) >> 10);
             int G = Y - ((352 * Cb + 731 * Cr + 512) >> 10);
             int B = Y + ((1815 * Cb + 512) >> 10);
-            
-           // R = std::clamp(R, -128, 127);
-           // G = std::clamp(G, -128, 127);
-            //B = std::clamp(B, -128, 127);
 
             if (!command.DataOutputSigned) {
                 R = std::clamp(R + 128, 0, 255);
@@ -788,91 +543,6 @@ void MDEC::yuv_to_rgb(DCTBlock& block, uint16_t xx, uint16_t yy, std::array<int1
             
             p[py * 16 + px] = { r, g, b };
         }
-    }
-    
-    return;
-    
-    if (command.DataOutputDepth == 3) {
-        block.data.resize(256);
-        
-        for (int i = 0; i < 256; i++) {
-            auto &p0 = p[i];
-            
-            uint16_t r5 = (p0.r >> 3);
-            uint16_t g5 = (p0.g >> 3);
-            uint16_t b5 = (p0.b >> 3);
-            
-            block.data[i] =
-                    (b5 << 10) |
-                    (g5 << 5)  |
-                    (r5);
-        }
-        
-        return;
-    }
-    
-    block.data.clear();
-    block.data.reserve(192);
-    
-    uint16_t hw[3];
-    uint32_t word = 0;
-    bool low = true;
-    
-    for (int i = 0; i < 256; i += 2) {
-        auto& p0 = p[i + 0];
-        auto& p1 = p[i + 1];
-        
-        hw[0] = uint16_t(p0.r) | (uint16_t(p0.g) << 8);
-        hw[1] = uint16_t(p0.b) | (uint16_t(p1.r) << 8);
-        hw[2] = uint16_t(p1.g) | (uint16_t(p1.b) << 8);
-        
-        for (int j = 0; j < 3; j++) {
-            if (low) {
-                word = hw[j];
-                low = false;
-            } else {
-                word |= uint32_t(hw[j]) << 16;
-                block.data.push_back(word);
-                word = 0;
-                low = true;
-            }
-        }
-    }
-    
-    // flush dangling halfword
-    if (!low)
-        block.data.push_back(word);
-    
-    return;
-    
-    for (int i = 0; i < 256; i++) {
-        /*
-        auto& p0 = p[i + 0];
-        auto& p1 = p[i + 1];
-        auto& p2 = p[i + 2];
-        auto& p3 = p[i + 3];
-        
-        uint32_t w0 =
-            (p0.b) |
-            (p0.g << 8) |
-            (p0.r << 16) |
-            (p1.b << 24);
-        
-        uint32_t w1 =
-            (p1.g) |
-            (p1.r << 8) |
-            (p2.b << 16) |
-            (p2.g << 24);
-        
-        uint32_t w2 =
-            (p2.r) |
-            (p3.b << 8) |
-            (p3.g << 16) |
-            (p3.r << 24);
-        
-        block.data.push_back(w0);
-        block.data.push_back(w1);
-        block.data.push_back(w2);*/
     }
 }
 

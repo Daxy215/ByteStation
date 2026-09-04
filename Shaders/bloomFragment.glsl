@@ -14,8 +14,9 @@ uniform float uKernelB;         // B-spline parameter
 uniform float uKernelC;         // Cubic parameter
 uniform float uSharpness;       // Sharpness strength
 uniform bool uEnableUpscaling = false;
+uniform bool uEnableColorAdjustments = false;
+uniform bool uEnableCrtEffects = false;
 
-uniform int uSampleRadius = 2;                 // Kernel radius
 uniform float uLODBias = 0.5;                  // Mipmap LOD bias
 uniform float uEdgeThreshold = 0.1;            // Edge detection threshold
 uniform float uDitherStrength = 0.005;         // Dithering strength
@@ -80,8 +81,8 @@ vec4 textureCubic(sampler2D tex, vec2 uv, vec2 texSize) {
     vec4 sum = vec4(0.0);
     float wsum = 0.0;
     
-    for(int y = -uSampleRadius; y <= uSampleRadius; y++) {
-        for(int x = -uSampleRadius; x <= uSampleRadius; x++) {
+    for(int y = -1; y <= 2; y++) {
+        for(int x = -1; x <= 2; x++) {
             vec2 offset = vec2(x, y);
             float wx = cubicWeight(offset.x - f.x, uKernelB, uKernelC);
             float wy = cubicWeight(offset.y - f.y, uKernelB, uKernelC);
@@ -131,30 +132,35 @@ vec3 applyGamma(vec3 color) {
 }
 
 void main() {
-    if(!uEnableUpscaling) {
-        FragColor = texture(screenTexture, TexCoords);
-        return;
+    vec3 color;
+
+    if(uEnableUpscaling) {
+        // Upscale with quality-controlled bicubic
+        vec4 upscaled = textureCubic(screenTexture, TexCoords, uTextureSize);
+        color = upscaled.rgb;
+
+        // Adaptive sharpening
+        vec3 blurred = textureLod(screenTexture, TexCoords, 1.0 + uLODBias).rgb;
+        color = sharpen(color, blurred, uSharpness, TexCoords);
+    } else {
+        color = texture(screenTexture, TexCoords).rgb;
     }
-    
-    // Upscale with quality-controlled bicubic
-    vec4 upscaled = textureCubic(screenTexture, TexCoords, uTextureSize);
-    vec3 color = upscaled.rgb;
-    
-    // Adaptive sharpening
-    vec3 blurred = textureLod(screenTexture, TexCoords, 1.0 + uLODBias).rgb;
-    color = sharpen(color, blurred, uSharpness, TexCoords);
-    
-    // Color adjustments
-    color = adjustContrastSaturation(color, uContrast, uSaturation);
-    
+
+    if(uEnableColorAdjustments)
+        color = adjustContrastSaturation(color, uContrast, uSaturation);
+
     // Post-processing effects
     if(uEnableBloom)
         color = applyBloom(color, TexCoords);
-    
-    color = crtEffects(color, TexCoords);
-    color = applyDither(color, TexCoords);
-    color = applyFilmGrain(color, TexCoords);
-    color = applyGamma(color);
-    
+
+    if(uEnableCrtEffects) {
+        color = crtEffects(color, TexCoords);
+        color = applyDither(color, TexCoords);
+        color = applyFilmGrain(color, TexCoords);
+    }
+
+    if(uEnableColorAdjustments)
+        color = applyGamma(color);
+
     FragColor = vec4(color, 1.0);
 }

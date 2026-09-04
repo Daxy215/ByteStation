@@ -18,205 +18,10 @@
 #include "../../Utils/FileSystem/FileManager.h"
 
 // #define Test
+
 //Ik I shouldn't do this but im lazy
 enum { WIDTH = 1024, HEIGHT = 512 };
 static int curWidth = 1024, curHeight = 512;
-
-/*namespace {
-    static int orient2d(const Emulator::Gpu::Position &a, const Emulator::Gpu::Position &b, int x, int y) {
-        return int((b.x - a.x) * (float(y) - a.y) - (b.y - a.y) * (float(x) - a.x));
-    }
-
-    static int area2d(const Emulator::Gpu::Position &a, const Emulator::Gpu::Position &b,
-                      const Emulator::Gpu::Position &c) {
-        return int((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x));
-    }
-
-    static bool isTopLeft(const Emulator::Gpu::Position &a, const Emulator::Gpu::Position &b) {
-        const float dx = b.x - a.x;
-        const float dy = b.y - a.y;
-
-        return dy < 0.0f || (dy == 0.0f && dx > 0.0f);
-    }
-
-    static bool insideTriangle(const Emulator::Gpu::Position v[3], int x, int y) {
-        const int area = area2d(v[0], v[1], v[2]);
-
-        if (area == 0) {
-            return false;
-        }
-
-        const int sign = area > 0 ? 1 : -1;
-
-        for (int i = 0; i < 3; i++) {
-            const Emulator::Gpu::Position &a = v[i];
-            const Emulator::Gpu::Position &b = v[(i + 1) % 3];
-
-            const int e = sign * orient2d(a, b, x, y);
-
-            if (e < 0) {
-                return false;
-            }
-
-            if (e == 0 && !isTopLeft(a, b)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    static int clipLeft(const Emulator::Gpu &gpu) { return std::clamp<int>(gpu.drawingAreaLeft, 0, WIDTH - 1); }
-
-    static int clipTop(const Emulator::Gpu &gpu) { return std::clamp<int>(gpu.drawingAreaTop, 0, HEIGHT - 1); }
-
-    static int clipRight(const Emulator::Gpu &gpu) {
-        if (gpu.drawingAreaRight == 0 && gpu.drawingAreaBottom == 0) {
-            return WIDTH - 1;
-        }
-
-        return std::clamp<int>(gpu.drawingAreaRight, 0, WIDTH - 1);
-    }
-
-    static int clipBottom(const Emulator::Gpu &gpu) {
-        if (gpu.drawingAreaRight == 0 && gpu.drawingAreaBottom == 0) {
-            return HEIGHT - 1;
-        }
-
-        return std::clamp<int>(gpu.drawingAreaBottom, 0, HEIGHT - 1);
-    }
-
-    static int applyTextureWindow(int v, uint8_t mask, uint8_t offset) {
-        const int m = int(mask) * 8;
-        const int o = int(offset & mask) * 8;
-        return (v & ~m) | o;
-    }
-
-    static uint16_t sampleTexture(Emulator::Gpu &gpu, const Emulator::Gpu::UV &uv,
-                                  const Emulator::Gpu::Attributes attributes) {
-        int u = int(uv.u);
-        int v = int(uv.v);
-
-        u = applyTextureWindow(u, gpu.textureWindowXMask, gpu.textureWindowXOffset);
-        v = applyTextureWindow(v, gpu.textureWindowYMask, gpu.textureWindowYOffset);
-
-        const uint32_t dataX = static_cast<uint32_t>(uv.dataX);
-        const uint32_t dataY = static_cast<uint32_t>(uv.dataY);
-
-        const uint32_t clutX = dataX >> 16;
-        const uint32_t pageX = dataX & 0xFFFF;
-        const uint32_t clutY = dataY >> 16;
-        const uint32_t pageY = dataY & 0xFFFF;
-
-        switch (attributes.textureDepth()) {
-            case 0:
-                return gpu.vram->getPixel4(uint32_t(u), uint32_t(v), clutX, clutY, pageX, pageY);
-            case 1:
-                return gpu.vram->getPixel8(uint32_t(u), uint32_t(v), clutX, clutY, pageX, pageY);
-            default:
-                return gpu.vram->getPixel16(uint32_t(u), uint32_t(v), pageX, pageY);
-        }
-    }
-
-    static Emulator::Gpu::UV interpolateUV(const Emulator::Gpu::Position p[3], const Emulator::Gpu::UV uv[3], int x,
-                                           int y) {
-        const double area = double(area2d(p[0], p[1], p[2]));
-
-        const double w0 = double(area2d({float(x), float(y)}, p[1], p[2])) / area;
-        const double w1 = double(area2d(p[0], {float(x), float(y)}, p[2])) / area;
-        const double w2 = double(area2d(p[0], p[1], {float(x), float(y)})) / area;
-
-        return {float(uv[0].u * w0 + uv[1].u * w1 + uv[2].u * w2), float(uv[0].v * w0 + uv[1].v * w1 + uv[2].v * w2),
-                uv[0].dataX, uv[0].dataY};
-    }
-
-    static void drawDirectTriangle(Emulator::Gpu &gpu, const Emulator::Gpu::Position v[3],
-                                   const Emulator::Gpu::Color colors[3], const Emulator::Gpu::UV uvs[3],
-                                   const Emulator::Gpu::Attributes attributes) {
-        const int area = area2d(v[0], v[1], v[2]);
-
-        if (area == 0) {
-            return;
-        }
-
-        int minX = int(std::min({v[0].x, v[1].x, v[2].x}));
-        int maxX = int(std::max({v[0].x, v[1].x, v[2].x}));
-        int minY = int(std::min({v[0].y, v[1].y, v[2].y}));
-        int maxY = int(std::max({v[0].y, v[1].y, v[2].y}));
-
-        minX = std::max(minX, clipLeft(gpu));
-        maxX = std::min(maxX, clipRight(gpu));
-        minY = std::max(minY, clipTop(gpu));
-        maxY = std::min(maxY, clipBottom(gpu));
-
-        for (int y = minY; y <= maxY; y++) {
-            for (int x = minX; x <= maxX; x++) {
-                if (!insideTriangle(v, x, y)) {
-                    continue;
-                }
-
-                uint16_t c;
-
-                if (attributes.useTextures()) {
-                    Emulator::Gpu::UV uv = interpolateUV(v, uvs, x, y);
-                    c                    = sampleTexture(gpu, uv, attributes);
-
-                    if ((c & 0x7FFF) == 0) {
-                        continue;
-                    }
-                } else {
-                    c = static_cast<uint16_t>(colors[0].toU32());
-                }
-
-                gpu.vram->writePixel(uint32_t(x), uint32_t(y), c);
-            }
-        }
-    }
-
-    static void drawDirectLine(Emulator::Gpu &gpu, const Emulator::Gpu::Position p[2],
-                               const Emulator::Gpu::Color color) {
-        int       x0 = int(p[0].x);
-        int       y0 = int(p[0].y);
-        const int x1 = int(p[1].x);
-        const int y1 = int(p[1].y);
-
-        const int cLeft   = clipLeft(gpu);
-        const int cTop    = clipTop(gpu);
-        const int cRight  = clipRight(gpu);
-        const int cBottom = clipBottom(gpu);
-
-        const uint16_t c = static_cast<uint16_t>(color.toU32());
-
-        const int dx = std::abs(x1 - x0);
-        const int sx = x0 < x1 ? 1 : -1;
-        const int dy = -std::abs(y1 - y0);
-        const int sy = y0 < y1 ? 1 : -1;
-
-        int err = dx + dy;
-
-        for (;;) {
-            if (x0 >= cLeft && x0 <= cRight && y0 >= cTop && y0 <= cBottom) {
-                gpu.vram->writePixel(uint32_t(x0), uint32_t(y0), c);
-            }
-
-            if (x0 == x1 && y0 == y1) {
-                break;
-            }
-
-            const int e2 = err * 2;
-
-            if (e2 >= dy) {
-                err += dy;
-                x0 += sx;
-            }
-
-            if (e2 <= dx) {
-                err += dx;
-                y0 += sy;
-            }
-        }
-    }
-}*/
 
 Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
     glfwSetErrorCallback(
@@ -366,83 +171,40 @@ Emulator::Renderer::Renderer(Emulator::Gpu &gpu) : gpu(gpu), _rasterizer(gpu) {
 
         pixelCenterModeUni = glGetUniformLocation(program, "pixelCenterMode");
         glUniform1i(pixelCenterModeUni, 0);
+
+        internalScaleUni = glGetUniformLocation(program, "uInternalScale");
+        glUniform1i(internalScaleUni, internalScale);
     }
 
     glEnable(GL_BLEND);
-    // glDisable(GL_BLEND);
 
     for (int i = 0; i < 2; i++)
-        sceneFBO[i] = createFrameBuffer(WIDTH, HEIGHT, sceneTex[i]);
+        sceneFBO[i] = createFrameBuffer(WIDTH * internalScale, HEIGHT * internalScale, sceneTex[i]);
+
+    readbackFBO = createFrameBuffer(WIDTH, HEIGHT, readbackTex);
 
     // After sceneFBO creation
     for (int i = 0; i < 2; i++) {
-        bloomFBO[i] = createFrameBuffer(WIDTH, HEIGHT, bloomTexture[i]);
-
-        /*glBindTexture(GL_TEXTURE_2D, bloomTexture[i]);
-        glGenerateMipmap(GL_TEXTURE_2D);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);*/
+        bloomFBO[i] = createFrameBuffer(WIDTH * internalScale, HEIGHT * internalScale, bloomTexture[i]);
     }
 
     {
-        /*// Compile vertex shader first as, it's used with other shaders
-        // std::string postVertexSource   = preprocessShader(readFile("Shaders/bloomVertex.glsl"), "Shader");
-        std::string postVertexSource   = getShaderSource("../../Shaders/bloomVertex.glsl");
+        std::string postVertexSource = getShaderSource("../../Shaders/bloomVertex.glsl");
         postProcessVertexShader = compileShader(postVertexSource.c_str(), GL_VERTEX_SHADER);
 
-        //std::string thresholdSource = preprocessShader(readFile("Shaders/bloom_threshold.frag"), "Shaders");
         std::string thresholdSource = getShaderSource("../../Shaders/bloom_threshold.frag");
-        //std::string blurSource = preprocessShader(readFile("Shaders/bloom_blur.frag"), "Shaders");
-        std::string blurSource = getShaderSource("../../Shaders/bloom_blur.frag");
+        std::string blurSource      = getShaderSource("../../Shaders/bloom_blur.frag");
 
         bloomThresholdProgram = compileShader(thresholdSource.c_str(), GL_FRAGMENT_SHADER);
-        blurProgram = compileShader(blurSource.c_str(), GL_FRAGMENT_SHADER);
+        blurProgram           = compileShader(blurSource.c_str(), GL_FRAGMENT_SHADER);
 
         bloomThresholdProgram = linkProgram(postProcessVertexShader, bloomThresholdProgram);
-        blurProgram = linkProgram(postProcessVertexShader, blurProgram);
+        blurProgram           = linkProgram(postProcessVertexShader, blurProgram);
 
-        //std::string postFragmentSource = preprocessShader(readFile("Shaders/bloomFragment.glsl"), "Shader");
         std::string postFragmentSource = getShaderSource("../../Shaders/bloomFragment.glsl");
 
         postProcessFragmentShader = compileShader(postFragmentSource.c_str(), GL_FRAGMENT_SHADER);
-        postProcessProgram = linkProgram(postProcessVertexShader, postProcessFragmentShader);*/
-
-        const char *v = R"(
-            #version 330 core
-
-            layout(location = 0) in vec2 aPos;
-            layout(location = 1) in vec2 aUV;
-
-            out vec2 vUV;
-
-            uniform vec2 uUvMin;
-            uniform vec2 uUvMax;
-
-            void main() {
-                vUV = mix(uUvMin, uUvMax, aUV);
-                gl_Position = vec4(aPos, 0.0, 1.0);
-            }
-        )";
-
-        const char *f = R"(
-            #version 330 core
-
-            in vec2 vUV;
-            out vec4 fragColor;
-
-            uniform sampler2D screenTexture;
-
-            void main() {
-                fragColor = texture(screenTexture, vUV);
-            }
-        )";
-
-        postProcessVertexShader   = compileShader(v, GL_VERTEX_SHADER);
-        postProcessFragmentShader = compileShader(f, GL_FRAGMENT_SHADER);
-
-        postProcessProgram = linkProgram(postProcessVertexShader, postProcessFragmentShader);
+        postProcessProgram        = linkProgram(postProcessVertexShader, postProcessFragmentShader);
 
         setupScreenQuad();
 
@@ -479,6 +241,10 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
         return;
 
     isRendering = true;
+
+    if (internalScale != lastInternalScale) {
+        resizeFramebuffers();
+    }
 
     glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO[curTex]);
 
@@ -522,6 +288,11 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
 
         glUniform1i(glGetUniformLocation(postProcessProgram, "screenTexture"), 0);
 
+        glUniform1i(glGetUniformLocation(postProcessProgram, "uEnableBloom"), 0);
+        glUniform1i(glGetUniformLocation(postProcessProgram, "uEnableUpscaling"), 0);
+        glUniform1i(glGetUniformLocation(postProcessProgram, "uEnableColorAdjustments"), 0);
+        glUniform1i(glGetUniformLocation(postProcessProgram, "uEnableCrtEffects"), 0);
+
         glUniform2f(glGetUniformLocation(postProcessProgram, "uUvMin"), uvMinX, uvMinY);
         glUniform2f(glGetUniformLocation(postProcessProgram, "uUvMax"), uvMaxX, uvMaxY);
 
@@ -538,7 +309,7 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
 
     // Bloom threshold
     glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO[0]);
-    glViewport(0, 0, WIDTH, HEIGHT);
+    glViewport(0, 0, WIDTH * internalScale, HEIGHT * internalScale);
 
     glEnable(GL_BLEND);
 
@@ -558,7 +329,7 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO[1]);
-    glViewport(0, 0, WIDTH, HEIGHT);
+    glViewport(0, 0, WIDTH * internalScale, HEIGHT * internalScale);
 
     glEnable(GL_BLEND);
 
@@ -605,13 +376,12 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
         // Set uniforms
         glUniform1i(glGetUniformLocation(postProcessProgram, "screenTexture"), 0);
         glUniform1i(glGetUniformLocation(postProcessProgram, "bloomTexture"), 1);
-        glUniform2f(glGetUniformLocation(postProcessProgram, "uTextureSize"), WIDTH, HEIGHT);
+        glUniform2f(glGetUniformLocation(postProcessProgram, "uTextureSize"), WIDTH * internalScale, HEIGHT * internalScale);
         glUniform2f(glGetUniformLocation(postProcessProgram, "uOutputSize"), 3840.0f, 1920.0f);
 
         glUniform1f(glGetUniformLocation(postProcessProgram, "uKernelB"), kernelB);
         glUniform1f(glGetUniformLocation(postProcessProgram, "uKernelC"), kernelC);
         glUniform1f(glGetUniformLocation(postProcessProgram, "uSharpness"), sharpness);
-        glUniform1i(glGetUniformLocation(postProcessProgram, "uSampleRadius"), sampleRadius);
         glUniform1f(glGetUniformLocation(postProcessProgram, "uLODBias"), lodBias);
         glUniform1f(glGetUniformLocation(postProcessProgram, "uEdgeThreshold"), edgeThreshold);
         glUniform1f(glGetUniformLocation(postProcessProgram, "uDitherStrength"), ditherStrength);
@@ -628,6 +398,8 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
 
         glUniform1i(glGetUniformLocation(postProcessProgram, "uEnableBloom"), enableBloom ? 1 : 0);
         glUniform1i(glGetUniformLocation(postProcessProgram, "uEnableUpscaling"), enableUpscaling ? 1 : 0);
+        glUniform1i(glGetUniformLocation(postProcessProgram, "uEnableColorAdjustments"), enableColorAdjustments ? 1 : 0);
+        glUniform1i(glGetUniformLocation(postProcessProgram, "uEnableCrtEffects"), enableCrtEffects ? 1 : 0);
 
         glUniform2f(glGetUniformLocation(postProcessProgram, "uUvMin"), uvMinX, uvMinY);
         glUniform2f(glGetUniformLocation(postProcessProgram, "uUvMax"), uvMaxX, uvMaxY);
@@ -655,7 +427,7 @@ void Emulator::Renderer::flushDrawCommands() {
     }
 
     glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO[curTex]);
-    glViewport(0, 0, WIDTH, HEIGHT);
+    glViewport(0, 0, WIDTH * internalScale, HEIGHT * internalScale);
 
     draw();
 
@@ -682,10 +454,24 @@ void Emulator::Renderer::readbackToVram(uint32_t x, uint32_t y, uint32_t width, 
             return;
         }
 
+        const uint32_t srcX = regionX * internalScale;
+        const uint32_t srcY = (HEIGHT - regionY - regionHeight) * internalScale;
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, sceneFBO[curTex]);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, readbackFBO);
+
+        glBlitFramebuffer(
+            srcX, srcY, srcX + regionWidth * internalScale, srcY + regionHeight * internalScale,
+            regionX, HEIGHT - regionY - regionHeight, regionX + regionWidth, HEIGHT - regionY,
+            GL_COLOR_BUFFER_BIT, GL_NEAREST
+        );
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
         std::vector<uint8_t> pixels(regionWidth * regionHeight * 4);
 
         glGetTextureSubImage(
-            sceneTex[curTex],
+            readbackTex,
             0,
             regionX,
             HEIGHT - regionY - regionHeight,
@@ -766,7 +552,7 @@ void Emulator::Renderer::draw() {
     glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
 
     glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO[curTex]);
-    glViewport(0, 0, WIDTH, HEIGHT);
+    glViewport(0, 0, WIDTH * internalScale, HEIGHT * internalScale);
 
     glDisable(GL_BLEND);
     glDisable(GL_CULL_FACE);
@@ -786,11 +572,9 @@ void Emulator::Renderer::draw() {
     glUniform1i(maskBitUni, gpu.forceSetMaskBit ? 1 : 0);
     glUniform1i(checkMaskUni, gpu.preserveMaskedPixels ? 1 : 0);
     glUniform1i(pixelCenterModeUni, primitiveMode == GL_TRIANGLES ? 0 : 1);
+    glUniform1i(internalScaleUni, internalScale);
 
     glBindVertexArray(VAO);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, gpu.vram->getCurrentTexture());
 
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, sceneTex[curTex]);
@@ -1215,11 +999,29 @@ GLuint Emulator::Renderer::createFrameBuffer(GLsizei width, GLsizei height, GLui
     return framebuffer;
 }
 
+void Emulator::Renderer::resizeFramebuffers() {
+    for (int i = 0; i < 2; i++) {
+        glDeleteFramebuffers(1, &sceneFBO[i]);
+        glDeleteTextures(1, &sceneTex[i]);
+
+        glDeleteFramebuffers(1, &bloomFBO[i]);
+        glDeleteTextures(1, &bloomTexture[i]);
+    }
+
+    for (int i = 0; i < 2; i++)
+        sceneFBO[i] = createFrameBuffer(WIDTH * internalScale, HEIGHT * internalScale, sceneTex[i]);
+
+    for (int i = 0; i < 2; i++)
+        bloomFBO[i] = createFrameBuffer(WIDTH * internalScale, HEIGHT * internalScale, bloomTexture[i]);
+
+    lastInternalScale = internalScale;
+}
+
 void Emulator::Renderer::setupScreenQuad() {
     float fullscreenQuad[] = {// positions   // texCoords
-                              -1.0f, 1.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f,
-
-                              -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f, 1.0f};
+        -1.0f, 1.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f,
+        -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f, 1.0f
+    };
 
     glGenVertexArrays(1, &quadVAO);
     glGenBuffers(1, &quadVBO);

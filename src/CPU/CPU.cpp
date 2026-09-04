@@ -68,7 +68,7 @@ int CPU::executeNextInstruction() {
      * to a different pc address though doc says it's an unkown bit?
      * so, no idea what I'm really missing here?
      *
-     * 30    -      Not used (zero)=
+     * 30    -      Not used (zero)
      */
     delayJumpSlot = jumpSlot;
     jumpSlot = false;

@@ -1,16 +1,17 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
-#include <functional>
-#include <vector>
 
 class Interconnect;
 
 class Scheduler {
 public:
-    using EventFunc = std::function<void()>;
+    using EventFunc = void (*)(Interconnect*);
 
     explicit Scheduler(Interconnect* interconnect) : _interconnect(interconnect) {}
+
+    void rebind(Interconnect* interconnect) { _interconnect = interconnect; }
 
     void addCycles(uint32_t cycles) {
         _currentCycle += cycles;
@@ -37,7 +38,9 @@ private:
 
     Interconnect* _interconnect;
 
-    std::vector<Event> _events;
+    static constexpr size_t MAX_EVENTS = 4;
+    Event _events[MAX_EVENTS];
+    size_t _eventCount = 0;
 
     uint64_t _currentCycle = 0;
     uint64_t _nextEventCycle = 0;

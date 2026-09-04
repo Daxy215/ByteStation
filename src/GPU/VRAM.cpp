@@ -1,5 +1,6 @@
 ﻿#include "VRAM.h"
 #include "Gpu.h"
+#include "Rendering/Renderer.h"
 
 #include <iostream>
 
@@ -56,11 +57,14 @@ Emulator::VRAM::VRAM(Gpu &gpu) : gpu(gpu) {
         GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT
     ));
 
+    glGenFramebuffers(1, &blitSrcFBO);
+    glGenFramebuffers(1, &blitDstFBO);
+
     GLenum err = glGetError();
     if(err != GL_NO_ERROR) {
         std::cerr << "OpenGL Error during Renderer constructor: " << err << '\n';
     }
-    
+
     reset();
 }
 
@@ -71,28 +75,6 @@ Emulator::VRAM::~VRAM() {
 }
 
 void Emulator::VRAM::endTransfer() {
-    /*glBindBuffer(GL_PIXEL_UNPACK_BUFFER, pbo24);
-    
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, MAX_WIDTH);
-    
-    glTextureSubImage2D(
-        tex24,
-        0,
-        0,
-        0,
-        MAX_WIDTH,
-        MAX_HEIGHT,
-        GL_RGBA,
-        GL_UNSIGNED_BYTE,
-        reinterpret_cast<void *>(0)
-    );
-    
-    glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-    
-    return;*/
-    
     glPixelStorei(GL_UNPACK_ROW_LENGTH, MAX_WIDTH);
     
     for (int ty = 0; ty < tilesY; ty++) {
@@ -260,14 +242,33 @@ uint16_t Emulator::VRAM::RGB555_to_RGB565(uint16_t color) {
 
 void Emulator::VRAM::copyToTexture(uint32_t x, uint32_t y, uint32_t dx, uint32_t dy, uint32_t width, uint32_t height, GLuint tex) {
     auto curTex = getCurrentTexture();
-    
-    glCopyImageSubData(
-        curTex, GL_TEXTURE_2D, 0,
-        x, y, 0,
-        tex, GL_TEXTURE_2D, 0,
-        dx, dy, 0,
-        width, height, 1
+    uint32_t dstScale = gpu.renderer->internalScale;
+
+    if (dstScale <= 1) {
+        glCopyImageSubData(
+            curTex, GL_TEXTURE_2D, 0,
+            x, y, 0,
+            tex, GL_TEXTURE_2D, 0,
+            dx, dy, 0,
+            width, height, 1
+        );
+
+        return;
+    }
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, blitSrcFBO);
+    glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, curTex, 0);
+
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blitDstFBO);
+    glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+
+    glBlitFramebuffer(
+        x, y, x + width, y + height,
+        dx * dstScale, dy * dstScale, (dx + width) * dstScale, (dy + height) * dstScale,
+        GL_COLOR_BUFFER_BIT, GL_NEAREST
     );
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 int Emulator::VRAM::getCurrentTexture() {

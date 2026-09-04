@@ -2,8 +2,6 @@
 
 in vec3 color;
 
-//uniform ivec2 drawingAreaMin;
-//uniform ivec2 drawingAreaMax;
 flat in ivec2 drawingAreaMinIn;
 flat in ivec2 drawingAreaMaxIn;
 in vec2 VRAMPos;
@@ -31,7 +29,6 @@ flat in int attr;
 
 out vec4 fragColor;
 
-layout(binding = 0) uniform sampler2D texture_sample4;
 layout(binding = 1) uniform sampler2D sceneTex;
 
 //uniform int texture_depth;
@@ -40,6 +37,7 @@ uniform int semiTransparencyMode;
 uniform int dithering;
 uniform int setMaskBit;
 uniform int checkMaskBit;
+uniform int uInternalScale = 1;
 
 const int IS_SEMITRANSPARENT_MASK = 0x1;
 const int BLEND_TEXTURE_MASK = 0x2;
@@ -139,9 +137,10 @@ vec3 psxSemiBlend(vec3 back, vec3 front, int mode) {
 }
 
 vec4 read(int x, int y) {
-    y = 512 - 1 - y;
-    
-    return texelFetch(texture_sample4, ivec2(x, y), 0);
+    int sx = x * uInternalScale;
+    int sy = 512 * uInternalScale - 1 - y * uInternalScale;
+
+    return texelFetch(sceneTex, ivec2(sx, sy), 0);
 }
 
 vec4 clut4bit(vec2 coords, ivec2 clut, ivec2 page) {
@@ -209,8 +208,8 @@ void main() {
     }
 
     if (checkMaskBit != 0) {
-        int existingY = 511 - int(VRAMPos.y);
-        vec4 existing = texelFetch(sceneTex, ivec2(int(VRAMPos.x), existingY), 0);
+        int existingY = 512 * uInternalScale - 1 - int(VRAMPos.y * float(uInternalScale));
+        vec4 existing = texelFetch(sceneTex, ivec2(int(VRAMPos.x * float(uInternalScale)), existingY), 0);
 
         if (existing.a >= 0.5) {
             discard;
@@ -289,8 +288,8 @@ void main() {
      */
     bool shouldBlend = isSemiTransparent == 1 && (textureMode == 0 || texelSemiTransparent);
     if(shouldBlend) {
-        int y = 511 - int(VRAMPos.y);
-        vec4 B = texelFetch(sceneTex, ivec2(int(VRAMPos.x), y), 0);
+        int y = 512 * uInternalScale - 1 - int(VRAMPos.y * float(uInternalScale));
+        vec4 B = texelFetch(sceneTex, ivec2(int(VRAMPos.x * float(uInternalScale)), y), 0);
         outColor = vec4(psxSemiBlend(B.rgb, psxDither24To15(F.rgb, ivec2(VRAMPos)), semiMode), 1.0);
     } else {
         // No transparency
