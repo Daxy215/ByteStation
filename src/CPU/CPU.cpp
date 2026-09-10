@@ -3428,7 +3428,7 @@ void CPU::branch(uint32_t offset) {
     nextpc = offset;//pc + (offset * 4);
 
     branchSlot = true;
-    jumpSlot = true;
+    //jumpSlot = true;
 }
 
 int CPU::opadd(Instruction& instruction) {
