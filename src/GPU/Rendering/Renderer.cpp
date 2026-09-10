@@ -1000,19 +1000,34 @@ GLuint Emulator::Renderer::createFrameBuffer(GLsizei width, GLsizei height, GLui
 }
 
 void Emulator::Renderer::resizeFramebuffers() {
-    for (int i = 0; i < 2; i++) {
-        glDeleteFramebuffers(1, &sceneFBO[i]);
-        glDeleteTextures(1, &sceneTex[i]);
-
-        glDeleteFramebuffers(1, &bloomFBO[i]);
-        glDeleteTextures(1, &bloomTexture[i]);
-    }
+    GLuint oldSceneFBO[2] = {sceneFBO[0], sceneFBO[1]};
+    GLuint oldSceneTex[2] = {sceneTex[0], sceneTex[1]};
 
     for (int i = 0; i < 2; i++)
         sceneFBO[i] = createFrameBuffer(WIDTH * internalScale, HEIGHT * internalScale, sceneTex[i]);
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 2; i++) {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, oldSceneFBO[i]);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, sceneFBO[i]);
+
+        glBlitFramebuffer(
+            0, 0, WIDTH * lastInternalScale, HEIGHT * lastInternalScale,
+            0, 0, WIDTH * internalScale, HEIGHT * internalScale,
+            GL_COLOR_BUFFER_BIT, GL_NEAREST
+        );
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        glDeleteFramebuffers(1, &oldSceneFBO[i]);
+        glDeleteTextures(1, &oldSceneTex[i]);
+    }
+
+    for (int i = 0; i < 2; i++) {
+        glDeleteFramebuffers(1, &bloomFBO[i]);
+        glDeleteTextures(1, &bloomTexture[i]);
+
         bloomFBO[i] = createFrameBuffer(WIDTH * internalScale, HEIGHT * internalScale, bloomTexture[i]);
+    }
 
     lastInternalScale = internalScale;
 }
