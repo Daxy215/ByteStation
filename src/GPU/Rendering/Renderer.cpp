@@ -341,7 +341,7 @@ void Emulator::Renderer::display(const bool displayEntireScreen) {
         // glGenerateMipmap(GL_TEXTURE_2D);
         glUniform1i(glGetUniformLocation(blurProgram, "image"), 0);
         glUniform1i(glGetUniformLocation(blurProgram, "horizontal"), horizontal ? 1 : 0);
-        glUniform1f(glGetUniformLocation(blurProgram, "blurRadius"), blurRadius);
+        glUniform1f(glGetUniformLocation(blurProgram, "blurRadius"), blurRadius * internalScale);
 
         glBindVertexArray(quadVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -563,7 +563,7 @@ void Emulator::Renderer::draw() {
     glDisable(GL_DITHER);
 
     glLineWidth(1.0f);
-    glPointSize(1.0f);
+    glPointSize(static_cast<float>(internalScale));
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
     glUseProgram(program);
